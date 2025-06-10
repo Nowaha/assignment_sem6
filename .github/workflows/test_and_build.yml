@@ -19,7 +19,7 @@ jobs:
         with:
           channel: stable
           cache: true
-          cache-key: "flutter-:os:-:channel:-:version:-:arch:-${{ github.ref }}-:hash:"
+          cache-key: "flutter-:os:-:channel:-:version:-:arch:-:hash:"
           cache-path: "${{ runner.tool_cache }}/flutter/:channel:-:version:-:arch:"
       - run: flutter --version
 
