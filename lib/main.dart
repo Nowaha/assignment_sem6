@@ -1,11 +1,31 @@
+import 'package:assignment_sem6/data/dao/impl/memoryuserdao.dart';
+import 'package:assignment_sem6/data/dao/userdao.dart';
+import 'package:assignment_sem6/data/repo/impl/userrepositoryimpl.dart';
+import 'package:assignment_sem6/data/repo/userrepository.dart';
+import 'package:assignment_sem6/data/service/impl/userserviceimpl.dart';
+import 'package:assignment_sem6/data/service/userservice.dart';
 import 'package:assignment_sem6/screens/home.dart';
 import 'package:assignment_sem6/screens/settings.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 
 void main() {
-  runApp(const MainApp());
+  runApp(
+    MultiProvider(
+      providers: [
+        Provider<UserDao>(create: (_) => MemoryUserDao()),
+        ProxyProvider<UserDao, UserRepository>(
+          update: (_, dao, _) => UserRepositoryImpl(dao: dao),
+        ),
+        ProxyProvider<UserRepository, UserService>(
+          update: (_, repository, _) => UserServiceImpl(repository: repository),
+        ),
+      ],
+      child: const MainApp(),
+    ),
+  );
 }
 
 final _router = GoRouter(
