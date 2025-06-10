@@ -1,9 +1,12 @@
+import 'dart:async';
+
 import 'package:assignment_sem6/data/dao/userdao.dart';
 import 'package:assignment_sem6/data/entity/impl/user.dart';
 import 'package:assignment_sem6/extension/iterable.dart';
 import 'package:assignment_sem6/mixin/mutexmixin.dart';
+import 'package:assignment_sem6/mixin/streammixin.dart';
 
-class MemoryUserDao extends UserDao with MutexMixin {
+class MemoryUserDao extends UserDao with MutexMixin, StreamMixin<User> {
   final Map<String, User> _users = {};
 
   @override
@@ -39,6 +42,7 @@ class MemoryUserDao extends UserDao with MutexMixin {
     }
 
     _users[user.uuid] = user;
+    controller.add(_users.values.toList());
   });
 
   @override
@@ -48,9 +52,22 @@ class MemoryUserDao extends UserDao with MutexMixin {
     }
 
     _users[user.uuid] = user;
+    controller.add(_users.values.toList());
   });
 
   @override
-  Future<bool> delete(String uuid) =>
-      safe(() async => _users.remove(uuid) != null);
+  Future<bool> delete(String uuid) => safe(() async {
+    bool success = _users.remove(uuid) != null;
+
+    if (success) {
+      controller.add(_users.values.toList());
+    }
+
+    return success;
+  });
+
+  @override
+  void dispose() {
+    controller.close();
+  }
 }
