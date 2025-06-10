@@ -1,0 +1,4 @@
+enum Sort {
+  ascending,
+  descending
+}
