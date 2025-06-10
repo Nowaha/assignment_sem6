@@ -1,8 +1,8 @@
 import 'package:assignment_sem6/screens/home.dart';
 import 'package:assignment_sem6/screens/settings.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:provider/provider.dart';
 
 void main() {
   runApp(const MainApp());
@@ -30,6 +30,16 @@ final _router = GoRouter(
 class MainApp extends StatelessWidget {
   const MainApp({super.key});
 
+  void onPointerDown(PointerDownEvent event) {
+    if (event.buttons == kBackMouseButton) {
+      if (_router.canPop()) {
+        _router.pop();
+      }
+    } /* else if (event.buttons == kForwardMouseButton) {
+      
+    } */
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp.router(
@@ -39,6 +49,9 @@ class MainApp extends StatelessWidget {
         useMaterial3: true,
       ),
       routerConfig: _router,
+      builder: (context, child) {
+        return Listener(onPointerDown: onPointerDown, child: child);
+      },
     );
   }
 }
