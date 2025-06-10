@@ -10,8 +10,11 @@ Cross-platform Flutter application created for the assignment for Semester 6, th
 - Desktop (Windows, macOS, Linux)
 
 ## Used libraries
-- [provider](https://pub.dev/packages/provider) - State management
+- [bcrypt](https://pub.dev/packages/bcrypt) - Password hashing
 - [go_router](https://pub.dev/packages/go_router) - Routing
+- [mutex](https://pub.dev/packages/mutex) - Mutex locks for thread safety
+- [provider](https://pub.dev/packages/provider) - State management
+- [uuid](https://pub.dev/packages/uuid) - UUID generation
 
 ## How to run
 `flutter run`
