@@ -1,7 +1,7 @@
 import 'package:assignment_sem6/data/entity/impl/post.dart';
 import 'package:assignment_sem6/data/repo/postrepository.dart';
 import 'package:assignment_sem6/util/sort.dart';
-import 'package:assignment_sem6/util/validation.dart';
+import 'package:assignment_sem6/util/uuid.dart';
 
 class PostRepositoryImpl extends PostRepository {
   PostRepositoryImpl({required super.dao});
@@ -30,7 +30,7 @@ class PostRepositoryImpl extends PostRepository {
     int limit = 10,
     int page = 0,
   }) {
-    if (!Validation.isValidUUID(creatorUUID)) {
+    if (!UUIDv4.isValid(creatorUUID)) {
       throw ArgumentError("Invalid UUID", "creatorUUID");
     }
 
