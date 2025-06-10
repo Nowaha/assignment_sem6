@@ -1,8 +1,16 @@
+import 'package:assignment_sem6/data/dao/impl/memorypostdao.dart';
 import 'package:assignment_sem6/data/dao/impl/memoryuserdao.dart';
+import 'package:assignment_sem6/data/dao/postdao.dart';
 import 'package:assignment_sem6/data/dao/userdao.dart';
+import 'package:assignment_sem6/data/entity/impl/post.dart';
+import 'package:assignment_sem6/data/entity/impl/user.dart';
+import 'package:assignment_sem6/data/repo/impl/postrepositoryimpl.dart';
 import 'package:assignment_sem6/data/repo/impl/userrepositoryimpl.dart';
+import 'package:assignment_sem6/data/repo/postrepository.dart';
 import 'package:assignment_sem6/data/repo/userrepository.dart';
+import 'package:assignment_sem6/data/service/impl/postserviceimpl.dart';
 import 'package:assignment_sem6/data/service/impl/userserviceimpl.dart';
+import 'package:assignment_sem6/data/service/postservice.dart';
 import 'package:assignment_sem6/data/service/userservice.dart';
 import 'package:assignment_sem6/screens/home.dart';
 import 'package:assignment_sem6/screens/settings.dart';
@@ -21,6 +29,22 @@ void main() {
         ),
         ProxyProvider<UserRepository, UserService>(
           update: (_, repository, _) => UserServiceImpl(repository: repository),
+        ),
+        StreamProvider<List<User>>(
+          create: (context) => context.read<UserService>().stream,
+          initialData: const [],
+        ),
+
+        Provider<PostDao>(create: (_) => MemoryPostDao()),
+        ProxyProvider<PostDao, PostRepository>(
+          update: (_, dao, _) => PostRepositoryImpl(dao: dao),
+        ),
+        ProxyProvider<PostRepository, PostService>(
+          update: (_, repository, _) => PostServiceImpl(repository: repository),
+        ),
+        StreamProvider<List<Post>>(
+          create: (context) => context.read<PostService>().stream,
+          initialData: const [],
         ),
       ],
       child: const MainApp(),
