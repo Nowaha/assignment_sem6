@@ -14,6 +14,7 @@ import 'package:assignment_sem6/data/service/postservice.dart';
 import 'package:assignment_sem6/data/service/userservice.dart';
 import 'package:assignment_sem6/screens/home.dart';
 import 'package:assignment_sem6/screens/settings.dart';
+import 'package:assignment_sem6/state/authstate.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -23,6 +24,8 @@ void main() {
   runApp(
     MultiProvider(
       providers: [
+        ChangeNotifierProvider(create: (_) => AuthState()),
+
         Provider<UserDao>(
           create: (_) {
             final dao = MemoryUserDao();
