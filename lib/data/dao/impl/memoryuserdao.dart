@@ -35,13 +35,13 @@ class MemoryUserDao extends UserDao with MutexMixin, StreamMixin<User> {
   Future<User?> findByUsername(String username) =>
       safe(() async => _findByUsername(username));
   User? _findByUsername(String username) =>
-      _users.values.firstWhereOrNull((user) => user.username == username);
+      _users.values.firstWhereOrNull((user) => user.username.toLowerCase() == username.toLowerCase());
 
   @override
   Future<User?> findByEmail(String email) =>
       safe(() async => _findByEmail(email));
   User? _findByEmail(String email) =>
-      _users.values.firstWhereOrNull((user) => user.email == email);
+      _users.values.firstWhereOrNull((user) => user.email.toLowerCase() == email.toLowerCase());
 
   @override
   Future<void> insert(User user) => safe(() async {
