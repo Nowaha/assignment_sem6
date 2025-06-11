@@ -13,6 +13,8 @@ import 'package:assignment_sem6/data/service/impl/userserviceimpl.dart';
 import 'package:assignment_sem6/data/service/postservice.dart';
 import 'package:assignment_sem6/data/service/userservice.dart';
 import 'package:assignment_sem6/screens/home.dart';
+import 'package:assignment_sem6/screens/login.dart';
+import 'package:assignment_sem6/screens/register.dart';
 import 'package:assignment_sem6/screens/settings.dart';
 import 'package:assignment_sem6/state/authstate.dart';
 import 'package:flutter/gestures.dart';
@@ -67,49 +69,85 @@ void main() {
   );
 }
 
-final _router = GoRouter(
-  routes: [
-    GoRoute(
-      path: HomePage.routeName,
-      builder: (context, state) {
-        return const HomePage();
-      },
-      routes: [
-        GoRoute(
-          path: SettingsPage.routeName,
-          builder: (context, state) {
-            return const SettingsPage();
-          },
-        ),
-      ],
-    ),
-  ],
-);
-
-class MainApp extends StatelessWidget {
+class MainApp extends StatefulWidget {
   const MainApp({super.key});
 
-  void onPointerDown(PointerDownEvent event) {
+  @override
+  State<StatefulWidget> createState() => _MainAppState();
+}
+
+class _MainAppState extends State<MainApp> {
+  late final GoRouter _router;
+
+  void _onPointerDown(PointerDownEvent event) {
     if (event.buttons == kBackMouseButton) {
       if (_router.canPop()) {
         _router.pop();
       }
-    } /* else if (event.buttons == kForwardMouseButton) {
-      
-    } */
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    final authState = context.read<AuthState>();
+
+    _router = GoRouter(
+      initialLocation: "/login",
+      refreshListenable: authState,
+      redirect: (context, state) {
+        final loggedIn = authState.isLoggedIn;
+        final isLoggingIn =
+            state.fullPath == "/login" || state.fullPath == "/register";
+
+        if (!loggedIn) {
+          return isLoggingIn ? null : "/login";
+        }
+
+        if (loggedIn && isLoggingIn) {
+          return "/";
+        }
+
+        return null;
+      },
+      routes: [
+        GoRoute(
+          path: "/",
+          name: HomePage.routeName,
+          builder: (context, state) => const HomePage(),
+          routes: [
+            GoRoute(
+              path: "settings",
+              builder: (context, state) => const SettingsPage(),
+            ),
+          ],
+        ),
+        GoRoute(
+          name: LoginPage.routeName,
+          path: "/${LoginPage.routeName}",
+          builder: (context, state) => const LoginPage(),
+        ),
+        GoRoute(
+          name: RegisterPage.routeName,
+          path: "/${RegisterPage.routeName}",
+          builder: (context, state) => const RegisterPage(),
+        ),
+      ],
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp.router(
-      title: 'Semester 6',
+      title: "Semester 6",
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
       routerConfig: _router,
       builder: (context, child) {
-        return Listener(onPointerDown: onPointerDown, child: child);
+        return Listener(onPointerDown: _onPointerDown, child: child);
       },
     );
   }
