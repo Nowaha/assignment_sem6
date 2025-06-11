@@ -24,6 +24,24 @@ class User implements Entity {
     required this.role,
   });
 
+  User cloneWithChanges({
+    String? username,
+    String? firstName,
+    String? lastName,
+    String? email,
+    String? hashedPassword,
+    Role? role,
+  }) => User(
+    uuid: uuid,
+    creationTimestamp: creationTimestamp,
+    username: username ?? this.username,
+    firstName: firstName ?? this.firstName,
+    lastName: lastName ?? this.lastName,
+    email: email ?? this.email,
+    hashedPassword: hashedPassword ?? this.hashedPassword,
+    role: role ?? this.role,
+  );
+
   static User newUser({
     required String username,
     required String firstName,
