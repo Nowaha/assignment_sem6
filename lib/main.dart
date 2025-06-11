@@ -118,7 +118,8 @@ class _MainAppState extends State<MainApp> {
           builder: (context, state) => const HomePage(),
           routes: [
             GoRoute(
-              path: "settings",
+              name: SettingsPage.routeName,
+              path: SettingsPage.routeName,
               builder: (context, state) => const SettingsPage(),
             ),
           ],
