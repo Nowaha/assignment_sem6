@@ -86,7 +86,10 @@ class _RegisterPageState extends State<RegisterPage> {
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
                   TextButton(
-                    onPressed: !_loading ? () => context.goNamed(LoginPage.routeName) : null,
+                    onPressed:
+                        !_loading
+                            ? () => context.goNamed(LoginPage.routeName)
+                            : null,
                     child: Text("Log in"),
                   ),
                   FilledButton.icon(

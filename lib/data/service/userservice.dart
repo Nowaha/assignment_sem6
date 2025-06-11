@@ -33,7 +33,10 @@ abstract class UserService extends SingleStreamService<User, UserRepository> {
   Future<User> updatePassword(String uuid, String plainTextPassword);
   Future<User> updateEmail(String uuid, String email);
 
-  Future<User?> authenticateByUsername(String username, String plainTextPassword);
+  Future<User?> authenticateByUsername(
+    String username,
+    String plainTextPassword,
+  );
   Future<User?> authenticateByEmail(String email, String plainTextPassword);
 
   Future<bool> deleteUser(String uuid);

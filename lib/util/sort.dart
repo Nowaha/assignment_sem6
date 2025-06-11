@@ -1,4 +1,1 @@
-enum Sort {
-  ascending,
-  descending
-}
+enum Sort { ascending, descending }
