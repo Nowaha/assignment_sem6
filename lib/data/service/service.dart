@@ -8,10 +8,4 @@ abstract class Service<E extends Entity, R extends Repository<E, Dao<E>>> {
   Future<E?> getByUUID(String uuid) => repository.getByUUID(uuid);
   
   Future<Iterable<E>> getAll() => repository.getAll();
-
-  Future<void> add(E entity) => repository.add(entity);
-
-  Future<void> update(E entity) => repository.update(entity);
-
-  Future<void> delete(String uuid) => repository.remove(uuid);
 }
