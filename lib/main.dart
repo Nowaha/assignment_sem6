@@ -23,7 +23,13 @@ void main() {
   runApp(
     MultiProvider(
       providers: [
-        Provider<UserDao>(create: (_) => MemoryUserDao()),
+        Provider<UserDao>(
+          create: (_) {
+            final dao = MemoryUserDao();
+            dao.init();
+            return dao;
+          },
+        ),
         ProxyProvider<UserDao, UserRepository>(
           update: (_, dao, _) => UserRepositoryImpl(dao: dao),
         ),
@@ -35,7 +41,13 @@ void main() {
           initialData: const [],
         ),
 
-        Provider<PostDao>(create: (_) => MemoryPostDao()),
+        Provider<PostDao>(
+          create: (_) {
+            final dao = MemoryPostDao();
+            dao.init();
+            return dao;
+          },
+        ),
         ProxyProvider<PostDao, PostRepository>(
           update: (_, dao, _) => PostRepositoryImpl(dao: dao),
         ),

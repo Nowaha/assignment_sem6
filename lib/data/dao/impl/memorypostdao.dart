@@ -9,6 +9,16 @@ import 'package:assignment_sem6/util/sort.dart';
 class MemoryPostDao extends PostDao with MutexMixin, StreamMixin<Post> {
   final Map<String, Post> _posts = {};
 
+  @override
+  Future<void> init() async {
+    await insert(
+      Post.create(
+        creatorUUID: "2ff4e446-504e-4d5d-90e2-ce708f94d20e",
+        title: "This is a post!",
+      ),
+    );
+  }
+
   Future<void> _sortPosts(Sort sort, List<Post> posts) async => posts.sort(
     (a, b) =>
         (sort == Sort.ascending ? 1 : -1) *

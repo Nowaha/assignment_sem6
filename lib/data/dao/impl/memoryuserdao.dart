@@ -5,9 +5,24 @@ import 'package:assignment_sem6/data/entity/impl/user.dart';
 import 'package:assignment_sem6/extension/iterable.dart';
 import 'package:assignment_sem6/mixin/mutexmixin.dart';
 import 'package:assignment_sem6/mixin/streammixin.dart';
+import 'package:assignment_sem6/util/role.dart';
 
 class MemoryUserDao extends UserDao with MutexMixin, StreamMixin<User> {
   final Map<String, User> _users = {};
+
+  @override
+  Future<void> init() async {
+    await insert(
+      User.newUser(
+        username: "Nowaha",
+        firstName: "Noah",
+        lastName: "Verkaik",
+        email: "nowaha@pm.me",
+        plainTextPassword: "Password123!",
+        role: Role.administrator,
+      ),
+    );
+  }
 
   @override
   Future<Iterable<User>> findAll() => safe(() async => _users.values);
