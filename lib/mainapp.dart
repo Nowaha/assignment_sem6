@@ -2,6 +2,7 @@ import 'package:assignment_sem6/router.dart';
 import 'package:assignment_sem6/state/authstate.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
@@ -38,9 +39,11 @@ class _MainAppState extends State<MainApp> {
         useMaterial3: true,
       ),
       routerConfig: _router,
-      builder: (context, child) {
-        return Listener(onPointerDown: _onPointerDown, child: child);
-      },
+      builder:
+          (context, child) => FToastBuilder()(
+            context,
+            Listener(onPointerDown: _onPointerDown, child: child),
+          ),
     );
   }
 }
