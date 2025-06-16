@@ -1,3 +1,4 @@
+import 'package:assignment_sem6/widgets/screen.dart';
 import 'package:flutter/material.dart';
 
 class SettingsPage extends StatelessWidget {
@@ -7,9 +8,9 @@ class SettingsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Settings')),
-      body: Text("Settings"),
+    return Screen.scroll(
+      title: const Text('Settings'),
+      child: Text("Settings"),
     );
   }
 }

@@ -3,6 +3,7 @@ import 'package:assignment_sem6/mixin/formmixin.dart';
 import 'package:assignment_sem6/mixin/toastmixin.dart';
 import 'package:assignment_sem6/screens/login/login.dart';
 import 'package:assignment_sem6/util/validation.dart';
+import 'package:assignment_sem6/widgets/screen.dart';
 import 'package:assignment_sem6/widgets/sizedcircularprogressindicator.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -117,87 +118,81 @@ class _RegisterPageState extends State<RegisterPage>
               onPrimary: true,
             );
 
-    return Scaffold(
-      appBar: AppBar(title: const Text("Semester 6")),
-      body: Align(
-        alignment: Alignment.topCenter,
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.only(bottom: 16),
-          child: SizedBox(
-            width: 360,
-            child: Column(
+    return Screen.scroll(
+      title: const Text("Semester 6"),
+      child: SizedBox(
+        width: 360,
+        child: Column(
+          spacing: 16,
+          children: [
+            Text("Register", style: theme.textTheme.headlineLarge),
+            Text(
+              "Create a new account by entering your details in the fields below.",
+            ),
+
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              spacing: 8,
+              children: [
+                Text("Personal Details", style: theme.textTheme.labelLarge),
+                buildFormTextInput("Username", usernameController),
+              ],
+            ),
+
+            Row(
               spacing: 16,
               children: [
-                Text("Register", style: theme.textTheme.headlineLarge),
-                Text(
-                  "Create a new account by entering your details in the fields below.",
+                buildFormTextInput(
+                  "First Name",
+                  firstNameController,
+                  expand: true,
                 ),
-
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  spacing: 8,
-                  children: [
-                    Text("Personal Details", style: theme.textTheme.labelLarge),
-                    buildFormTextInput("Username", usernameController),
-                  ],
-                ),
-
-                Row(
-                  spacing: 16,
-                  children: [
-                    buildFormTextInput(
-                      "First Name",
-                      firstNameController,
-                      expand: true,
-                    ),
-                    buildFormTextInput(
-                      "Last Name",
-                      lastNameController,
-                      expand: true,
-                    ),
-                  ],
-                ),
-
-                buildFormTextInput("Email Address", emailController),
-
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  spacing: 8,
-                  children: [
-                    Text("Password", style: theme.textTheme.labelLarge),
-                    buildFormTextInput(
-                      "Password",
-                      passwordController,
-                      obscure: true,
-                    ),
-                    buildFormTextInput(
-                      "Confirm Password",
-                      passwordConfirmController,
-                      obscure: true,
-                    ),
-                  ],
-                ),
-
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    TextButton(
-                      onPressed:
-                          !loading
-                              ? () => context.goNamed(LoginPage.routeName)
-                              : null,
-                      child: Text("Log in"),
-                    ),
-                    FilledButton.icon(
-                      onPressed: () => _attemptToRegister(context),
-                      label: Text("Register"),
-                      icon: loginIcon,
-                    ),
-                  ],
+                buildFormTextInput(
+                  "Last Name",
+                  lastNameController,
+                  expand: true,
                 ),
               ],
             ),
-          ),
+
+            buildFormTextInput("Email Address", emailController),
+
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              spacing: 8,
+              children: [
+                Text("Password", style: theme.textTheme.labelLarge),
+                buildFormTextInput(
+                  "Password",
+                  passwordController,
+                  obscure: true,
+                ),
+                buildFormTextInput(
+                  "Confirm Password",
+                  passwordConfirmController,
+                  obscure: true,
+                ),
+              ],
+            ),
+
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                TextButton(
+                  onPressed:
+                      !loading
+                          ? () => context.goNamed(LoginPage.routeName)
+                          : null,
+                  child: Text("Log in"),
+                ),
+                FilledButton.icon(
+                  onPressed: () => _attemptToRegister(context),
+                  label: Text("Register"),
+                  icon: loginIcon,
+                ),
+              ],
+            ),
+          ],
         ),
       ),
     );

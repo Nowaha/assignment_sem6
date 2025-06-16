@@ -4,6 +4,7 @@ import 'package:assignment_sem6/data/entity/impl/user.dart';
 import 'package:assignment_sem6/data/service/userservice.dart';
 import 'package:assignment_sem6/screens/login/register.dart';
 import 'package:assignment_sem6/state/authstate.dart';
+import 'package:assignment_sem6/widgets/screen.dart';
 import 'package:assignment_sem6/widgets/sizedcircularprogressindicator.dart';
 import 'package:assignment_sem6/widgets/textinput.dart';
 import 'package:flutter/material.dart';
@@ -105,50 +106,50 @@ class _LoginPageState extends State<LoginPage> {
               onPrimary: true,
             );
 
-    return Scaffold(
-      appBar: AppBar(title: const Text("Semester 6")),
-      body: Center(
-        child: SizedBox(
-          width: 360,
-          child: Column(
-            spacing: 16,
-            children: [
-              Text("Log in", style: theme.textTheme.headlineLarge),
-              Text(
-                "Please enter your username/email address and password to log in to your personal account.",
-              ),
-              TextInput(
-                label: "Username / Email Address",
-                controller: usernameEmailController,
-                enabled: !_loading,
-                errorText: _error,
-                onChanged: (_) => _clearError(),
-              ),
-              TextInput(
-                label: "Password",
-                controller: passwordController,
-                enabled: !_loading,
-                obscure: true,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  TextButton(
-                    onPressed:
-                        !_loading
-                            ? () => context.goNamed(RegisterPage.routeName)
-                            : null,
-                    child: Text("Register"),
-                  ),
-                  FilledButton.icon(
-                    onPressed: () => _attemptToAuthenticate(context),
-                    label: Text("Log in"),
-                    icon: loginIcon,
-                  ),
-                ],
-              ),
-            ],
-          ),
+    return Screen.scroll(
+      title: const Text("Semester 6"),
+      child: SizedBox(
+        width: 360,
+        child: Column(
+          spacing: 16,
+          children: [
+            Text("Log in", style: theme.textTheme.headlineLarge),
+            Text(
+              "Please enter your username/email address and password to log in to your personal account.",
+            ),
+
+            TextInput(
+              label: "Username / Email Address",
+              controller: usernameEmailController,
+              enabled: !_loading,
+              errorText: _error,
+              onChanged: (_) => _clearError(),
+            ),
+            TextInput(
+              label: "Password",
+              controller: passwordController,
+              enabled: !_loading,
+              obscure: true,
+            ),
+
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                TextButton(
+                  onPressed:
+                      !_loading
+                          ? () => context.goNamed(RegisterPage.routeName)
+                          : null,
+                  child: Text("Register"),
+                ),
+                FilledButton.icon(
+                  onPressed: () => _attemptToAuthenticate(context),
+                  label: Text("Log in"),
+                  icon: loginIcon,
+                ),
+              ],
+            ),
+          ],
         ),
       ),
     );
