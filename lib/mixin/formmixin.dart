@@ -38,6 +38,10 @@ mixin FormMixin<T extends StatefulWidget> on State<T> {
       }
     });
 
+    if (_errors.isNotEmpty) {
+      setState(() {});
+    }
+
     return _errors.isEmpty;
   }
 
@@ -82,11 +86,23 @@ mixin FormMixin<T extends StatefulWidget> on State<T> {
     }
   }
 
+  void _nextOnSubmitted(TextEditingController controller, bool? obscure) {
+    if (controller.text.isEmpty) return;
+    
+    // If the field is obscured, we want to skip through the reveal button
+    if (obscure == true) {
+      FocusScope.of(context).nextFocus();
+    }
+  }
+
   Widget buildFormTextInput(
     String label,
     TextEditingController controller, {
     bool expand = false,
     bool? obscure,
+    TextInputAction textInputAction = TextInputAction.next,
+    TextInputType? keyboardType,
+    ValueChanged<String>? onSubmitted,
   }) => TextInput(
     label: label,
     controller: controller,
@@ -95,5 +111,8 @@ mixin FormMixin<T extends StatefulWidget> on State<T> {
     onChanged: (_) => clearError(controller),
     obscure: obscure,
     expand: expand,
+    textInputAction: textInputAction,
+    keyboardType: keyboardType,
+    onSubmitted: onSubmitted ?? (_) => _nextOnSubmitted(controller, obscure),
   );
 }

@@ -9,6 +9,10 @@ class TextInput extends StatefulWidget {
   final bool? obscure;
   final bool? enabled;
   final bool? expand;
+  final TextInputAction? textInputAction;
+  final TextInputType? keyboardType;
+  final int? maxLines;
+  final ValueChanged<String>? onSubmitted;
 
   const TextInput({
     super.key,
@@ -19,6 +23,10 @@ class TextInput extends StatefulWidget {
     this.obscure,
     this.enabled,
     this.expand,
+    this.textInputAction,
+    this.keyboardType,
+    this.maxLines,
+    this.onSubmitted,
   });
 
   @override
@@ -45,6 +53,14 @@ class _TextInputState extends State<TextInput> {
     onChanged: widget.onChanged,
     enabled: widget.enabled,
     obscureText: _obscure,
+    maxLines: widget.maxLines ?? 1,
+    textInputAction: widget.textInputAction,
+    onSubmitted: widget.onSubmitted,
+    keyboardType:
+        widget.keyboardType ??
+        (widget.obscure == true
+            ? TextInputType.visiblePassword
+            : TextInputType.text),
     decoration: InputDecoration(
       border: OutlineInputBorder(),
       errorText: widget.errorText,
