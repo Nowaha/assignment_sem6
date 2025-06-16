@@ -2,6 +2,7 @@ import 'package:assignment_sem6/data/entity/impl/user.dart';
 import 'package:assignment_sem6/screens/login/login.dart';
 import 'package:assignment_sem6/screens/settings.dart';
 import 'package:assignment_sem6/state/authstate.dart';
+import 'package:assignment_sem6/widgets/screen.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -25,21 +26,26 @@ class _HomePageState extends State<HomePage> {
     final authState = context.watch<AuthState>();
     final user = authState.getCurrentUser;
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text("Semester 6"),
-        actions: <Widget>[
-          IconButton(
-            onPressed: () {
-              context.goNamed(SettingsPage.routeName);
-            },
-            icon: const Icon(Icons.settings),
-          ),
-        ],
+    return Screen.center(
+      title: const Text("Home"),
+      appBarActions: <Widget>[
+        IconButton(
+          onPressed: () {
+            context.goNamed(SettingsPage.routeName);
+          },
+          icon: const Icon(Icons.settings),
+        ),
+      ],
+      floatingActionButton: FloatingActionButton(
+        tooltip: "Create a new post",
+        onPressed: () {
+          context.go("/post/create");
+        },
+        child: const Icon(Icons.add),
       ),
-      body:
+      child:
           user == null
-              ? const Center(child: CircularProgressIndicator())
+              ? CircularProgressIndicator()
               : Column(
                 children: [
                   Text("Hello, ${user.firstName}!"),
@@ -50,6 +56,12 @@ class _HomePageState extends State<HomePage> {
                       context.goNamed(LoginPage.routeName);
                     },
                     child: Text("Log out"),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      context.go("/post/randomPostId");
+                    },
+                    child: Text("View post"),
                   ),
                 ],
               ),

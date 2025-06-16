@@ -1,0 +1,53 @@
+import 'package:assignment_sem6/mixin/formmixin.dart';
+import 'package:assignment_sem6/widgets/screen.dart';
+import 'package:flutter/material.dart';
+
+class CreatePost extends StatefulWidget {
+  static const String routeName = "/post";
+
+  const CreatePost({super.key});
+
+  @override
+  State<StatefulWidget> createState() => _CreatePostState();
+}
+
+class _CreatePostState extends State<CreatePost> with FormMixin {
+  final titleController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+
+    registerValidators({
+      titleController:
+          (input) => input.isEmpty ? "Title cannot be empty." : null,
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Screen.center(
+      title: Text("Create Post"),
+      child: SizedBox(
+        width: 960,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            const Text("Create a new post here!"),
+
+            buildFormTextInput("Title", titleController),
+
+            buildFormTextInput("Contents", titleController),
+
+            ElevatedButton(
+              onPressed: () {
+                validate();
+              },
+              child: const Text("Create Post"),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
