@@ -7,7 +7,7 @@ class UserRepositoryImpl extends UserRepository {
 
   @override
   Future<User?> getByEmail(String email) async {
-    if (!Validation.isValidEmail(email)) {
+    if (Validation.isValidEmail(email) != EmailValidationResult.valid) {
       throw ArgumentError("Invalid email.");
     }
     return await dao.findByEmail(email);
@@ -15,7 +15,7 @@ class UserRepositoryImpl extends UserRepository {
 
   @override
   Future<User?> getByUsername(String username) async {
-    if (!Validation.isValidUsername(username)) {
+    if (Validation.isValidUsername(username) != UsernameValidationResult.valid) {
       throw ArgumentError("Invalid username.");
     }
     return await dao.findByUsername(username);

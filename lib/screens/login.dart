@@ -37,24 +37,44 @@ class _LoginPageState extends State<LoginPage> {
     final userService = context.read<UserService>();
 
     await Future.delayed(Duration(milliseconds: Random().nextInt(1000) + 250));
-    User? authenticatedUser = await userService.authenticateByUsername(
-      usernameEmailController.text,
-      passwordController.text,
-    );
-    authenticatedUser ??= await userService.authenticateByEmail(
-      usernameEmailController.text,
-      passwordController.text,
-    );
 
-    if (authenticatedUser != null) {
-      authState.login(authenticatedUser);
-      return;
+    try {
+      User? authenticatedUser;
+
+      try {
+        authenticatedUser = await userService.authenticateByUsername(
+          usernameEmailController.text,
+          passwordController.text,
+        );
+        // ignore: empty_catches
+      } catch (error) {}
+
+      if (authenticatedUser == null) {
+        try {
+          authenticatedUser ??= await userService.authenticateByEmail(
+            usernameEmailController.text,
+            passwordController.text,
+          );
+          // ignore: empty_catches
+        } catch (error) {}
+      }
+
+      if (authenticatedUser != null) {
+        authState.login(authenticatedUser);
+        return;
+      }
+
+      setState(() {
+        _loading = false;
+        _error = "Invalid username or password, please try again.";
+      });
+    } catch (error) {
+      setState(() {
+        _loading = false;
+        _error = "An error occurred. Please try again.";
+        print("Error during authentication: $error");
+      });
     }
-
-    setState(() {
-      _loading = false;
-      _error = "Invalid username or password, please try again.";
-    });
   }
 
   void _clearError() {
@@ -63,6 +83,13 @@ class _LoginPageState extends State<LoginPage> {
     setState(() {
       _error = null;
     });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    usernameEmailController.dispose();
+    passwordController.dispose();
   }
 
   @override

@@ -35,15 +35,15 @@ class UserServiceImpl extends UserService {
     required String plainTextPassword,
     Role role = Role.regular,
   }) async {
-    if (!Validation.isValidName(firstName)) {
+    if (Validation.isValidName(firstName) != NameValidationResult.valid) {
       throw ArgumentError("First name is invalid.", "firstName");
     }
 
-    if (!Validation.isValidName(lastName)) {
+    if (Validation.isValidName(lastName) != NameValidationResult.valid) {
       throw ArgumentError("Last name is invalid.", "lastName");
     }
 
-    if (!Validation.isValidEmail(email)) {
+    if (Validation.isValidEmail(email) != EmailValidationResult.valid) {
       throw ArgumentError("Email is invalid.", "email");
     }
 
@@ -73,11 +73,11 @@ class UserServiceImpl extends UserService {
     String? firstName,
     String? lastName,
   }) async {
-    if (firstName != null && !Validation.isValidName(firstName)) {
+    if (firstName != null && Validation.isValidName(firstName) != NameValidationResult.valid) {
       throw ArgumentError("First name is invalid.", "firstName");
     }
 
-    if (lastName != null && !Validation.isValidName(lastName)) {
+    if (lastName != null && Validation.isValidName(lastName) != NameValidationResult.valid) {
       throw ArgumentError("Last name is invalid.", "lastName");
     }
 
@@ -96,7 +96,7 @@ class UserServiceImpl extends UserService {
 
   @override
   Future<User> updateEmail(String uuid, String email) async {
-    if (!Validation.isValidEmail(email)) {
+    if (Validation.isValidEmail(email) != EmailValidationResult.valid) {
       throw ArgumentError("Email is invalid.", "email");
     }
 
@@ -112,7 +112,7 @@ class UserServiceImpl extends UserService {
 
   @override
   Future<User> updatePassword(String uuid, String plainTextPassword) async {
-    if (!Validation.isValidPassword(plainTextPassword)) {
+    if (Validation.isValidPassword(plainTextPassword) != PasswordValidationResult.valid) {
       throw ArgumentError("Password is invalid.", "plainTextPassword");
     }
 
