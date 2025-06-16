@@ -1,3 +1,3 @@
 class Time {
-  int nowAsTimestamp() => DateTime.now().millisecondsSinceEpoch;
+  static int nowAsTimestamp() => DateTime.now().millisecondsSinceEpoch;
 }

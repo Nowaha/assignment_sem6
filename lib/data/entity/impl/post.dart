@@ -17,7 +17,7 @@ class Post extends Entity {
 
   static create({required String creatorUUID, required String title}) => Post(
     uuid: UUIDv4.generate(),
-    creationTimestamp: Time().nowAsTimestamp(),
+    creationTimestamp: Time.nowAsTimestamp(),
     creatorUUID: creatorUUID,
     title: title,
   );
