@@ -1,12 +1,10 @@
-import 'dart:math';
-
 import 'package:assignment_sem6/data/entity/impl/user.dart';
 import 'package:assignment_sem6/data/service/userservice.dart';
+import 'package:assignment_sem6/mixin/formmixin.dart';
 import 'package:assignment_sem6/screens/login/register.dart';
 import 'package:assignment_sem6/state/authstate.dart';
 import 'package:assignment_sem6/widgets/screen.dart';
 import 'package:assignment_sem6/widgets/sizedcircularprogressindicator.dart';
-import 'package:assignment_sem6/widgets/textinput.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -20,24 +18,24 @@ class LoginPage extends StatefulWidget {
   State<StatefulWidget> createState() => _LoginPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
-  String? _error;
-  bool _loading = false;
-
+class _LoginPageState extends State<LoginPage> with FormMixin {
   final usernameEmailController = TextEditingController();
   final passwordController = TextEditingController();
 
   void _attemptToAuthenticate(BuildContext context) async {
-    if (_loading) return;
-    _loading = true;
-    setState(() {
-      _error = null;
-    });
+    if (loading) return;
+    setLoading(true);
+    clearAllErrors();
+
+    if (!validate()) {
+      setLoading(false);
+      return;
+    }
 
     final authState = context.read<AuthState>();
     final userService = context.read<UserService>();
 
-    await Future.delayed(Duration(milliseconds: Random().nextInt(1000) + 250));
+    // await Future.delayed(Duration(milliseconds: Random().nextInt(1000) + 250));
 
     try {
       User? authenticatedUser;
@@ -66,24 +64,19 @@ class _LoginPageState extends State<LoginPage> {
       }
 
       setState(() {
-        _loading = false;
-        _error = "Invalid username or password, please try again.";
+        setLoading(false, updateState: false);
+        setError(usernameEmailController, "Invalid username or password.");
       });
     } catch (error) {
       setState(() {
-        _loading = false;
-        _error = "An error occurred. Please try again.";
+        setLoading(false, updateState: false);
+        setError(
+          usernameEmailController,
+          "An error occured, please try again.",
+        );
         print("Error during authentication: $error");
       });
     }
-  }
-
-  void _clearError() {
-    if (_error == null) return;
-
-    setState(() {
-      _error = null;
-    });
   }
 
   @override
@@ -98,7 +91,7 @@ class _LoginPageState extends State<LoginPage> {
     final theme = Theme.of(context);
 
     final loginIcon =
-        !_loading
+        !loading
             ? Icon(Icons.login)
             : SizedCircularProgressIndicator.square(
               size: 14,
@@ -118,18 +111,15 @@ class _LoginPageState extends State<LoginPage> {
               "Please enter your username/email address and password to log in to your personal account.",
             ),
 
-            TextInput(
-              label: "Username / Email Address",
-              controller: usernameEmailController,
-              enabled: !_loading,
-              errorText: _error,
-              onChanged: (_) => _clearError(),
+            buildFormTextInput(
+              "Username/ Email Address",
+              usernameEmailController,
             ),
-            TextInput(
-              label: "Password",
-              controller: passwordController,
-              enabled: !_loading,
+            buildFormTextInput(
+              "Password",
+              passwordController,
               obscure: true,
+              textInputAction: TextInputAction.done,
             ),
 
             Row(
@@ -137,7 +127,7 @@ class _LoginPageState extends State<LoginPage> {
               children: [
                 TextButton(
                   onPressed:
-                      !_loading
+                      !loading
                           ? () => context.goNamed(RegisterPage.routeName)
                           : null,
                   child: Text("Register"),
