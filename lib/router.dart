@@ -1,6 +1,6 @@
 import 'package:assignment_sem6/screens/home.dart';
-import 'package:assignment_sem6/screens/login.dart';
-import 'package:assignment_sem6/screens/register.dart';
+import 'package:assignment_sem6/screens/login/login.dart';
+import 'package:assignment_sem6/screens/login/register.dart';
 import 'package:assignment_sem6/screens/settings.dart';
 import 'package:assignment_sem6/state/authstate.dart';
 import 'package:go_router/go_router.dart';

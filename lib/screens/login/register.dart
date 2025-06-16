@@ -1,6 +1,6 @@
 import 'package:assignment_sem6/data/service/userservice.dart';
 import 'package:assignment_sem6/mixin/toastmixin.dart';
-import 'package:assignment_sem6/screens/login.dart';
+import 'package:assignment_sem6/screens/login/login.dart';
 import 'package:assignment_sem6/util/validation.dart';
 import 'package:assignment_sem6/widgets/sizedcircularprogressindicator.dart';
 import 'package:assignment_sem6/widgets/textinput.dart';

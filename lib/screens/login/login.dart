@@ -2,7 +2,7 @@ import 'dart:math';
 
 import 'package:assignment_sem6/data/entity/impl/user.dart';
 import 'package:assignment_sem6/data/service/userservice.dart';
-import 'package:assignment_sem6/screens/register.dart';
+import 'package:assignment_sem6/screens/login/register.dart';
 import 'package:assignment_sem6/state/authstate.dart';
 import 'package:assignment_sem6/widgets/sizedcircularprogressindicator.dart';
 import 'package:assignment_sem6/widgets/textinput.dart';

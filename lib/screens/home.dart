@@ -1,5 +1,5 @@
 import 'package:assignment_sem6/data/entity/impl/user.dart';
-import 'package:assignment_sem6/screens/login.dart';
+import 'package:assignment_sem6/screens/login/login.dart';
 import 'package:assignment_sem6/screens/settings.dart';
 import 'package:assignment_sem6/state/authstate.dart';
 import 'package:flutter/material.dart';
