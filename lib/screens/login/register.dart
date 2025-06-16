@@ -146,16 +146,22 @@ class _RegisterPageState extends State<RegisterPage>
                   "First Name",
                   firstNameController,
                   expand: true,
+                  keyboardType: TextInputType.name,
                 ),
                 buildFormTextInput(
                   "Last Name",
                   lastNameController,
                   expand: true,
+                  keyboardType: TextInputType.name,
                 ),
               ],
             ),
 
-            buildFormTextInput("Email Address", emailController),
+            buildFormTextInput(
+              "Email Address",
+              emailController,
+              keyboardType: TextInputType.emailAddress,
+            ),
 
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -166,11 +172,14 @@ class _RegisterPageState extends State<RegisterPage>
                   "Password",
                   passwordController,
                   obscure: true,
+                  keyboardType: TextInputType.visiblePassword,
                 ),
                 buildFormTextInput(
                   "Confirm Password",
                   passwordConfirmController,
                   obscure: true,
+                  textInputAction: TextInputAction.done,
+                  keyboardType: TextInputType.visiblePassword,
                 ),
               ],
             ),
