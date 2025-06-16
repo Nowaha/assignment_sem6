@@ -8,6 +8,7 @@ class TextInput extends StatefulWidget {
   final ValueChanged<String>? onChanged;
   final bool? obscure;
   final bool? enabled;
+  final bool? expand;
 
   const TextInput({
     super.key,
@@ -17,6 +18,7 @@ class TextInput extends StatefulWidget {
     this.onChanged,
     this.obscure,
     this.enabled,
+    this.expand,
   });
 
   @override
@@ -38,8 +40,7 @@ class _TextInputState extends State<TextInput> {
     });
   }
 
-  @override
-  Widget build(BuildContext context) => TextField(
+  Widget _buildWidget() => TextField(
     controller: widget.controller,
     onChanged: widget.onChanged,
     enabled: widget.enabled,
@@ -54,4 +55,10 @@ class _TextInputState extends State<TextInput> {
               : null,
     ),
   );
+
+  @override
+  Widget build(BuildContext context) =>
+      (widget.expand == true)
+          ? Expanded(child: _buildWidget())
+          : _buildWidget();
 }
