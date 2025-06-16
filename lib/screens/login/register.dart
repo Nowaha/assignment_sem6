@@ -1,9 +1,9 @@
 import 'package:assignment_sem6/data/service/userservice.dart';
+import 'package:assignment_sem6/mixin/formmixin.dart';
 import 'package:assignment_sem6/mixin/toastmixin.dart';
 import 'package:assignment_sem6/screens/login/login.dart';
 import 'package:assignment_sem6/util/validation.dart';
 import 'package:assignment_sem6/widgets/sizedcircularprogressindicator.dart';
-import 'package:assignment_sem6/widgets/textinput.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:go_router/go_router.dart';
@@ -18,12 +18,8 @@ class RegisterPage extends StatefulWidget {
   State<StatefulWidget> createState() => _RegisterPageState();
 }
 
-class _RegisterPageState extends State<RegisterPage> with ToastMixin {
-  final Map<TextEditingController, String? Function(String input)> _validators =
-      {};
-  final Map<TextEditingController, String> _errors = {};
-  bool _loading = false;
-
+class _RegisterPageState extends State<RegisterPage>
+    with ToastMixin, FormMixin {
   final firstNameController = TextEditingController();
   final lastNameController = TextEditingController();
   final usernameController = TextEditingController();
@@ -49,7 +45,7 @@ class _RegisterPageState extends State<RegisterPage> with ToastMixin {
       return null;
     }
 
-    _validators.addAll({
+    registerValidators({
       firstNameController: (input) => Validation.isValidName(input).message,
       lastNameController: (input) => Validation.isValidName(input).message,
       usernameController: (input) => Validation.isValidUsername(input).message,
@@ -59,31 +55,13 @@ class _RegisterPageState extends State<RegisterPage> with ToastMixin {
     });
   }
 
-  bool _validate() {
-    _errors.clear();
-
-    _validators.forEach((controller, validator) {
-      String? error = validator(controller.text);
-      if (error != null) {
-        _errors[controller] = error;
-      }
-    });
-
-    return _errors.isEmpty;
-  }
-
   void _attemptToRegister(BuildContext context) async {
-    if (_loading) return;
-    _loading = true;
+    if (loading) return;
+    setLoading(true);
 
-    setState(() {
-      _errors.clear();
-    });
-
-    if (!_validate()) {
-      setState(() {
-        _loading = false;
-      });
+    clearAllErrors();
+    if (!validate()) {
+      setLoading(false);
       return;
     }
 
@@ -117,62 +95,21 @@ class _RegisterPageState extends State<RegisterPage> with ToastMixin {
         _ => usernameController,
       };
 
-      _errors[controller] = error.message;
+      setError(controller, error.message);
     } catch (error) {
-      _errors[usernameController] = "An error occurred. Please try again.";
+      setError(usernameController, "An error occurred. Please try again.");
       print("Error during registration: $error");
     } finally {
-      setState(() {
-        _loading = false;
-      });
+      setLoading(false);
     }
   }
-
-  void _clearError(TextEditingController? controller) {
-    if (controller == null) {
-      if (_errors.isNotEmpty) {
-        setState(() => _errors.clear());
-      }
-      return;
-    }
-
-    if (_errors.containsKey(controller)) {
-      setState(() => _errors.remove(controller));
-    }
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    firstNameController.dispose();
-    lastNameController.dispose();
-    usernameController.dispose();
-    emailController.dispose();
-    passwordController.dispose();
-    passwordConfirmController.dispose();
-  }
-
-  Widget _buildFormTextInput(
-    String label,
-    TextEditingController controller, {
-    bool expand = false,
-    bool? obscure,
-  }) => TextInput(
-    label: label,
-    controller: controller,
-    enabled: !_loading,
-    errorText: _errors[controller],
-    onChanged: (_) => _clearError(controller),
-    obscure: obscure,
-    expand: expand,
-  );
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
     final loginIcon =
-        !_loading
+        !loading
             ? Icon(Icons.login)
             : SizedCircularProgressIndicator.square(
               size: 14,
@@ -201,19 +138,19 @@ class _RegisterPageState extends State<RegisterPage> with ToastMixin {
                   spacing: 8,
                   children: [
                     Text("Personal Details", style: theme.textTheme.labelLarge),
-                    _buildFormTextInput("Username", usernameController),
+                    buildFormTextInput("Username", usernameController),
                   ],
                 ),
 
                 Row(
                   spacing: 16,
                   children: [
-                    _buildFormTextInput(
+                    buildFormTextInput(
                       "First Name",
                       firstNameController,
                       expand: true,
                     ),
-                    _buildFormTextInput(
+                    buildFormTextInput(
                       "Last Name",
                       lastNameController,
                       expand: true,
@@ -221,19 +158,19 @@ class _RegisterPageState extends State<RegisterPage> with ToastMixin {
                   ],
                 ),
 
-                _buildFormTextInput("Email Address", emailController),
+                buildFormTextInput("Email Address", emailController),
 
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   spacing: 8,
                   children: [
                     Text("Password", style: theme.textTheme.labelLarge),
-                    _buildFormTextInput(
+                    buildFormTextInput(
                       "Password",
                       passwordController,
                       obscure: true,
                     ),
-                    _buildFormTextInput(
+                    buildFormTextInput(
                       "Confirm Password",
                       passwordConfirmController,
                       obscure: true,
@@ -246,7 +183,7 @@ class _RegisterPageState extends State<RegisterPage> with ToastMixin {
                   children: [
                     TextButton(
                       onPressed:
-                          !_loading
+                          !loading
                               ? () => context.goNamed(LoginPage.routeName)
                               : null,
                       child: Text("Log in"),
