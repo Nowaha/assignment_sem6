@@ -5,21 +5,24 @@ import 'package:assignment_sem6/extension/map.dart';
 import 'package:assignment_sem6/mixin/mutexmixin.dart';
 import 'package:assignment_sem6/util/sort.dart';
 import 'package:assignment_sem6/util/time.dart';
+import 'package:assignment_sem6/util/uuid.dart';
 
 class MemoryCommentDao extends CommentDao with MutexMixin {
   final Map<String, Comment> _comments = {};
 
   @override
   Future<void> init() async {
-    await insert(
-      Comment(
-        uuid: "1a2b3c4d-5e6f-7g8h-9i0j-k1l2m3n4o5p6",
-        creationTimestamp: Time.nowAsTimestamp(),
-        creatorUUID: "2ff4e446-504e-4d5d-90e2-ce708f94d20e",
-        postUUID: "4fa88a92-dac7-4cc9-96ee-6d8a698f9743",
-        contents: "This is a comment!",
-      ),
-    );
+    for (int i = 0; i < 10; i++) {
+      await insert(
+        Comment(
+          uuid: UUIDv4.generate(),
+          creationTimestamp: Time.nowAsTimestamp(),
+          creatorUUID: "2ff4e446-504e-4d5d-90e2-ce708f94d20e",
+          postUUID: "4fa88a92-dac7-4cc9-96ee-6d8a698f9743",
+          contents: "This is a comment!",
+        ),
+      );
+    }
   }
 
   Future<void> _sortComments(Sort sort, List<Comment> posts) async =>

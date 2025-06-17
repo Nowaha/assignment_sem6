@@ -1,3 +1,4 @@
+import 'package:assignment_sem6/providers/themeprovider.dart';
 import 'package:assignment_sem6/router.dart';
 import 'package:assignment_sem6/state/authstate.dart';
 import 'package:flutter/gestures.dart';
@@ -32,12 +33,21 @@ class _MainAppState extends State<MainApp> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = context.watch<ThemeProvider>();
+
     return MaterialApp.router(
       title: "Semester 6",
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
+      darkTheme: ThemeData.dark().copyWith(
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: Colors.deepPurple,
+          brightness: Brightness.dark,
+        ),
+      ),
+      themeMode: theme.themeMode,
       routerConfig: _router,
       builder:
           (context, child) => FToastBuilder()(
