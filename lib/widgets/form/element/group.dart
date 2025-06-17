@@ -1,4 +1,4 @@
-import 'package:assignment_sem6/widgets/form/labeled.dart';
+import 'package:assignment_sem6/widgets/form/element/labeled.dart';
 import 'package:flutter/material.dart';
 
 class Group extends StatelessWidget {

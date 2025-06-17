@@ -1,4 +1,4 @@
-import 'package:assignment_sem6/widgets/form/label.dart';
+import 'package:assignment_sem6/widgets/form/element/label.dart';
 import 'package:flutter/material.dart';
 
 class Labeled extends StatelessWidget {
