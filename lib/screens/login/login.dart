@@ -120,6 +120,7 @@ class _LoginPageState extends State<LoginPage> with FormMixin {
               passwordController,
               obscure: true,
               textInputAction: TextInputAction.done,
+              onSubmitted: (_) => _attemptToAuthenticate(context),
             ),
 
             Row(
