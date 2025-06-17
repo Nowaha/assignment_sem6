@@ -18,7 +18,12 @@ class Screen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(title: title, actions: appBarActions),
+    appBar: AppBar(
+      title: title,
+      actions: appBarActions,
+      backgroundColor: Theme.of(context).colorScheme.primary,
+      foregroundColor: Theme.of(context).colorScheme.onPrimary,
+    ),
     body: child,
     floatingActionButton: floatingActionButton,
   );
