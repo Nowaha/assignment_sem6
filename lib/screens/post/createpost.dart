@@ -38,7 +38,7 @@ class _CreatePostState extends State<CreatePost> with FormMixin {
           children: [
             const Text("Create a new post here!"),
 
-            buildFormTextInput("Title", titleController),
+            buildFormTextInput("Title", titleController, autoFocus: true),
 
             buildFormTextInput("Contents", contentsController, multiline: true),
 

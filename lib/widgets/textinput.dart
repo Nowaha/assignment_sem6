@@ -14,6 +14,7 @@ class TextInput extends StatefulWidget {
   final int? minLines;
   final int? maxLines;
   final ValueChanged<String>? onSubmitted;
+  final bool autoFocus;
 
   const TextInput({
     super.key,
@@ -29,6 +30,7 @@ class TextInput extends StatefulWidget {
     this.minLines,
     this.maxLines,
     this.onSubmitted,
+    this.autoFocus = false,
   });
 
   @override
@@ -79,6 +81,7 @@ class _TextInputState extends State<TextInput> {
       textInputAction: textInputAction,
       onSubmitted: widget.onSubmitted,
       keyboardType: textInputType,
+      autofocus: widget.autoFocus,
       decoration: InputDecoration(
         border: OutlineInputBorder(),
         errorText: widget.errorText,

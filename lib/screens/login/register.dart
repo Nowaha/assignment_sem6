@@ -125,7 +125,12 @@ class _RegisterPageState extends State<RegisterPage>
 
             Labeled(
               "Personal Details",
-              child: buildFormTextInput("Username", usernameController),
+              child: buildFormTextInput(
+                "Username",
+                usernameController,
+                autoFocus: true,
+                keyboardType: TextInputType.name,
+              ),
             ),
 
             Group.horizontal(

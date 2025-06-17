@@ -105,6 +105,7 @@ mixin FormMixin<T extends StatefulWidget> on State<T> {
     ValueChanged<String>? onSubmitted,
     bool multiline = false,
     double multilineMaxHeight = 360,
+    bool autoFocus = false,
   }) {
     final built = TextInput(
       label: label,
@@ -119,6 +120,7 @@ mixin FormMixin<T extends StatefulWidget> on State<T> {
       onSubmitted: onSubmitted ?? (_) => _nextOnSubmitted(controller, obscure),
       minLines: multiline ? 3 : null,
       maxLines: multiline ? null : 1,
+      autoFocus: autoFocus,
     );
 
     if (multiline) {
