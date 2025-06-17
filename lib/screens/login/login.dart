@@ -1,10 +1,12 @@
+import 'dart:math';
+
 import 'package:assignment_sem6/data/entity/impl/user.dart';
 import 'package:assignment_sem6/data/service/userservice.dart';
 import 'package:assignment_sem6/mixin/formmixin.dart';
 import 'package:assignment_sem6/screens/login/register.dart';
 import 'package:assignment_sem6/state/authstate.dart';
+import 'package:assignment_sem6/widgets/loadingiconbutton.dart';
 import 'package:assignment_sem6/widgets/screen.dart';
-import 'package:assignment_sem6/widgets/sizedcircularprogressindicator.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -35,7 +37,7 @@ class _LoginPageState extends State<LoginPage> with FormMixin {
     final authState = context.read<AuthState>();
     final userService = context.read<UserService>();
 
-    // await Future.delayed(Duration(milliseconds: Random().nextInt(1000) + 250));
+    await Future.delayed(Duration(milliseconds: Random().nextInt(1000) + 250));
 
     try {
       User? authenticatedUser;
@@ -88,17 +90,6 @@ class _LoginPageState extends State<LoginPage> with FormMixin {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
-    final loginIcon =
-        !loading
-            ? Icon(Icons.login)
-            : SizedCircularProgressIndicator.square(
-              size: 14,
-              strokeWidth: 2,
-              onPrimary: true,
-            );
-
     return Screen.scroll(
       title: const Text("Semester 6"),
       child: SizedBox(
@@ -106,7 +97,7 @@ class _LoginPageState extends State<LoginPage> with FormMixin {
         child: Column(
           spacing: 16,
           children: [
-            Text("Log in", style: theme.textTheme.headlineLarge),
+            Text("Log in", style: Theme.of(context).textTheme.headlineLarge),
             Text(
               "Please enter your username/email address and password to log in to your personal account.",
             ),
@@ -133,10 +124,11 @@ class _LoginPageState extends State<LoginPage> with FormMixin {
                           : null,
                   child: Text("Register"),
                 ),
-                FilledButton.icon(
+                LoadingIconButton(
+                  label: "Log in",
+                  loading: loading,
+                  icon: Icon(Icons.login),
                   onPressed: () => _attemptToAuthenticate(context),
-                  label: Text("Log in"),
-                  icon: loginIcon,
                 ),
               ],
             ),

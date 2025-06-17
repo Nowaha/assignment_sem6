@@ -5,8 +5,8 @@ import 'package:assignment_sem6/screens/login/login.dart';
 import 'package:assignment_sem6/util/validation.dart';
 import 'package:assignment_sem6/widgets/form/element/group.dart';
 import 'package:assignment_sem6/widgets/form/element/labeled.dart';
+import 'package:assignment_sem6/widgets/loadingiconbutton.dart';
 import 'package:assignment_sem6/widgets/screen.dart';
-import 'package:assignment_sem6/widgets/sizedcircularprogressindicator.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:go_router/go_router.dart';
@@ -111,15 +111,6 @@ class _RegisterPageState extends State<RegisterPage>
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    final loginIcon =
-        !loading
-            ? Icon(Icons.login)
-            : SizedCircularProgressIndicator.square(
-              size: 14,
-              strokeWidth: 2,
-              onPrimary: true,
-            );
-
     return Screen.scroll(
       title: const Text("Semester 6"),
       child: SizedBox(
@@ -188,10 +179,11 @@ class _RegisterPageState extends State<RegisterPage>
                           : null,
                   child: Text("Log in"),
                 ),
-                FilledButton.icon(
+                LoadingIconButton(
+                  label: "Register",
+                  loading: loading,
+                  icon: Icon(Icons.login),
                   onPressed: () => _attemptToRegister(context),
-                  label: Text("Register"),
-                  icon: loginIcon,
                 ),
               ],
             ),
