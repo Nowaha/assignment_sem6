@@ -15,7 +15,8 @@ class UserRepositoryImpl extends UserRepository {
 
   @override
   Future<User?> getByUsername(String username) async {
-    if (Validation.isValidUsername(username) != UsernameValidationResult.valid) {
+    if (Validation.isValidUsername(username) !=
+        UsernameValidationResult.valid) {
       throw ArgumentError("Invalid username.");
     }
     return await dao.findByUsername(username);

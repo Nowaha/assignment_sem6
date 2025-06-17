@@ -1,5 +1,5 @@
 extension MapExtension<K, V> on Map<K, V> {
-  Map<K, V> getAll(List<K> keys) {
+  Map<K, V> getAll(Iterable<K> keys) {
     final Map<K, V> result = {};
     for (final key in keys) {
       final value = this[key];

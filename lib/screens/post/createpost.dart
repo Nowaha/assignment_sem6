@@ -1,4 +1,5 @@
 import 'package:assignment_sem6/mixin/formmixin.dart';
+import 'package:assignment_sem6/widgets/loadingiconbutton.dart';
 import 'package:assignment_sem6/widgets/screen.dart';
 import 'package:flutter/material.dart';
 
@@ -34,7 +35,7 @@ class _CreatePostState extends State<CreatePost> with FormMixin {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
-          spacing: 8,
+          spacing: 16,
           children: [
             const Text("Create a new post here!"),
 
@@ -42,11 +43,18 @@ class _CreatePostState extends State<CreatePost> with FormMixin {
 
             buildFormTextInput("Contents", contentsController, multiline: true),
 
-            ElevatedButton(
-              onPressed: () {
-                validate();
-              },
-              child: const Text("Create Post"),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              spacing: 16,
+              children: [
+                OutlinedButton(child: const Text("Preview"), onPressed: () {}),
+                LoadingIconButton(
+                  icon: Icon(Icons.add),
+                  label: "Create Post",
+                  loading: true,
+                  onPressed: validate,
+                ),
+              ],
             ),
           ],
         ),

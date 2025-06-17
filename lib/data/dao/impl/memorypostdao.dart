@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:assignment_sem6/data/dao/postdao.dart';
 import 'package:assignment_sem6/data/entity/impl/post.dart';
 import 'package:assignment_sem6/extension/list.dart';
@@ -7,6 +5,7 @@ import 'package:assignment_sem6/extension/map.dart';
 import 'package:assignment_sem6/mixin/mutexmixin.dart';
 import 'package:assignment_sem6/mixin/streammixin.dart';
 import 'package:assignment_sem6/util/sort.dart';
+import 'package:assignment_sem6/util/time.dart';
 
 class MemoryPostDao extends PostDao with MutexMixin, StreamMixin<Post> {
   final Map<String, Post> _posts = {};
@@ -14,7 +13,9 @@ class MemoryPostDao extends PostDao with MutexMixin, StreamMixin<Post> {
   @override
   Future<void> init() async {
     await insert(
-      Post.create(
+      Post(
+        uuid: "4fa88a92-dac7-4cc9-96ee-6d8a698f9743",
+        creationTimestamp: Time.nowAsTimestamp(),
         creatorUUID: "2ff4e446-504e-4d5d-90e2-ce708f94d20e",
         title: "This is a post!",
       ),
@@ -34,7 +35,7 @@ class MemoryPostDao extends PostDao with MutexMixin, StreamMixin<Post> {
   Future<Post?> findByUUID(String uuid) => safe(() async => _posts[uuid]);
 
   @override
-  Future<Map<String, Post>> findByUUIDs(List<String> uuids) =>
+  Future<Map<String, Post>> findByUUIDs(Iterable<String> uuids) =>
       safe(() async => _posts.getAll(uuids));
 
   @override

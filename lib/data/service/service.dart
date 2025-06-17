@@ -7,8 +7,29 @@ abstract class Service<E extends Entity, R extends Repository<E, Dao<E>>> {
 
   Future<E?> getByUUID(String uuid) => repository.getByUUID(uuid);
 
-  Future<Map<String, E>> getByUUIDs(List<String> uuids) =>
+  Future<Map<String, E>> getByUUIDs(Iterable<String> uuids) =>
       repository.getByUUIDs(uuids);
 
   Future<Iterable<E>> getAll() => repository.getAll();
+}
+
+abstract class LinkedService<
+  E extends Entity,
+  V,
+  R extends Repository<E, Dao<E>>
+>
+    extends Service<E, R> {
+  @override
+  R get repository;
+
+  Future<V?> link(E? entity);
+
+  Future<Map<String, V>> linkAll(Iterable<E> entities);
+
+  Future<V?> getByUUIDLinked(String uuid) async => link(await getByUUID(uuid));
+
+  Future<Map<String, V>> getByUUIDsLinked(Iterable<String> uuids) async =>
+      linkAll((await getByUUIDs(uuids)).values);
+
+  Future<Map<String, V>> getAllLinked() async => linkAll(await getAll());
 }

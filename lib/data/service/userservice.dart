@@ -1,9 +1,11 @@
 import 'package:assignment_sem6/data/entity/impl/user.dart';
 import 'package:assignment_sem6/data/repo/userrepository.dart';
+import 'package:assignment_sem6/data/service/service.dart';
 import 'package:assignment_sem6/data/service/singlestreamservice.dart';
 import 'package:assignment_sem6/util/role.dart';
 
-abstract class UserService extends SingleStreamService<User, UserRepository> {
+abstract class UserService extends Service<User, UserRepository>
+    implements SingleStreamService<User, UserRepository> {
   @override
   final UserRepository repository;
 

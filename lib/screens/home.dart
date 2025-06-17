@@ -59,7 +59,7 @@ class _HomePageState extends State<HomePage> {
                   ),
                   TextButton(
                     onPressed: () {
-                      context.go("/post/randomPostId");
+                      context.go("/post/4fa88a92-dac7-4cc9-96ee-6d8a698f9743");
                     },
                     child: Text("View post"),
                   ),

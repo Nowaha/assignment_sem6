@@ -73,11 +73,13 @@ class UserServiceImpl extends UserService {
     String? firstName,
     String? lastName,
   }) async {
-    if (firstName != null && Validation.isValidName(firstName) != NameValidationResult.valid) {
+    if (firstName != null &&
+        Validation.isValidName(firstName) != NameValidationResult.valid) {
       throw ArgumentError("First name is invalid.", "firstName");
     }
 
-    if (lastName != null && Validation.isValidName(lastName) != NameValidationResult.valid) {
+    if (lastName != null &&
+        Validation.isValidName(lastName) != NameValidationResult.valid) {
       throw ArgumentError("Last name is invalid.", "lastName");
     }
 
@@ -112,7 +114,8 @@ class UserServiceImpl extends UserService {
 
   @override
   Future<User> updatePassword(String uuid, String plainTextPassword) async {
-    if (Validation.isValidPassword(plainTextPassword) != PasswordValidationResult.valid) {
+    if (Validation.isValidPassword(plainTextPassword) !=
+        PasswordValidationResult.valid) {
       throw ArgumentError("Password is invalid.", "plainTextPassword");
     }
 
@@ -167,4 +170,10 @@ class UserServiceImpl extends UserService {
 
   @override
   Future<bool> deleteUser(String uuid) => repository.remove(uuid);
+
+  @override
+  void dispose() => repository.dispose();
+
+  @override
+  Stream<List<User>> get stream => repository.stream;
 }

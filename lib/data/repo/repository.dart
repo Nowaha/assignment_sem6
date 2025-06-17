@@ -5,7 +5,8 @@ abstract class Repository<E extends Entity, D extends Dao<E>> {
   D get dao;
 
   Future<E?> getByUUID(String uuid) => dao.findByUUID(uuid);
-  Future<Map<String, E>> getByUUIDs(List<String> uuids) => dao.findByUUIDs(uuids);
+  Future<Map<String, E>> getByUUIDs(Iterable<String> uuids) =>
+      dao.findByUUIDs(uuids);
   Future<Iterable<E>> getAll() => dao.findAll();
   Future<void> add(E entity) => dao.insert(entity);
   Future<void> update(E entity) => dao.update(entity);

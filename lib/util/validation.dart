@@ -34,8 +34,10 @@ class Validation {
 
   static PasswordValidationResult isValidPassword(String password) {
     if (password.isEmpty) return PasswordValidationResult.tooShort;
-    if (password.length < minPasswordLength) return PasswordValidationResult.tooShort;
-    if (password.length > maxPasswordLength) return PasswordValidationResult.tooLong;
+    if (password.length < minPasswordLength)
+      return PasswordValidationResult.tooShort;
+    if (password.length > maxPasswordLength)
+      return PasswordValidationResult.tooLong;
     if (!allowedPasswordRegex.hasMatch(password)) {
       return PasswordValidationResult.invalidCharacters;
     }
@@ -45,8 +47,10 @@ class Validation {
 
   static UsernameValidationResult isValidUsername(String username) {
     if (username.isEmpty) return UsernameValidationResult.empty;
-    if (username.length < minUsernameLength) return UsernameValidationResult.tooShort;
-    if (username.length > maxUsernameLength) return UsernameValidationResult.tooLong;
+    if (username.length < minUsernameLength)
+      return UsernameValidationResult.tooShort;
+    if (username.length > maxUsernameLength)
+      return UsernameValidationResult.tooLong;
     if (!characterWhitelistRegex.hasMatch(username)) {
       return UsernameValidationResult.invalidCharacters;
     }

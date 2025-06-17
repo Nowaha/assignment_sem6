@@ -1,4 +1,3 @@
-import 'package:assignment_sem6/data/entity/impl/post.dart';
 import 'package:assignment_sem6/screens/home.dart';
 import 'package:assignment_sem6/screens/login/login.dart';
 import 'package:assignment_sem6/screens/login/register.dart';
@@ -6,7 +5,6 @@ import 'package:assignment_sem6/screens/post/createpost.dart';
 import 'package:assignment_sem6/screens/post/viewpost.dart';
 import 'package:assignment_sem6/screens/settings.dart';
 import 'package:assignment_sem6/state/authstate.dart';
-import 'package:assignment_sem6/util/time.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -39,19 +37,23 @@ GoRouter createRouter(AuthState authState) {
             path: SettingsPage.routeName,
             builder: (context, state) => const SettingsPage(),
           ),
-          GoRoute(name: "createPost", path: "post/create", builder: (context, state) {
-            return CreatePost();
-          }),
           GoRoute(
-            path: "post/:postId",
+            name: "createPost",
+            path: "post/create",
             builder: (context, state) {
-              final postId = state.pathParameters['postId'];
-              
-              if (postId == null) {
-                return const Center(child: Text("Post ID is missing"));
+              return CreatePost();
+            },
+          ),
+          GoRoute(
+            path: "post/:postUUID",
+            builder: (context, state) {
+              final postUUID = state.pathParameters['postUUID'];
+
+              if (postUUID == null) {
+                return const Center(child: Text("Post UUID is missing"));
               }
 
-              return ViewPost(post: Post(uuid: postId, creationTimestamp: Time.nowAsTimestamp(), creatorUUID: "Creator ID!", title: "Post Title :3"));
+              return ViewPost(postUUID: postUUID);
             },
           ),
         ],
