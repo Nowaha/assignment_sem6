@@ -88,7 +88,7 @@ mixin FormMixin<T extends StatefulWidget> on State<T> {
 
   void _nextOnSubmitted(TextEditingController controller, bool? obscure) {
     if (controller.text.isEmpty) return;
-    
+
     // If the field is obscured, we want to skip through the reveal button
     if (obscure == true) {
       FocusScope.of(context).nextFocus();
@@ -100,19 +100,34 @@ mixin FormMixin<T extends StatefulWidget> on State<T> {
     TextEditingController controller, {
     bool expand = false,
     bool? obscure,
-    TextInputAction textInputAction = TextInputAction.next,
+    TextInputAction? textInputAction = TextInputAction.next,
     TextInputType? keyboardType,
     ValueChanged<String>? onSubmitted,
-  }) => TextInput(
-    label: label,
-    controller: controller,
-    enabled: !loading,
-    errorText: _errors[controller],
-    onChanged: (_) => clearError(controller),
-    obscure: obscure,
-    expand: expand,
-    textInputAction: textInputAction,
-    keyboardType: keyboardType,
-    onSubmitted: onSubmitted ?? (_) => _nextOnSubmitted(controller, obscure),
-  );
+    bool multiline = false,
+    double multilineMaxHeight = 360,
+  }) {
+    final built = TextInput(
+      label: label,
+      controller: controller,
+      enabled: !loading,
+      errorText: _errors[controller],
+      onChanged: (_) => clearError(controller),
+      obscure: obscure,
+      expand: expand,
+      textInputAction: textInputAction,
+      keyboardType: keyboardType,
+      onSubmitted: onSubmitted ?? (_) => _nextOnSubmitted(controller, obscure),
+      minLines: multiline ? 3 : null,
+      maxLines: multiline ? null : 1,
+    );
+
+    if (multiline) {
+      return ConstrainedBox(
+        constraints: BoxConstraints(maxHeight: multilineMaxHeight),
+        child: built,
+      );
+    } else {
+      return built;
+    }
+  }
 }

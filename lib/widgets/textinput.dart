@@ -11,6 +11,7 @@ class TextInput extends StatefulWidget {
   final bool? expand;
   final TextInputAction? textInputAction;
   final TextInputType? keyboardType;
+  final int? minLines;
   final int? maxLines;
   final ValueChanged<String>? onSubmitted;
 
@@ -25,6 +26,7 @@ class TextInput extends StatefulWidget {
     this.expand,
     this.textInputAction,
     this.keyboardType,
+    this.minLines,
     this.maxLines,
     this.onSubmitted,
   });
@@ -48,29 +50,51 @@ class _TextInputState extends State<TextInput> {
     });
   }
 
-  Widget _buildWidget() => TextField(
-    controller: widget.controller,
-    onChanged: widget.onChanged,
-    enabled: widget.enabled,
-    obscureText: _obscure,
-    maxLines: widget.maxLines ?? 1,
-    textInputAction: widget.textInputAction,
-    onSubmitted: widget.onSubmitted,
-    keyboardType:
-        widget.keyboardType ??
-        (widget.obscure == true
-            ? TextInputType.visiblePassword
-            : TextInputType.text),
-    decoration: InputDecoration(
-      border: OutlineInputBorder(),
-      errorText: widget.errorText,
-      label: Text(widget.label),
-      suffixIcon:
-          widget.obscure != null
-              ? ObscureToggle(obscure: _obscure, toggleObscure: _toggleObscure)
-              : null,
-    ),
-  );
+  Widget _buildWidget() {
+    final bool isMultiline = (widget.minLines ?? 1) > 1;
+
+    final TextInputAction? textInputAction;
+    final TextInputType? textInputType;
+
+    if (isMultiline) {
+      textInputAction = TextInputAction.newline;
+      textInputType = TextInputType.multiline;
+    } else {
+      textInputAction = widget.textInputAction;
+      textInputType =
+          widget.keyboardType ??
+          (widget.obscure == true
+              ? TextInputType.visiblePassword
+              : TextInputType.text);
+    }
+
+    return TextField(
+      controller: widget.controller,
+      onChanged: widget.onChanged,
+      enabled: widget.enabled,
+      obscureText: _obscure,
+      textAlignVertical: TextAlignVertical.top,
+      minLines: widget.minLines,
+      maxLines: widget.maxLines,
+      textInputAction: textInputAction,
+      onSubmitted: widget.onSubmitted,
+      keyboardType: textInputType,
+      decoration: InputDecoration(
+        border: OutlineInputBorder(),
+        errorText: widget.errorText,
+        label: Text(widget.label),
+        floatingLabelAlignment: FloatingLabelAlignment.start,
+        alignLabelWithHint: true,
+        suffixIcon:
+            widget.obscure != null
+                ? ObscureToggle(
+                  obscure: _obscure,
+                  toggleObscure: _toggleObscure,
+                )
+                : null,
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) =>

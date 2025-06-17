@@ -13,6 +13,7 @@ class CreatePost extends StatefulWidget {
 
 class _CreatePostState extends State<CreatePost> with FormMixin {
   final titleController = TextEditingController();
+  final contentsController = TextEditingController();
 
   @override
   void initState() {
@@ -26,18 +27,20 @@ class _CreatePostState extends State<CreatePost> with FormMixin {
 
   @override
   Widget build(BuildContext context) {
-    return Screen.center(
+    return Screen.scroll(
       title: Text("Create Post"),
       child: SizedBox(
         width: 960,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          spacing: 8,
           children: [
             const Text("Create a new post here!"),
 
             buildFormTextInput("Title", titleController),
 
-            buildFormTextInput("Contents", titleController),
+            buildFormTextInput("Contents", contentsController, multiline: true),
 
             ElevatedButton(
               onPressed: () {
