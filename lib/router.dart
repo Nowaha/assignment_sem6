@@ -61,12 +61,18 @@ GoRouter createRouter(AuthState authState) {
       GoRoute(
         name: LoginPage.routeName,
         path: "/${LoginPage.routeName}",
-        builder: (context, state) => const LoginPage(),
+        pageBuilder:
+            (context, state) =>
+                NoTransitionPage(key: state.pageKey, child: const LoginPage()),
       ),
       GoRoute(
         name: RegisterPage.routeName,
         path: "/${RegisterPage.routeName}",
-        builder: (context, state) => const RegisterPage(),
+        pageBuilder:
+            (context, state) => NoTransitionPage(
+              key: state.pageKey,
+              child: const RegisterPage(),
+            ),
       ),
     ],
   );
