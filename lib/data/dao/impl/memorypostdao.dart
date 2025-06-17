@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:assignment_sem6/data/dao/postdao.dart';
 import 'package:assignment_sem6/data/entity/impl/post.dart';
 import 'package:assignment_sem6/extension/list.dart';
+import 'package:assignment_sem6/extension/map.dart';
 import 'package:assignment_sem6/mixin/mutexmixin.dart';
 import 'package:assignment_sem6/mixin/streammixin.dart';
 import 'package:assignment_sem6/util/sort.dart';
@@ -33,9 +34,8 @@ class MemoryPostDao extends PostDao with MutexMixin, StreamMixin<Post> {
   Future<Post?> findByUUID(String uuid) => safe(() async => _posts[uuid]);
 
   @override
-  Future<List<Post>> findByUUIDs(List<String> uuids) => safe(
-    () async => uuids.map((uuid) => _posts[uuid]).whereType<Post>().toList(),
-  );
+  Future<Map<String, Post>> findByUUIDs(List<String> uuids) =>
+      safe(() async => _posts.getAll(uuids));
 
   @override
   Future<List<Post>> get({

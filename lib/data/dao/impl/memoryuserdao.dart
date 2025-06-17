@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:assignment_sem6/data/dao/userdao.dart';
 import 'package:assignment_sem6/data/entity/impl/user.dart';
 import 'package:assignment_sem6/extension/iterable.dart';
+import 'package:assignment_sem6/extension/map.dart';
 import 'package:assignment_sem6/mixin/mutexmixin.dart';
 import 'package:assignment_sem6/mixin/streammixin.dart';
 import 'package:assignment_sem6/util/role.dart';
@@ -37,6 +38,10 @@ class MemoryUserDao extends UserDao with MutexMixin, StreamMixin<User> {
   User? _findByUsername(String username) => _users.values.firstWhereOrNull(
     (user) => user.username.toLowerCase() == username.toLowerCase(),
   );
+
+  @override
+  Future<Map<String, User>> findByUUIDs(List<String> uuids) =>
+      safe(() async => _users.getAll(uuids));
 
   @override
   Future<User?> findByEmail(String email) =>
