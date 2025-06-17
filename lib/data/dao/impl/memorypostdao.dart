@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:assignment_sem6/data/dao/postdao.dart';
 import 'package:assignment_sem6/data/entity/impl/post.dart';
+import 'package:assignment_sem6/extension/list.dart';
 import 'package:assignment_sem6/mixin/mutexmixin.dart';
 import 'package:assignment_sem6/mixin/streammixin.dart';
 import 'package:assignment_sem6/util/sort.dart';
@@ -32,6 +33,11 @@ class MemoryPostDao extends PostDao with MutexMixin, StreamMixin<Post> {
   Future<Post?> findByUUID(String uuid) => safe(() async => _posts[uuid]);
 
   @override
+  Future<List<Post>> findByUUIDs(List<String> uuids) => safe(
+    () async => uuids.map((uuid) => _posts[uuid]).whereType<Post>().toList(),
+  );
+
+  @override
   Future<List<Post>> get({
     Sort sort = Sort.descending,
     int limit = 10,
@@ -42,9 +48,7 @@ class MemoryPostDao extends PostDao with MutexMixin, StreamMixin<Post> {
 
     await _sortPosts(sort, posts);
 
-    return posts
-        .getRange(min(limit * page, posts.length), min(limit, posts.length))
-        .toList();
+    return posts.takePage(page, limit);
   });
 
   @override
@@ -59,9 +63,7 @@ class MemoryPostDao extends PostDao with MutexMixin, StreamMixin<Post> {
 
     await _sortPosts(sort, posts);
 
-    return posts
-        .getRange(min(limit * page, posts.length), min(limit, posts.length))
-        .toList();
+    return posts.takePage(page, limit);
   });
 
   @override
