@@ -3,6 +3,8 @@ import 'package:assignment_sem6/mixin/formmixin.dart';
 import 'package:assignment_sem6/mixin/toastmixin.dart';
 import 'package:assignment_sem6/screens/login/login.dart';
 import 'package:assignment_sem6/util/validation.dart';
+import 'package:assignment_sem6/widgets/form/group.dart';
+import 'package:assignment_sem6/widgets/form/labeled.dart';
 import 'package:assignment_sem6/widgets/screen.dart';
 import 'package:assignment_sem6/widgets/sizedcircularprogressindicator.dart';
 import 'package:flutter/material.dart';
@@ -130,28 +132,21 @@ class _RegisterPageState extends State<RegisterPage>
               "Create a new account by entering your details in the fields below.",
             ),
 
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              spacing: 8,
-              children: [
-                Text("Personal Details", style: theme.textTheme.labelLarge),
-                buildFormTextInput("Username", usernameController),
-              ],
+            Labeled(
+              "Personal Details",
+              child: buildFormTextInput("Username", usernameController),
             ),
 
-            Row(
-              spacing: 16,
+            Group.horizontal(
               children: [
                 buildFormTextInput(
                   "First Name",
                   firstNameController,
-                  expand: true,
                   keyboardType: TextInputType.name,
                 ),
                 buildFormTextInput(
                   "Last Name",
                   lastNameController,
-                  expand: true,
                   keyboardType: TextInputType.name,
                 ),
               ],
@@ -163,11 +158,9 @@ class _RegisterPageState extends State<RegisterPage>
               keyboardType: TextInputType.emailAddress,
             ),
 
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              spacing: 8,
+            Group.vertical(
+              label: "Password",
               children: [
-                Text("Password", style: theme.textTheme.labelLarge),
                 buildFormTextInput(
                   "Password",
                   passwordController,
@@ -180,6 +173,7 @@ class _RegisterPageState extends State<RegisterPage>
                   obscure: true,
                   textInputAction: TextInputAction.done,
                   keyboardType: TextInputType.visiblePassword,
+                  onSubmitted: (_) => _attemptToRegister(context),
                 ),
               ],
             ),
