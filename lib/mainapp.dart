@@ -41,11 +41,17 @@ class _MainAppState extends State<MainApp> {
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
+        appBarTheme: AppBarTheme(
+          centerTitle: false
+        ),
       ),
       darkTheme: ThemeData.dark().copyWith(
         colorScheme: ColorScheme.fromSeed(
           seedColor: Colors.deepPurple,
           brightness: Brightness.dark,
+        ),
+        appBarTheme: AppBarTheme(
+          centerTitle: false
         ),
       ),
       themeMode: theme.themeMode,
