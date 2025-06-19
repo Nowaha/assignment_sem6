@@ -1,6 +1,6 @@
-import 'package:assignment_sem6/data/entity/impl/user.dart';
-import 'package:assignment_sem6/screens/login/login.dart';
-import 'package:assignment_sem6/screens/settings.dart';
+import 'package:assignment_sem6/screens/post/createpost.dart';
+import 'package:assignment_sem6/screens/view/map.dart';
+import 'package:assignment_sem6/screens/view/timeline.dart';
 import 'package:assignment_sem6/state/authstate.dart';
 import 'package:assignment_sem6/widgets/screen.dart';
 import 'package:flutter/material.dart';
@@ -17,8 +17,20 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  Widget element(User user) {
-    return Text("${user.uuid} ${user.firstName} ${user.lastName}");
+  ActiveView activeView = ActiveView.timeline;
+
+  void _setActiveView(ActiveView view) {
+    if (activeView == view) return;
+    setState(() {
+      activeView = view;
+    });
+  }
+
+  void _logout() {
+    context.read<AuthState>().logout();
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(const SnackBar(content: Text("You have been logged out.")));
   }
 
   @override
@@ -26,51 +38,78 @@ class _HomePageState extends State<HomePage> {
     final authState = context.watch<AuthState>();
     final user = authState.getCurrentUser;
 
-    return Screen.center(
-      title: const Text("Home"),
-      appBarActions: <Widget>[
-        IconButton(
-          onPressed: () {
-            context.goNamed(SettingsPage.routeName);
-          },
-          icon: const Icon(Icons.settings),
+    return Screen(
+      title: Text(activeView.title),
+      appBarActions: [
+        IconButton(onPressed: () {}, icon: Icon(Icons.notifications)),
+        PopupMenuButton(
+          icon: Icon(Icons.person),
+          menuPadding: EdgeInsets.only(top: 4),
+          onSelected:
+              (value) => {
+                switch (value) {
+                  "profile" => context.go("/profile/${user!.uuid}"),
+                  "settings" => context.goNamed("settings"),
+                  "logout" => _logout(),
+                  _ => FlutterError("Unknown action selected: $value"),
+                },
+              },
+          tooltip: "${user?.firstName} ${user?.lastName}",
+          itemBuilder:
+              (context) => <PopupMenuEntry>[
+                PopupMenuItem<String>(
+                  value: "info",
+                  enabled: false,
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(minWidth: 100),
+                    child: Text(
+                      'Hello, ${user?.firstName ?? "Guest"}!',
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.primary,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
+                    ),
+                  ),
+                ),
+                PopupMenuDivider(),
+                if (user != null)
+                  PopupMenuItem(value: "profile", child: Text("Profile")),
+                PopupMenuItem(value: "settings", child: Text("Settings")),
+                PopupMenuItem(value: "logout", child: Text("Log out")),
+              ],
         ),
       ],
       floatingActionButton: FloatingActionButton(
-        tooltip: "Create a new post",
+        child: Icon(Icons.add),
         onPressed: () {
-          context.go("/post/create");
+          if (user == null) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text("You must be logged in to post.")),
+            );
+            return;
+          }
+
+          context.goNamed("createPost");
         },
-        child: const Icon(Icons.add),
       ),
-      child:
-          user == null
-              ? CircularProgressIndicator()
-              : Column(
-                children: [
-                  Text("Hello, ${user.firstName}!"),
-                  Text("Role: ${user.role.name}"),
-                  TextButton(
-                    onPressed: () {
-                      authState.logout();
-                      context.goNamed(LoginPage.routeName);
-                    },
-                    child: Text("Log out"),
-                  ),
-                  TextButton(
-                    onPressed: () {
-                      context.go("/post/4fa88a92-dac7-4cc9-96ee-6d8a698f9743");
-                    },
-                    child: Text("View post"),
-                  ),
-                  TextButton(
-                    onPressed: () {
-                      context.go("/profile/${user.uuid}");
-                    },
-                    child: Text("View profile"),
-                  ),
-                ],
-              ),
+      child: switch (activeView) {
+        ActiveView.timeline => TimelineView(
+          onMapButtonPressed: () => _setActiveView(ActiveView.map),
+        ),
+        ActiveView.map => MapView(
+          onTimelineButtonPressed: () => _setActiveView(ActiveView.timeline),
+        ),
+      },
     );
   }
+}
+
+enum ActiveView {
+  timeline("Timeline View"),
+  map("Map View");
+
+  final String title;
+
+  const ActiveView(this.title);
 }

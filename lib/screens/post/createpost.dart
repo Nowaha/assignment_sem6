@@ -4,7 +4,7 @@ import 'package:assignment_sem6/widgets/screen.dart';
 import 'package:flutter/material.dart';
 
 class CreatePost extends StatefulWidget {
-  static const String routeName = "/post";
+  static const String routeName = "/post/create";
 
   const CreatePost({super.key});
 

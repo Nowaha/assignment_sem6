@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class Screen extends StatelessWidget {
-  static const padding = EdgeInsets.all(16);
+  static const defaultPadding = EdgeInsets.all(16);
 
   final Widget title;
   final Widget child;
@@ -34,6 +34,7 @@ class Screen extends StatelessWidget {
     required Widget child,
     List<Widget>? appBarActions,
     Widget? floatingActionButton,
+    EdgeInsets padding = defaultPadding,
   }) => Screen._(
     key: key,
     title: title,
@@ -48,6 +49,7 @@ class Screen extends StatelessWidget {
     required Widget child,
     List<Widget>? appBarActions,
     Widget? floatingActionButton,
+    EdgeInsets padding = defaultPadding,
   }) => Screen._(
     key: key,
     title: title,
@@ -63,6 +65,7 @@ class Screen extends StatelessWidget {
     List<Widget>? appBarActions,
     Widget? floatingActionButton,
     Alignment alignment = Alignment.topCenter,
+    EdgeInsets padding = defaultPadding,
   }) => Screen._(
     key: key,
     title: title,
