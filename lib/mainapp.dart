@@ -37,6 +37,7 @@ class _MainAppState extends State<MainApp> {
 
     return MaterialApp.router(
       title: "Semester 6",
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,

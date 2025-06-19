@@ -1,3 +1,4 @@
+import 'package:assignment_sem6/widgets/map/map.dart';
 import 'package:flutter/material.dart';
 
 class MapView extends StatelessWidget {
@@ -7,20 +8,34 @@ class MapView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Center(
-    child: Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      spacing: 16,
+    child: Stack(
       children: [
-        Text(
-          "Map view is not implemented yet.",
-          style: Theme.of(context).textTheme.headlineSmall,
+        Positioned.fill(child: MapWidget()),
+        Positioned(
+          right: 16,
+          top: 0,
+          child: Column(
+            children: [
+              IconButton.filled(
+                onPressed: onTimelineButtonPressed,
+                icon: const Icon(Icons.timeline),
+                iconSize: 32,
+                padding: EdgeInsets.all(16),
+              ),
+            ],
+          ),
         ),
-        IconButton.filled(
-          onPressed: onTimelineButtonPressed,
-          icon: const Icon(Icons.timeline),
-          iconSize: 32,
-          padding: EdgeInsets.all(16),
+        Positioned.fill(
+          child: IgnorePointer(
+            child: Center(
+              child: Text(
+                "Map view is not implemented yet.",
+                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                  color: Colors.white.withAlpha(200),
+                ),
+              ),
+            ),
+          ),
         ),
       ],
     ),

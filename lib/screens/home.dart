@@ -1,4 +1,3 @@
-import 'package:assignment_sem6/screens/post/createpost.dart';
 import 'package:assignment_sem6/screens/view/map.dart';
 import 'package:assignment_sem6/screens/view/timeline.dart';
 import 'package:assignment_sem6/state/authstate.dart';
@@ -40,6 +39,7 @@ class _HomePageState extends State<HomePage> {
 
     return Screen(
       title: Text(activeView.title),
+      padding: EdgeInsets.zero,
       appBarActions: [
         IconButton(onPressed: () {}, icon: Icon(Icons.notifications)),
         PopupMenuButton(
@@ -93,14 +93,29 @@ class _HomePageState extends State<HomePage> {
           context.goNamed("createPost");
         },
       ),
-      child: switch (activeView) {
-        ActiveView.timeline => TimelineView(
-          onMapButtonPressed: () => _setActiveView(ActiveView.map),
-        ),
-        ActiveView.map => MapView(
-          onTimelineButtonPressed: () => _setActiveView(ActiveView.timeline),
-        ),
-      },
+      child: Stack(
+        children: [
+          Positioned.fill(
+            child: Visibility(
+              visible: activeView == ActiveView.timeline,
+              maintainState: true,
+              child: TimelineView(
+                onMapButtonPressed: () => _setActiveView(ActiveView.map),
+              ),
+            ),
+          ),
+          Positioned.fill(
+            child: Visibility(
+              visible: activeView == ActiveView.map,
+              maintainState: true,
+              child: MapView(
+                onTimelineButtonPressed:
+                    () => _setActiveView(ActiveView.timeline),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
