@@ -21,6 +21,7 @@ class Screen extends StatelessWidget {
     appBar: AppBar(
       title: title,
       actions: appBarActions,
+      actionsPadding: EdgeInsets.only(right: 8),
       backgroundColor: Theme.of(context).colorScheme.primary,
       foregroundColor: Theme.of(context).colorScheme.onPrimary,
     ),
