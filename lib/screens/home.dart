@@ -63,6 +63,12 @@ class _HomePageState extends State<HomePage> {
                     },
                     child: Text("View post"),
                   ),
+                  TextButton(
+                    onPressed: () {
+                      context.go("/profile/${user.uuid}");
+                    },
+                    child: Text("View profile"),
+                  ),
                 ],
               ),
     );

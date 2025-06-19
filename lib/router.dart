@@ -3,6 +3,7 @@ import 'package:assignment_sem6/screens/login/login.dart';
 import 'package:assignment_sem6/screens/login/register.dart';
 import 'package:assignment_sem6/screens/post/createpost.dart';
 import 'package:assignment_sem6/screens/post/viewpost.dart';
+import 'package:assignment_sem6/screens/profile/profile.dart';
 import 'package:assignment_sem6/screens/settings.dart';
 import 'package:assignment_sem6/state/authstate.dart';
 import 'package:flutter/material.dart';
@@ -54,6 +55,18 @@ GoRouter createRouter(AuthState authState) {
               }
 
               return ViewPost(postUUID: postUUID);
+            },
+          ),
+          GoRoute(
+            path: "profile/:userUUID",
+            builder: (context, state) {
+              final userUUID = state.pathParameters['userUUID'];
+
+              if (userUUID == null) {
+                return const Center(child: Text("User UUID is missing"));
+              }
+              
+              return Profile(userUUID: userUUID);
             },
           ),
         ],
