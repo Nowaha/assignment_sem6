@@ -10,7 +10,8 @@ dependencies:
   bcrypt: ^1.1.3
   flutter:
     sdk: flutter
-  flutter_map: ^8.1.1
+  flutter_map: ^6.0.0
+  flutter_map_marker_cluster: ^1.3.6
   go_router: ^15.1.3
   latlong2: ^0.9.1
   mutex: ^3.1.0

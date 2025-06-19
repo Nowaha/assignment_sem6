@@ -1,4 +1,4 @@
-import 'package:assignment_sem6/widgets/map/map.dart';
+import 'package:assignment_sem6/widgets/view/map/map.dart';
 import 'package:flutter/material.dart';
 
 class MapView extends StatelessWidget {
