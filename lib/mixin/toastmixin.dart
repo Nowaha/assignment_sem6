@@ -1,46 +1,21 @@
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 
 mixin ToastMixin<T extends StatefulWidget> on State<T> {
-  late final FToast fToast;
-
-  @override
-  void initState() {
-    super.initState();
-
-    fToast = FToast();
-    fToast.init(context);
-  }
-
   void showToast(
     String message, {
-    bool replace = true,
-    Toast toastLength = Toast.LENGTH_SHORT,
-    ToastGravity gravity = ToastGravity.BOTTOM,
+    Duration duration = const Duration(seconds: 2),
   }) {
-    Duration toastDuration =
-        toastLength == Toast.LENGTH_SHORT
-            ? Duration(seconds: 2)
-            : Duration(seconds: 5);
-
-    if (replace) {
-      clearToasts();
-    }
-
-    fToast.showToast(
-      child: Card(
-        color: Colors.black87,
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Text(message, style: const TextStyle(color: Colors.white)),
-        ),
-      ),
-      gravity: gravity,
-      toastDuration: toastDuration,
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message), duration: duration, showCloseIcon: true),
     );
   }
 
   void clearToasts() {
-    fToast.removeCustomToast();
+    ScaffoldMessenger.of(context).clearSnackBars();
   }
+}
+
+class ToastLength {
+  static const Duration short = Duration(seconds: 2);
+  static const Duration long = Duration(seconds: 4);
 }

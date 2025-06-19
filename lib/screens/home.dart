@@ -1,3 +1,4 @@
+import 'package:assignment_sem6/mixin/toastmixin.dart';
 import 'package:assignment_sem6/screens/view/map.dart';
 import 'package:assignment_sem6/screens/view/timeline.dart';
 import 'package:assignment_sem6/state/authstate.dart';
@@ -15,7 +16,7 @@ class HomePage extends StatefulWidget {
   State<StatefulWidget> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _HomePageState extends State<HomePage> with ToastMixin {
   ActiveView activeView = ActiveView.timeline;
 
   void _setActiveView(ActiveView view) {
@@ -26,10 +27,8 @@ class _HomePageState extends State<HomePage> {
   }
 
   void _logout() {
+    showToast("You have been logged out.");
     context.read<AuthState>().logout();
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(const SnackBar(content: Text("You have been logged out.")));
   }
 
   @override

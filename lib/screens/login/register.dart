@@ -8,7 +8,6 @@ import 'package:assignment_sem6/widgets/form/element/labeled.dart';
 import 'package:assignment_sem6/widgets/loadingiconbutton.dart';
 import 'package:assignment_sem6/widgets/screen.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
@@ -81,8 +80,7 @@ class _RegisterPageState extends State<RegisterPage>
 
       showToast(
         "Registration successful! You can now log in.",
-        toastLength: Toast.LENGTH_LONG,
-        gravity: ToastGravity.BOTTOM,
+        duration: ToastLength.long,
       );
 
       if (context.mounted) {

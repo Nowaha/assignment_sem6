@@ -3,7 +3,6 @@ import 'package:assignment_sem6/router.dart';
 import 'package:assignment_sem6/state/authstate.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
@@ -41,26 +40,20 @@ class _MainAppState extends State<MainApp> {
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
-        appBarTheme: AppBarTheme(
-          centerTitle: false
-        ),
+        appBarTheme: AppBarTheme(centerTitle: false),
       ),
       darkTheme: ThemeData.dark().copyWith(
         colorScheme: ColorScheme.fromSeed(
           seedColor: Colors.deepPurple,
           brightness: Brightness.dark,
         ),
-        appBarTheme: AppBarTheme(
-          centerTitle: false
-        ),
+        appBarTheme: AppBarTheme(centerTitle: false),
       ),
       themeMode: theme.themeMode,
       routerConfig: _router,
       builder:
-          (context, child) => FToastBuilder()(
-            context,
-            Listener(onPointerDown: _onPointerDown, child: child),
-          ),
+          (context, child) =>
+              Listener(onPointerDown: _onPointerDown, child: child),
     );
   }
 }
