@@ -60,61 +60,63 @@ class _TimelineElementState extends State<TimelineElement> {
   Widget build(BuildContext context) => Positioned(
     left: widget.left,
     top: widget._top,
-    child: MouseRegion(
-      onEnter: (_) => setState(() => _isHovered = true),
-      onExit: (_) => setState(() => _isHovered = false),
-      child: SizedBox(
-        width: widget.width,
-        height: widget._finalHeight,
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 100),
-          decoration: BoxDecoration(
-            color: !_isHovered ? widget.color.withAlpha(126) : widget.color,
-            border: Border(
-              left: BorderSide(color: widget.color, width: 4),
-              right: BorderSide(color: widget.color, width: 4),
+    child: RepaintBoundary(
+      child: MouseRegion(
+        onEnter: (_) => setState(() => _isHovered = true),
+        onExit: (_) => setState(() => _isHovered = false),
+        child: SizedBox(
+          width: widget.width,
+          height: widget._finalHeight,
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 100),
+            decoration: BoxDecoration(
+              color: !_isHovered ? widget.color.withAlpha(126) : widget.color,
+              border: Border(
+                left: BorderSide(color: widget.color, width: 4),
+                right: BorderSide(color: widget.color, width: 4),
+              ),
             ),
-          ),
-          child: Column(
-            mainAxisAlignment:
-                widget._isHanging
-                    ? MainAxisAlignment.end
-                    : MainAxisAlignment.start,
-            children: [
-              Container(
-                color: widget.color,
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Tooltip(
-                    message: widget.name,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      spacing: 12,
-                      children: [
-                        Text(
-                          widget.startTime,
-                          style: TextStyle(color: widget._textColor),
-                        ),
-                        Expanded(
-                          child: Text(
-                            widget.name,
-                            overflow: TextOverflow.ellipsis,
-                            style: TextStyle(
-                              color: widget._textColor,
-                              fontWeight: FontWeight.bold,
+            child: Column(
+              mainAxisAlignment:
+                  widget._isHanging
+                      ? MainAxisAlignment.end
+                      : MainAxisAlignment.start,
+              children: [
+                Container(
+                  color: widget.color,
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Tooltip(
+                      message: widget.name,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        spacing: 12,
+                        children: [
+                          Text(
+                            widget.startTime,
+                            style: TextStyle(color: widget._textColor),
+                          ),
+                          Expanded(
+                            child: Text(
+                              widget.name,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                color: widget._textColor,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                           ),
-                        ),
-                        Text(
-                          widget.endTime,
-                          style: TextStyle(color: widget._textColor),
-                        ),
-                      ],
+                          Text(
+                            widget.endTime,
+                            style: TextStyle(color: widget._textColor),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

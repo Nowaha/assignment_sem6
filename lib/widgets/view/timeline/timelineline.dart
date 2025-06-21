@@ -1,8 +1,7 @@
+import 'package:assignment_sem6/widgets/view/timeline/timelinelinepainter.dart';
 import 'package:flutter/material.dart';
 
 class TimelineLine extends StatelessWidget {
-  static const tickLabelFontSize = 12.0;
-
   final int startTimestamp;
   final int endTimestamp;
   final double timescale;
@@ -20,12 +19,6 @@ class TimelineLine extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = Theme.of(context).colorScheme.onSurface;
-
-    final screenWidth = MediaQuery.of(context).size.width;
-    final tickWidth = 4.0;
-
-    final int totalTicks = (timescale / tickEvery).ceil();
     final double totalVisibleTime = timescale;
     final halfVisibleTime = totalVisibleTime / 2;
 
@@ -33,68 +26,24 @@ class TimelineLine extends StatelessWidget {
 
     firstTickTime = (firstTickTime ~/ tickEvery) * tickEvery;
 
-    String formatTimestamp(int timestamp) {
-      final time = DateTime.fromMillisecondsSinceEpoch(timestamp);
-      final hours = time.hour.toString().padLeft(2, '0');
-      final minutes = time.minute.toString().padLeft(2, '0');
-      return '$hours:$minutes';
-    }
-
-    final textPainter = TextPainter(
-      text: TextSpan(
-        text: formatTimestamp(firstTickTime),
-        style: TextStyle(fontSize: tickLabelFontSize, color: color),
-      ),
-      textAlign: TextAlign.center,
-      textDirection: TextDirection.ltr,
-    );
-    textPainter.layout();
-    final labelWidth = textPainter.size.width;
-
-    double timeToPosition(int timestamp) {
-      final timeDiff = timestamp - centerTime;
-      return screenWidth / 2 + (timeDiff / totalVisibleTime) * screenWidth;
-    }
-
-    Widget buildTick(int i) {
-      final tickTime = firstTickTime + i * tickEvery;
-      final position = timeToPosition(tickTime);
-      final String timestampLabel = formatTimestamp(tickTime);
-
-      return Positioned(
-        left: position - (labelWidth / 2),
-        top: 32,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          spacing: 2,
-          children: [
-            Container(width: tickWidth, height: 16.0, color: color),
-            Text(
-              timestampLabel,
-              style: TextStyle(
-                fontSize: tickLabelFontSize,
-                color: color.withAlpha(200),
-              ),
-              textAlign: TextAlign.center,
-            ),
-          ],
-        ),
-      );
-    }
-
-    return SizedBox(
-      height: 80,
-      width: screenWidth,
-      child: Stack(
-        children: [
-          Positioned.fill(
-            child: Align(
-              alignment: Alignment.center,
-              child: Container(height: 3, color: color),
+    return RepaintBoundary(
+      child: IgnorePointer(
+        child: SizedBox(
+          height: 80,
+          width: double.infinity,
+          child: CustomPaint(
+            painter: TimelinePainter(
+              centerTime: centerTime,
+              timescale: timescale,
+              tickEvery: tickEvery,
+              totalTicks: (timescale / tickEvery).ceil(),
+              firstTickTime:
+                  (centerTime - timescale / 2).toInt() ~/ tickEvery * tickEvery,
+              color: Theme.of(context).colorScheme.onSurface,
+              screenWidth: MediaQuery.of(context).size.width,
             ),
           ),
-          for (int i = 0; i <= totalTicks; i++) buildTick(i),
-        ],
+        ),
       ),
     );
   }

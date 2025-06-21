@@ -13,7 +13,7 @@ class MapView extends StatelessWidget {
         Positioned.fill(child: MapWidget()),
         Positioned(
           right: 16,
-          top: 0,
+          top: 16,
           child: Column(
             children: [
               IconButton.filled(

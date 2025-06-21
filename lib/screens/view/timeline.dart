@@ -7,35 +7,6 @@ class TimelineView extends StatelessWidget {
   const TimelineView({super.key, required this.onMapButtonPressed});
 
   @override
-  Widget build(BuildContext context) => Stack(
-    children: [
-      Positioned.fill(
-        child: Timeline(startTimestamp: 0, endTimestamp: 1000 * 60 * 60),
-      ),
-      Positioned(
-        right: 16,
-        top: 0,
-        child: Column(
-          children: [
-            IconButton.filled(
-              onPressed: onMapButtonPressed,
-              icon: const Icon(Icons.map),
-              iconSize: 32,
-              padding: EdgeInsets.all(16),
-            ),
-          ],
-        ),
-      ),
-      // Positioned.fill(
-      //   child: IgnorePointer(
-      //     child: Center(
-      //       child: Text(
-      //         "Timeline view is not implemented yet.",
-      //         style: Theme.of(context).textTheme.headlineSmall,
-      //       ),
-      //     ),
-      //   ),
-      // ),
-    ],
-  );
+  Widget build(BuildContext context) =>
+      Timeline(startTimestamp: 0, endTimestamp: 1000 * 60 * 60, onMapButtonPressed: onMapButtonPressed);
 }

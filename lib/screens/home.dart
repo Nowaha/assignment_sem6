@@ -98,8 +98,10 @@ class _HomePageState extends State<HomePage> with ToastMixin {
             child: Visibility(
               visible: activeView == ActiveView.timeline,
               maintainState: true,
-              child: TimelineView(
-                onMapButtonPressed: () => _setActiveView(ActiveView.map),
+              child: RepaintBoundary(
+                child: TimelineView(
+                  onMapButtonPressed: () => _setActiveView(ActiveView.map),
+                ),
               ),
             ),
           ),
@@ -107,9 +109,11 @@ class _HomePageState extends State<HomePage> with ToastMixin {
             child: Visibility(
               visible: activeView == ActiveView.map,
               maintainState: true,
-              child: MapView(
-                onTimelineButtonPressed:
-                    () => _setActiveView(ActiveView.timeline),
+              child: RepaintBoundary(
+                child: MapView(
+                  onTimelineButtonPressed:
+                      () => _setActiveView(ActiveView.timeline),
+                ),
               ),
             ),
           ),

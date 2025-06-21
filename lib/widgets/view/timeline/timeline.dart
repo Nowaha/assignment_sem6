@@ -1,3 +1,5 @@
+import 'package:assignment_sem6/util/screen.dart';
+import 'package:assignment_sem6/widgets/view/timeline/timelinecontrols.dart';
 import 'package:assignment_sem6/widgets/view/timeline/timelineelement.dart';
 import 'package:assignment_sem6/widgets/view/timeline/timelineline.dart';
 import 'package:assignment_sem6/widgets/view/timeline/timelinezoom.dart';
@@ -6,11 +8,13 @@ import 'package:flutter/material.dart';
 class Timeline extends StatefulWidget {
   final int startTimestamp;
   final int endTimestamp;
+  final VoidCallback? onMapButtonPressed;
 
   const Timeline({
     super.key,
     required this.startTimestamp,
     required this.endTimestamp,
+    this.onMapButtonPressed,
   });
 
   @override
@@ -137,19 +141,11 @@ class TimelineState extends State<Timeline> {
     });
   }
 
-  double getScreenHeight() {
-    final mediaQuery = MediaQuery.of(context);
-    return mediaQuery.size.height;
-  }
-
-  double getScreenWidth() {
-    final mediaQuery = MediaQuery.of(context);
-    return mediaQuery.size.width;
-  }
-
-  double getElementLeftPosition(TimelineItem item, double width) {
-    final screenWidth = getScreenWidth();
-
+  double getElementLeftPosition(
+    double screenWidth,
+    TimelineItem item,
+    double width,
+  ) {
     // Use centerTime as the zero point on the timeline
     final startPosition =
         (item.startTimestamp.toDouble() - centerTime.toDouble()) /
@@ -164,14 +160,17 @@ class TimelineState extends State<Timeline> {
     final leftPosition =
         startPosition + (endPosition - startPosition) / 2 - width / 2;
 
-    // Shift so centerTime is at the middle of the screen
     return leftPosition + (screenWidth / 2);
   }
 
-  double getElementWidth(int startTimestamp, int endTimestamp) {
+  double getElementWidth(
+    double screenWidth,
+    int startTimestamp,
+    int endTimestamp,
+  ) {
     return (endTimestamp.toDouble() - startTimestamp.toDouble()) /
         effectiveTimeScale *
-        getScreenWidth();
+        screenWidth;
   }
 
   @override
@@ -182,6 +181,9 @@ class TimelineState extends State<Timeline> {
         recalculateCenter(stackHeight);
       }
     });
+
+    final screenUtil = ScreenUtil(context);
+    final screenWidth = screenUtil.width;
 
     return Stack(
       key: _stackKey,
@@ -213,13 +215,18 @@ class TimelineState extends State<Timeline> {
                         "${endTime.hour.toString().padLeft(2, '0')}:${endTime.minute.toString().padLeft(2, '0')}:${endTime.second.toString().padLeft(2, '0')}";
 
                     final elementWidth = getElementWidth(
+                      screenWidth,
                       item.startTimestamp,
                       item.endTimestamp,
                     );
                     final elementHeight = 80.0;
 
                     final element = TimelineElement(
-                      left: getElementLeftPosition(item, elementWidth),
+                      left: getElementLeftPosition(
+                        screenWidth,
+                        item,
+                        elementWidth,
+                      ),
                       center: center,
                       layer: item.layer,
                       width: elementWidth,
@@ -247,60 +254,49 @@ class TimelineState extends State<Timeline> {
         ),
         Positioned(
           right: 16,
-          top: 100,
-          child: Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.surfaceBright,
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Column(
-              spacing: 8,
-              children: [
-                Row(
-                  spacing: 8,
-                  children: [
-                    IconButton.filled(
-                      onPressed: () {
-                        setState(() {
-                          zoom += 0.1;
-                        });
-                      },
-                      icon: const Icon(Icons.zoom_in),
-                    ),
-                    IconButton.filled(
-                      onPressed: () {
-                        setState(() {
-                          zoom -= 0.1;
-                        });
-                      },
-                      icon: const Icon(Icons.zoom_out),
-                    ),
-                  ],
+          top: 16,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            spacing: 16,
+            children: [
+              if (widget.onMapButtonPressed != null)
+                IconButton.filled(
+                  onPressed: widget.onMapButtonPressed,
+                  icon: const Icon(Icons.map),
+                  iconSize: 32,
+                  padding: EdgeInsets.all(16),
                 ),
-                Row(
-                  spacing: 8,
-                  children: [
-                    IconButton.filled(
-                      onPressed: () {
-                        setState(() {
-                          centerTime -= timeScale ~/ 8;
-                        });
-                      },
-                      icon: const Icon(Icons.arrow_left),
-                    ),
-                    IconButton.filled(
-                      onPressed: () {
-                        setState(() {
-                          centerTime += timeScale ~/ 8;
-                        });
-                      },
-                      icon: const Icon(Icons.arrow_right),
-                    ),
-                  ],
+              if (screenUtil.isBigScreen)
+                TimelineControls(
+                  onZoomIn:
+                      () => setState(() {
+                        zoom = (zoom * 1.2).clamp(0.1, 10.0);
+                      }),
+                  onZoomOut:
+                      () => setState(() {
+                        zoom = (zoom / 1.2).clamp(0.1, 10.0);
+                      }),
+                  onResetZoom:
+                      () => setState(() {
+                        zoom = 1.0;
+                      }),
+                  onScrollLeft:
+                      () => setState(() {
+                        centerTime -= (effectiveTimeScale * 0.1).toInt();
+                      }),
+                  onScrollRight:
+                      () => setState(() {
+                        centerTime += (effectiveTimeScale * 0.1).toInt();
+                      }),
+                  onCenter:
+                      () => setState(() {
+                        centerTime =
+                            widget.startTimestamp +
+                            ((widget.endTimestamp - widget.startTimestamp) ~/
+                                2);
+                      }),
                 ),
-              ],
-            ),
+            ],
           ),
         ),
       ],
