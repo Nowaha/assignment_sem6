@@ -33,7 +33,7 @@ class TimelineState extends State<Timeline> {
   void initState() {
     super.initState();
 
-    final startTimestamp = widget.controller.startTimestamp;
+    final startTimestamp = widget.controller.startTimestamp ~/ 1000 * 1000;
 
     arrangeElements([
       TempPost(
