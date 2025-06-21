@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 class TimelineLine extends StatelessWidget {
+  static const tickLabelFontSize = 12.0;
+
   final int startTimestamp;
   final int endTimestamp;
   final double timescale;
@@ -31,13 +33,57 @@ class TimelineLine extends StatelessWidget {
 
     firstTickTime = (firstTickTime ~/ tickEvery) * tickEvery;
 
+    String formatTimestamp(int timestamp) {
+      final time = DateTime.fromMillisecondsSinceEpoch(timestamp);
+      final hours = time.hour.toString().padLeft(2, '0');
+      final minutes = time.minute.toString().padLeft(2, '0');
+      return '$hours:$minutes';
+    }
+
+    final textPainter = TextPainter(
+      text: TextSpan(
+        text: formatTimestamp(firstTickTime),
+        style: TextStyle(fontSize: tickLabelFontSize, color: color),
+      ),
+      textAlign: TextAlign.center,
+      textDirection: TextDirection.ltr,
+    );
+    textPainter.layout();
+    final labelWidth = textPainter.size.width;
+
     double timeToPosition(int timestamp) {
       final timeDiff = timestamp - centerTime;
       return screenWidth / 2 + (timeDiff / totalVisibleTime) * screenWidth;
     }
 
+    Widget buildTick(int i) {
+      final tickTime = firstTickTime + i * tickEvery;
+      final position = timeToPosition(tickTime);
+      final String timestampLabel = formatTimestamp(tickTime);
+
+      return Positioned(
+        left: position - (labelWidth / 2),
+        top: 32,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          spacing: 2,
+          children: [
+            Container(width: tickWidth, height: 16.0, color: color),
+            Text(
+              timestampLabel,
+              style: TextStyle(
+                fontSize: tickLabelFontSize,
+                color: color.withAlpha(200),
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
+      );
+    }
+
     return SizedBox(
-      height: 20,
+      height: 80,
       width: screenWidth,
       child: Stack(
         children: [
@@ -47,13 +93,7 @@ class TimelineLine extends StatelessWidget {
               child: Container(height: 3, color: color),
             ),
           ),
-
-          for (int i = 0; i <= totalTicks; i++)
-            Positioned(
-              left:
-                  timeToPosition(firstTickTime + i * tickEvery) - tickWidth / 2,
-              child: Container(width: tickWidth, height: 16.0, color: color),
-            ),
+          for (int i = 0; i <= totalTicks; i++) buildTick(i),
         ],
       ),
     );
