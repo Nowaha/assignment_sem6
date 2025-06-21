@@ -58,6 +58,9 @@ class TimelineController extends ChangeNotifier {
   int get centerTimestamp => (_startTimestamp + _endTimestamp) ~/ 2;
   Range get range => (start: _startTimestamp, end: _endTimestamp);
 
+  int get effectiveStartTimestamp => _startTimestamp - leeway;
+  int get effectiveEndTimestamp => _endTimestamp + leeway;
+
   int get visibleStartTimestamp => _visibleStartTimestamp;
   int get visibleEndTimestamp => _visibleEndTimestamp;
   int get visibleCenterTimestamp =>
