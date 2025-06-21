@@ -2,7 +2,6 @@ import 'dart:math';
 
 import 'package:assignment_sem6/widgets/view/map/marker.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_marker_cluster/flutter_map_marker_cluster.dart';
 import 'package:latlong2/latlong.dart';
