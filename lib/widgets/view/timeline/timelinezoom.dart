@@ -43,9 +43,11 @@ class TimelineZoom extends StatelessWidget {
       child: GestureDetector(
         behavior: HitTestBehavior.translucent,
         onScaleUpdate: (details) {
-          onZoomChanged((zoom * details.scale).clamp(0.1, 10.0));
-
-          if (details.scale == 1.0) {
+          if (details.scale != 1.0) {
+            final scaleDelta = details.scale - 1.0;
+            final zoomChange = zoom * (1 + scaleDelta * 0.2);
+            onZoomChanged(zoomChange.clamp(0.1, 10.0));
+          } else {
             onCenterTimeChanged(
               centerTime -
                   (details.focalPointDelta.dx * effectiveDragSensitivity)
