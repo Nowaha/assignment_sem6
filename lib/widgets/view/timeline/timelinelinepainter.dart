@@ -12,7 +12,8 @@ class TimelinePainter extends CustomPainter {
   final int totalTicks;
   final int firstTickTime;
   final Color color;
-  final Color backgroundColor;
+  final Color onSurfaceColor;
+  final Color surfaceColor;
   final double screenWidth;
 
   TimelinePainter({
@@ -22,7 +23,8 @@ class TimelinePainter extends CustomPainter {
     required this.totalTicks,
     required this.firstTickTime,
     required this.color,
-    required this.backgroundColor,
+    required this.onSurfaceColor,
+    required this.surfaceColor,
     required this.screenWidth,
   });
 
@@ -64,7 +66,7 @@ class TimelinePainter extends CustomPainter {
       final textPainter = TextPainter(
         text: TextSpan(
           text: formatTimestamp(tickTime),
-          style: TextStyle(color: color, fontSize: tickLabelFontSize),
+          style: TextStyle(color: onSurfaceColor, fontSize: tickLabelFontSize),
         ),
         textAlign: TextAlign.center,
         textDirection: TextDirection.ltr,
@@ -77,10 +79,13 @@ class TimelinePainter extends CustomPainter {
         textPainter.width + 8,
         textPainter.height + 8,
       );
-      canvas.drawRect(backgroundRect, Paint()..color = Colors.black);
+      canvas.drawRRect(
+        RRect.fromRectAndRadius(backgroundRect, Radius.circular(8)),
+        Paint()..color = surfaceColor,
+      );
 
       final labelX = positionX - textPainter.width / 2;
-      final labelY = centerY + tickHeight / 2 + 2;
+      final labelY = centerY + tickHeight / 2 + 3;
 
       textPainter.paint(canvas, Offset(labelX, labelY));
 

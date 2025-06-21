@@ -64,9 +64,6 @@ class TimelineUtil {
 
   static int _roundToNiceInterval(int intervalMs) {
     const niceValues = [
-      100,
-      200,
-      500,
       1000,
       2000,
       5000,

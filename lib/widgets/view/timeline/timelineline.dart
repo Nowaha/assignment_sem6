@@ -19,6 +19,7 @@ class TimelineLine extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     final halfVisibleTime = timescale / 2;
 
     int firstTickTime = centerTime - halfVisibleTime.toInt();
@@ -38,8 +39,9 @@ class TimelineLine extends StatelessWidget {
               totalTicks: (timescale / tickEvery).ceil(),
               firstTickTime:
                   (centerTime - timescale / 2).toInt() ~/ tickEvery * tickEvery,
-              color: Theme.of(context).colorScheme.onSurface,
-              backgroundColor: Theme.of(context).colorScheme.surface,
+              color: theme.colorScheme.onSurface,
+              surfaceColor: theme.colorScheme.surface,
+              onSurfaceColor: theme.colorScheme.onSurface,
               screenWidth: MediaQuery.of(context).size.width,
             ),
           ),
