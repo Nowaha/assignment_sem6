@@ -1,4 +1,5 @@
 import 'package:assignment_sem6/widgets/collapsible/collapsible.dart';
+import 'package:assignment_sem6/widgets/noeffectinkwell.dart';
 import 'package:flutter/material.dart';
 
 class CollapsibleWithHeader extends StatefulWidget {
@@ -40,34 +41,49 @@ class _CollapsibleWithHeaderState extends State<CollapsibleWithHeader> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          spacing: 8,
-          children: [
-            SizedBox.square(
-              dimension: 24,
-              child: IconButton(
-                tooltip: _isCollapsed ? "Expand" : "Collapse",
-                onPressed: _toggleCollapse,
-                padding: EdgeInsets.zero,
-                icon: Icon(
-                  _isCollapsed ? Icons.expand_more : Icons.expand_less,
-                ),
+    return IntrinsicWidth(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Tooltip(
+            message:
+                _isCollapsed
+                    ? "Expand ${widget.title}"
+                    : "Collapse ${widget.title}",
+            child: NoEffectInkWell(
+              onTap: _toggleCollapse,
+              child: Row(
+                spacing: 8,
+                children: [
+                  SizedBox.square(
+                    dimension: 24,
+                    child: IconButton(
+                      onPressed: _toggleCollapse,
+                      padding: EdgeInsets.zero,
+                      icon: Icon(
+                        _isCollapsed ? Icons.expand_more : Icons.expand_less,
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    child: Text(
+                      widget.title,
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
+                  ),
+                ],
               ),
             ),
-            Text(widget.title, style: Theme.of(context).textTheme.titleMedium),
-          ],
-        ),
-        Collapsible(
-          isCollapsed: _isCollapsed,
-          child: Padding(
-            padding: const EdgeInsets.only(top: 12.0),
-            child: widget.child,
           ),
-        ),
-      ],
+          Collapsible(
+            isCollapsed: _isCollapsed,
+            child: Padding(
+              padding: const EdgeInsets.only(top: 12.0),
+              child: widget.child,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
