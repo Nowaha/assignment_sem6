@@ -7,10 +7,7 @@ class TimelineUtil {
     for (int i = previousItems.length - 1; i >= 0; i--) {
       final item = previousItems[i];
 
-      if (item.endTimestamp <= post.startTimestamp) break;
-
-      if (!(post.endTimestamp <= item.startTimestamp ||
-          post.startTimestamp >= item.endTimestamp)) {
+      if (post.startTimestamp < item.endTimestamp) {
         occupiedLayers.add(item.layer);
       }
     }
@@ -57,5 +54,37 @@ class TimelineUtil {
     return (endTimestamp.toDouble() - startTimestamp.toDouble()) /
         effectiveTimeScale *
         screenWidth;
+  }
+
+  static int calculateTickEvery(int timescale, int pixelWidth) {
+    const idealPixelPerTick = 120;
+    int targetTicks = (pixelWidth / idealPixelPerTick).round();
+    return _roundToNiceInterval(timescale ~/ targetTicks);
+  }
+
+  static int _roundToNiceInterval(int intervalMs) {
+    const niceValues = [
+      100,
+      200,
+      500,
+      1000,
+      2000,
+      5000,
+      10000,
+      15000,
+      30000,
+      60000,
+      120000,
+      300000,
+      600000,
+      1800000,
+      3600000,
+    ];
+
+    for (final value in niceValues) {
+      if (intervalMs <= value) return value;
+    }
+
+    return intervalMs; // fallback
   }
 }
