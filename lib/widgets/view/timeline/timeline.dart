@@ -26,14 +26,14 @@ class Timeline extends StatefulWidget {
 class TimelineState extends State<Timeline> {
   final GlobalKey _stackKey = GlobalKey();
 
-  double center = 99999;
+  double _center = 99999;
+  final ValueNotifier<int?> _hoveredIndex = ValueNotifier(null);
 
   @override
   void initState() {
     super.initState();
 
-    final startTimestamp = widget.controller.visibleStartTimestamp;
-    final endTimestamp = widget.controller.visibleEndTimestamp;
+    final startTimestamp = widget.controller.startTimestamp;
 
     arrangeElements([
       TempPost(
@@ -67,12 +67,40 @@ class TimelineState extends State<Timeline> {
         color: Colors.purple,
       ),
       TempPost(
+        startTimestamp: startTimestamp + (1000 * 60 * 27),
+        endTimestamp: startTimestamp + (1000 * 60 * 43),
+        name: "Post 7",
+        color: Colors.deepOrange,
+      ),
+      TempPost(
         startTimestamp: startTimestamp + (1000 * 60 * 50),
         endTimestamp: startTimestamp + (1000 * 60 * 60),
         name: "Post 6",
         color: Colors.yellow,
       ),
+      for (int i = 7; i < 20; i++)
+        TempPost(
+          startTimestamp: startTimestamp + (1000 * 30 * (i - 1)),
+          endTimestamp: startTimestamp + (1000 * 30 * (i + 3)),
+          name: "Post $i",
+          color: Colors.primaries[i % Colors.primaries.length],
+        ),
+      for (int i = 7; i < 20; i++)
+        TempPost(
+          startTimestamp: startTimestamp + (1000 * 30 * (i - 1)),
+          endTimestamp: startTimestamp + (1000 * 30 * (i + 3)),
+          name: "Post $i",
+          color: Colors.primaries[i % Colors.primaries.length],
+        ),
     ]);
+  }
+
+  void _setPutToFront(int index) {
+    _hoveredIndex.value = index;
+  }
+
+  void _clearPutToFront() {
+    _hoveredIndex.value = null;
   }
 
   void arrangeElements(List<TempPost> posts) {
@@ -99,15 +127,63 @@ class TimelineState extends State<Timeline> {
       );
     }
 
-    arranged.sort((a, b) => a.startTimestamp.compareTo(b.startTimestamp));
-
     widget.controller.updateItems(arranged);
   }
 
   void recalculateCenter(double height) {
     setState(() {
-      center = height / 2;
+      _center = height / 2;
     });
+  }
+
+  Widget _buildChild(
+    TimelineItem item,
+    int index,
+    double screenWidth,
+    int tickEvery,
+  ) {
+    final startTime = DateTime.fromMillisecondsSinceEpoch(item.startTimestamp);
+    final endTime = DateTime.fromMillisecondsSinceEpoch(item.endTimestamp);
+    String startTimeString =
+        "${startTime.hour.toString().padLeft(2, '0')}:${startTime.minute.toString().padLeft(2, '0')}";
+    String endTimeString =
+        "${endTime.hour.toString().padLeft(2, '0')}:${endTime.minute.toString().padLeft(2, '0')}";
+
+    if (tickEvery < 1000 * 60 ||
+        _hoveredIndex.value == index) {
+      startTimeString += ":${startTime.second.toString().padLeft(2, '0')}";
+      endTimeString += ":${endTime.second.toString().padLeft(2, '0')}";
+    }
+
+    final elementWidth = TimelineUtil.getElementWidth(
+      screenWidth,
+      widget.controller.visibleTimeScale,
+      item.startTimestamp,
+      item.endTimestamp,
+    );
+    final elementHeight = 80.0;
+
+    final element = TimelineElement(
+      index: index,
+      onHover: () => _setPutToFront(index),
+      onLeave: _clearPutToFront,
+      left: TimelineUtil.getElementLeftPosition(
+        screenWidth,
+        widget.controller.visibleTimeScale,
+        widget.controller.visibleCenterTimestamp,
+        item,
+        elementWidth,
+      ),
+      center: _center,
+      layer: item.layer,
+      width: elementWidth,
+      height: elementHeight,
+      color: item.color,
+      startTime: startTimeString,
+      name: item.name,
+      endTime: endTimeString,
+    );
+    return element;
   }
 
   @override
@@ -121,6 +197,7 @@ class TimelineState extends State<Timeline> {
 
     final screenUtil = ScreenUtil(context);
     final screenWidth = screenUtil.width;
+    final tickEvery = widget.controller.getTickEvery(screenWidth.toInt());
 
     return Stack(
       key: _stackKey,
@@ -130,46 +207,28 @@ class TimelineState extends State<Timeline> {
             zoom: (zoom) => widget.controller.zoom(zoom),
             pan: (pan) => widget.controller.pan(pan),
             child: Stack(
-              children:
-                  widget.controller.items.map((item) {
-                    final startTime = DateTime.fromMillisecondsSinceEpoch(
-                      item.startTimestamp,
-                    );
-                    final endTime = DateTime.fromMillisecondsSinceEpoch(
-                      item.endTimestamp,
-                    );
-                    final startTimeString =
-                        "${startTime.hour.toString().padLeft(2, '0')}:${startTime.minute.toString().padLeft(2, '0')}:${startTime.second.toString().padLeft(2, '0')}";
-                    final endTimeString =
-                        "${endTime.hour.toString().padLeft(2, '0')}:${endTime.minute.toString().padLeft(2, '0')}:${endTime.second.toString().padLeft(2, '0')}";
+              children: [
+                for (int i = 0; i < widget.controller.items.length; i++)
+                  _buildChild(
+                    widget.controller.items[i],
+                    i,
+                    screenWidth,
+                    tickEvery,
+                  ),
 
-                    final elementWidth = TimelineUtil.getElementWidth(
+                ValueListenableBuilder<int?>(
+                  valueListenable: _hoveredIndex,
+                  builder: (_, hoveredIndex, __) {
+                    if (hoveredIndex == null) return const SizedBox.shrink();
+                    return _buildChild(
+                      widget.controller.items[hoveredIndex],
+                      hoveredIndex,
                       screenWidth,
-                      widget.controller.visibleTimeScale,
-                      item.startTimestamp,
-                      item.endTimestamp,
+                      tickEvery,
                     );
-                    final elementHeight = 80.0;
-
-                    final element = TimelineElement(
-                      left: TimelineUtil.getElementLeftPosition(
-                        screenWidth,
-                        widget.controller.visibleTimeScale,
-                        widget.controller.visibleCenterTimestamp,
-                        item,
-                        elementWidth,
-                      ),
-                      center: center,
-                      layer: item.layer,
-                      width: elementWidth,
-                      height: elementHeight,
-                      color: item.color,
-                      startTime: startTimeString,
-                      name: item.name,
-                      endTime: endTimeString,
-                    );
-                    return element;
-                  }).toList(),
+                  },
+                ),
+              ],
             ),
           ),
         ),
@@ -180,7 +239,7 @@ class TimelineState extends State<Timeline> {
               endTimestamp: widget.controller.visibleEndTimestamp,
               timescale: widget.controller.visibleTimeScale,
               centerTime: widget.controller.visibleCenterTimestamp,
-              tickEvery: 1000 * 60 * 5, // 5 minutes
+              tickEvery: tickEvery,
             ),
           ),
         ),
@@ -216,7 +275,11 @@ class TimelineState extends State<Timeline> {
             ],
           ),
         ),
-        Positioned(left: 16, top: 16, child: FilterContainer()),
+        Positioned(
+          left: 16,
+          top: 16,
+          child: RepaintBoundary(child: FilterContainer()),
+        ),
         Positioned(
           bottom: 0,
           left: 0,

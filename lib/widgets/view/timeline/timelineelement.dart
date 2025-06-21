@@ -1,15 +1,19 @@
 import 'package:flutter/material.dart';
 
 class TimelineElement extends StatefulWidget {
+  final int index;
   final double left;
   final double center;
   final double width;
   final double height;
+  final String name;
   final Color color;
   final String startTime;
-  final String name;
   final String endTime;
   final int layer;
+  final VoidCallback? onHover;
+  final VoidCallback? onLeave;
+  final VoidCallback? onSelect;
 
   late final double _finalHeight;
   late final double _top;
@@ -18,26 +22,37 @@ class TimelineElement extends StatefulWidget {
 
   TimelineElement({
     super.key,
+    required this.index,
     required this.left,
     required this.center,
     required this.width,
     required this.height,
+    required this.name,
     required this.color,
     required this.startTime,
-    required this.name,
     required this.endTime,
+    this.onHover,
+    this.onLeave,
+    this.onSelect,
     this.layer = 0,
   }) {
     _isHanging = layer > 0 && layer % 2 == 0;
 
+    int layerOnHalf;
     if (layer == 0) {
+      layerOnHalf = 1;
       _finalHeight = height;
-    } else if (layer == 1) {
-      _finalHeight = height * 2;
     } else if (layer % 2 == 0) {
-      _finalHeight = height * (layer / 2);
+      layerOnHalf = layer ~/ 2;
+
+      if (layer == 1) {
+        _finalHeight = height;
+      } else {
+        _finalHeight = height + ((layerOnHalf - 1) * height * 0.75);
+      }
     } else {
-      _finalHeight = height * ((layer + 1) / 2);
+      layerOnHalf = ((layer + 1) ~/ 2) + 1;
+      _finalHeight = height + ((layerOnHalf - 1) * height * 0.75);
     }
 
     if (_isHanging) {
@@ -56,25 +71,50 @@ class TimelineElement extends StatefulWidget {
 class _TimelineElementState extends State<TimelineElement> {
   bool _isHovered = false;
 
+  void _onHover(_) {
+    if (widget.onHover != null) {
+      widget.onHover!();
+    }
+
+    setState(() {
+      _isHovered = true;
+    });
+  }
+
+  void _onLeave(_) {
+    if (widget.onLeave != null) {
+      widget.onLeave!();
+    }
+    setState(() {
+      _isHovered = false;
+    });
+  }
+
   @override
   Widget build(BuildContext context) => Positioned(
     left: widget.left,
     top: widget._top,
     child: RepaintBoundary(
       child: MouseRegion(
-        onEnter: (_) => setState(() => _isHovered = true),
-        onExit: (_) => setState(() => _isHovered = false),
+        onEnter: _onHover,
+        onExit: _onLeave,
         child: SizedBox(
           width: widget.width,
           height: widget._finalHeight,
-          child: AnimatedContainer(
-            duration: const Duration(milliseconds: 100),
+          child: Container(
             decoration: BoxDecoration(
               color: !_isHovered ? widget.color.withAlpha(126) : widget.color,
               border: Border(
                 left: BorderSide(color: widget.color, width: 4),
                 right: BorderSide(color: widget.color, width: 4),
               ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withAlpha(126),
+                  blurRadius: 8.0,
+                  offset: const Offset(2, 2),
+                ),
+              ],
             ),
             child: Column(
               mainAxisAlignment:

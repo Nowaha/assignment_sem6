@@ -4,22 +4,24 @@ import 'package:flutter/material.dart';
 class TimelineLine extends StatelessWidget {
   final int startTimestamp;
   final int endTimestamp;
+  final int tickEvery;
   final int timescale;
   final int centerTime;
-  final int tickEvery;
 
   const TimelineLine({
     super.key,
     required this.startTimestamp,
     required this.endTimestamp,
+    required this.tickEvery,
     required this.timescale,
     required this.centerTime,
-    required this.tickEvery,
   });
 
   @override
   Widget build(BuildContext context) {
     final halfVisibleTime = timescale / 2;
+
+    print(tickEvery);
 
     int firstTickTime = centerTime - halfVisibleTime.toInt();
 
@@ -39,6 +41,7 @@ class TimelineLine extends StatelessWidget {
               firstTickTime:
                   (centerTime - timescale / 2).toInt() ~/ tickEvery * tickEvery,
               color: Theme.of(context).colorScheme.onSurface,
+              backgroundColor: Theme.of(context).colorScheme.surface,
               screenWidth: MediaQuery.of(context).size.width,
             ),
           ),
