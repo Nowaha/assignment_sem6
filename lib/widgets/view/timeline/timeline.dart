@@ -149,8 +149,7 @@ class TimelineState extends State<Timeline> {
     String endTimeString =
         "${endTime.hour.toString().padLeft(2, '0')}:${endTime.minute.toString().padLeft(2, '0')}";
 
-    if (tickEvery < 1000 * 60 ||
-        _hoveredIndex.value == index) {
+    if (tickEvery < 1000 * 60 || _hoveredIndex.value == index) {
       startTimeString += ":${startTime.second.toString().padLeft(2, '0')}";
       endTimeString += ":${endTime.second.toString().padLeft(2, '0')}";
     }
@@ -204,6 +203,7 @@ class TimelineState extends State<Timeline> {
       children: [
         Positioned.fill(
           child: TimelineZoom(
+            dragSensitivity: widget.controller.visibleTimeScale.toDouble() / screenWidth,
             zoom: (zoom) => widget.controller.zoom(zoom),
             pan: (pan) => widget.controller.pan(pan),
             child: Stack(

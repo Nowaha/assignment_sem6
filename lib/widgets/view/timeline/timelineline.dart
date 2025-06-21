@@ -21,8 +21,6 @@ class TimelineLine extends StatelessWidget {
   Widget build(BuildContext context) {
     final halfVisibleTime = timescale / 2;
 
-    print(tickEvery);
-
     int firstTickTime = centerTime - halfVisibleTime.toInt();
 
     firstTickTime = (firstTickTime ~/ tickEvery) * tickEvery;

@@ -1,6 +1,7 @@
 import 'package:assignment_sem6/widgets/view/timeline/minimap/timelineminimappostpainter.dart';
 import 'package:assignment_sem6/widgets/view/timeline/minimap/timelineminimapseekerpainter.dart';
 import 'package:assignment_sem6/widgets/view/timeline/timelinecontroller.dart';
+import 'package:assignment_sem6/widgets/view/timeline/timelinezoom.dart';
 import 'package:flutter/material.dart';
 
 class TimelineMiniMap extends StatelessWidget {
@@ -15,30 +16,39 @@ class TimelineMiniMap extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: height,
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface.withAlpha(200),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withAlpha(126),
-            blurRadius: 8.0,
-            offset: const Offset(0, -2),
-          ),
-        ],
-        border: Border(
-          top: BorderSide(
-            color: Theme.of(context).colorScheme.outline,
-            width: 2.0,
+    return TimelineZoom.calculatedSensitivity(
+      maxWidth: MediaQuery.of(context).size.width,
+      zoom: (zoom) {
+        controller.zoom(1 / zoom);
+      },
+      pan: (pan) {
+        controller.pan(-pan);
+      },
+      child: Container(
+        height: height,
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.surface.withAlpha(200),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withAlpha(126),
+              blurRadius: 8.0,
+              offset: const Offset(0, -2),
+            ),
+          ],
+          border: Border(
+            top: BorderSide(
+              color: Theme.of(context).colorScheme.outline,
+              width: 2.0,
+            ),
           ),
         ),
-      ),
-      child: CustomPaint(
-        painter: TimelineMinimapPostPainter(
-          controller,
-          timelineColor: Theme.of(context).colorScheme.onSurface,
+        child: CustomPaint(
+          painter: TimelineMinimapPostPainter(
+            controller,
+            timelineColor: Theme.of(context).colorScheme.onSurface,
+          ),
+          foregroundPainter: TimelineMinimapSeekerPainter(controller),
         ),
-        foregroundPainter: TimelineMinimapSeekerPainter(controller),
       ),
     );
   }
