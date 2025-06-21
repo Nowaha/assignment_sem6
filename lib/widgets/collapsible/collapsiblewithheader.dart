@@ -5,12 +5,14 @@ class CollapsibleWithHeader extends StatefulWidget {
   final String title;
   final Widget child;
   final bool initiallyCollapsed;
+  final Function(bool)? onCollapseChanged;
 
   const CollapsibleWithHeader({
     super.key,
     required this.title,
     required this.child,
     this.initiallyCollapsed = false,
+    this.onCollapseChanged,
   });
 
   @override
@@ -30,6 +32,10 @@ class _CollapsibleWithHeaderState extends State<CollapsibleWithHeader> {
     setState(() {
       _isCollapsed = !_isCollapsed;
     });
+
+    if (widget.onCollapseChanged != null) {
+      widget.onCollapseChanged!(_isCollapsed);
+    }
   }
 
   @override
@@ -40,17 +46,24 @@ class _CollapsibleWithHeaderState extends State<CollapsibleWithHeader> {
         Row(
           spacing: 8,
           children: [
-            IconButton(
-              onPressed: _toggleCollapse,
-              icon: Icon(_isCollapsed ? Icons.expand_more : Icons.expand_less),
+            SizedBox.square(
+              dimension: 24,
+              child: IconButton(
+                tooltip: _isCollapsed ? "Expand" : "Collapse",
+                onPressed: _toggleCollapse,
+                padding: EdgeInsets.zero,
+                icon: Icon(
+                  _isCollapsed ? Icons.expand_more : Icons.expand_less,
+                ),
+              ),
             ),
-            Text(widget.title, style: Theme.of(context).textTheme.titleSmall),
+            Text(widget.title, style: Theme.of(context).textTheme.titleMedium),
           ],
         ),
         Collapsible(
           isCollapsed: _isCollapsed,
           child: Padding(
-            padding: const EdgeInsets.only(top: 8.0),
+            padding: const EdgeInsets.only(top: 12.0),
             child: widget.child,
           ),
         ),
