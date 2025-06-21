@@ -104,7 +104,7 @@ class _HomePageState extends State<HomePage> with ToastMixin {
                   startTimestamp: Time.nowAsTimestamp(),
                   endTimestamp:
                       Time.nowAsTimestamp() + (1000 * 60 * 60), // 1 hour
-                  timeScale: 1000 * 60 * 60, // 1 hour
+                  timeScale: 1000 * 60 * 30, // half an hour
                   onMapButtonPressed: () => _setActiveView(ActiveView.map),
                 ),
               ),
