@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 class TimelineLine extends StatelessWidget {
   final int startTimestamp;
   final int endTimestamp;
-  final double timescale;
+  final int timescale;
   final int centerTime;
   final int tickEvery;
 
@@ -19,8 +19,7 @@ class TimelineLine extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final double totalVisibleTime = timescale;
-    final halfVisibleTime = totalVisibleTime / 2;
+    final halfVisibleTime = timescale / 2;
 
     int firstTickTime = centerTime - halfVisibleTime.toInt();
 

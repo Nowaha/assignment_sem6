@@ -2,21 +2,17 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
 class TimelineZoom extends StatelessWidget {
-  final double zoom;
-  final Function(double) onZoomChanged;
-  final int centerTime;
-  final Function(int) onCenterTimeChanged;
+  final Function(double) zoom;
+  final Function(int) pan;
   final double dragSensitivity;
   final Widget child;
 
-  double get effectiveDragSensitivity => dragSensitivity / (zoom / 1.5);
+  double get effectiveDragSensitivity => dragSensitivity;
 
   const TimelineZoom({
     super.key,
     required this.zoom,
-    required this.onZoomChanged,
-    required this.centerTime,
-    required this.onCenterTimeChanged,
+    required this.pan,
     this.dragSensitivity = 5000,
     required this.child,
   });
@@ -27,15 +23,11 @@ class TimelineZoom extends StatelessWidget {
       onPointerSignal: (pointerSignal) {
         if (pointerSignal is PointerScrollEvent) {
           if (pointerSignal.scrollDelta.dy != 0) {
-            onZoomChanged(
-              (zoom - pointerSignal.scrollDelta.dy * 0.001).clamp(0.1, 10.0),
-            );
+            zoom(pointerSignal.scrollDelta.dy * 0.001);
           }
           if (pointerSignal.scrollDelta.dx != 0) {
-            onCenterTimeChanged(
-              centerTime +
-                  (pointerSignal.scrollDelta.dx * effectiveDragSensitivity)
-                      .toInt(),
+            pan(
+              (pointerSignal.scrollDelta.dx * effectiveDragSensitivity).toInt(),
             );
           }
         }
@@ -45,13 +37,11 @@ class TimelineZoom extends StatelessWidget {
         onScaleUpdate: (details) {
           if (details.scale != 1.0) {
             final scaleDelta = details.scale - 1.0;
-            final zoomChange = zoom * (1 + scaleDelta * 0.2);
-            onZoomChanged(zoomChange.clamp(0.1, 10.0));
+            final zoomChange = 1 + scaleDelta * 0.2;
+            zoom(zoomChange);
           } else {
-            onCenterTimeChanged(
-              centerTime -
-                  (details.focalPointDelta.dx * effectiveDragSensitivity)
-                      .toInt(),
+            pan(
+              (-details.focalPointDelta.dx * effectiveDragSensitivity).toInt(),
             );
           }
         },

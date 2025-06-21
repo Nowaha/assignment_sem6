@@ -2,6 +2,7 @@ import 'package:assignment_sem6/mixin/toastmixin.dart';
 import 'package:assignment_sem6/screens/view/map.dart';
 import 'package:assignment_sem6/screens/view/timeline.dart';
 import 'package:assignment_sem6/state/authstate.dart';
+import 'package:assignment_sem6/util/time.dart';
 import 'package:assignment_sem6/widgets/screen.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -100,6 +101,10 @@ class _HomePageState extends State<HomePage> with ToastMixin {
               maintainState: true,
               child: RepaintBoundary(
                 child: TimelineView(
+                  startTimestamp: Time.nowAsTimestamp(),
+                  endTimestamp:
+                      Time.nowAsTimestamp() + (1000 * 60 * 60), // 1 hour
+                  timeScale: 1000 * 60 * 60, // 1 hour
                   onMapButtonPressed: () => _setActiveView(ActiveView.map),
                 ),
               ),

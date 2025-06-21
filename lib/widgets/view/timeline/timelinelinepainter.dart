@@ -6,7 +6,7 @@ class TimelinePainter extends CustomPainter {
   static const tickLabelFontSize = 12.0;
 
   final int centerTime;
-  final double timescale;
+  final int timescale;
   final int tickEvery;
   final int totalTicks;
   final int firstTickTime;

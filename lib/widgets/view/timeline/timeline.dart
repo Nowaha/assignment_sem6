@@ -1,4 +1,8 @@
 import 'package:assignment_sem6/util/screen.dart';
+import 'package:assignment_sem6/util/timelineutil.dart';
+import 'package:assignment_sem6/widgets/view/filter/filtercontainer.dart';
+import 'package:assignment_sem6/widgets/view/timeline/minimap/timelineminimap.dart';
+import 'package:assignment_sem6/widgets/view/timeline/timelinecontroller.dart';
 import 'package:assignment_sem6/widgets/view/timeline/timelinecontrols.dart';
 import 'package:assignment_sem6/widgets/view/timeline/timelineelement.dart';
 import 'package:assignment_sem6/widgets/view/timeline/timelineline.dart';
@@ -6,14 +10,12 @@ import 'package:assignment_sem6/widgets/view/timeline/timelinezoom.dart';
 import 'package:flutter/material.dart';
 
 class Timeline extends StatefulWidget {
-  final int startTimestamp;
-  final int endTimestamp;
+  final TimelineController controller;
   final VoidCallback? onMapButtonPressed;
 
   const Timeline({
     super.key,
-    required this.startTimestamp,
-    required this.endTimestamp,
+    required this.controller,
     this.onMapButtonPressed,
   });
 
@@ -23,63 +25,54 @@ class Timeline extends StatefulWidget {
 
 class TimelineState extends State<Timeline> {
   final GlobalKey _stackKey = GlobalKey();
-  final double timeScale = 1000 * 60 * 60; // Screen displays 1 hour of time
 
-  double zoom = 1.0;
-  double get effectiveTimeScale => timeScale / zoom;
-  int centerTime = 0;
-  final List<TimelineItem> timestamps = [];
-
-  double center = 0;
+  double center = 99999;
 
   @override
   void initState() {
     super.initState();
 
-    centerTime =
-        widget.startTimestamp +
-        ((widget.endTimestamp - widget.startTimestamp) ~/ 2);
+    final startTimestamp = widget.controller.visibleStartTimestamp;
+    final endTimestamp = widget.controller.visibleEndTimestamp;
 
     arrangeElements([
       TempPost(
-        startTimestamp: widget.startTimestamp,
-        endTimestamp: widget.startTimestamp + (1000 * 60 * 10),
+        startTimestamp: startTimestamp,
+        endTimestamp: startTimestamp + (1000 * 60 * 10),
         name: "Post 1",
         color: Colors.red,
       ),
       TempPost(
-        startTimestamp: widget.startTimestamp + (1000 * 60 * 10),
-        endTimestamp: widget.startTimestamp + (1000 * 60 * 20),
+        startTimestamp: startTimestamp + (1000 * 60 * 10),
+        endTimestamp: startTimestamp + (1000 * 60 * 20),
         name: "Post 2",
         color: Colors.blue,
       ),
       TempPost(
-        startTimestamp: widget.startTimestamp + (1000 * 60 * 15),
-        endTimestamp: widget.startTimestamp + (1000 * 60 * 30),
+        startTimestamp: startTimestamp + (1000 * 60 * 15),
+        endTimestamp: startTimestamp + (1000 * 60 * 30),
         name: "Post 3",
         color: Colors.green,
       ),
       TempPost(
-        startTimestamp: widget.startTimestamp + (1000 * 60 * 23),
-        endTimestamp: widget.startTimestamp + (1000 * 60 * 50),
+        startTimestamp: startTimestamp + (1000 * 60 * 23),
+        endTimestamp: startTimestamp + (1000 * 60 * 50),
         name: "Post 4",
         color: Colors.orange,
       ),
       TempPost(
-        startTimestamp: widget.startTimestamp + (1000 * 60 * 25),
-        endTimestamp: widget.startTimestamp + (1000 * 60 * 40),
+        startTimestamp: startTimestamp + (1000 * 60 * 25),
+        endTimestamp: startTimestamp + (1000 * 60 * 40),
         name: "Post 5",
         color: Colors.purple,
       ),
       TempPost(
-        startTimestamp: widget.startTimestamp + (1000 * 60 * 50),
-        endTimestamp: widget.startTimestamp + (1000 * 60 * 60),
+        startTimestamp: startTimestamp + (1000 * 60 * 50),
+        endTimestamp: startTimestamp + (1000 * 60 * 60),
         name: "Post 6",
         color: Colors.yellow,
       ),
     ]);
-
-    timestamps.sort((a, b) => b.layer.abs().compareTo(a.layer.abs()));
   }
 
   void arrangeElements(List<TempPost> posts) {
@@ -91,7 +84,7 @@ class TimelineState extends State<Timeline> {
     for (int i = 0; i < sorted.length; i++) {
       final post = sorted[i];
 
-      int layer = resolveLayer(post, arranged);
+      int layer = TimelineUtil.resolveLayer(post, arranged);
 
       arranged.add(
         TimelineItem(
@@ -106,71 +99,15 @@ class TimelineState extends State<Timeline> {
       );
     }
 
-    setState(() {
-      timestamps.clear();
-      timestamps.addAll(arranged);
-    });
-  }
+    arranged.sort((a, b) => a.startTimestamp.compareTo(b.startTimestamp));
 
-  int resolveLayer(TempPost post, List<TimelineItem> previousItems) {
-    final occupiedLayers = <int>{};
-
-    for (int i = previousItems.length - 1; i >= 0; i--) {
-      final item = previousItems[i];
-
-      if (item.endTimestamp <= post.startTimestamp) break;
-
-      if (!(post.endTimestamp <= item.startTimestamp ||
-          post.startTimestamp >= item.endTimestamp)) {
-        occupiedLayers.add(item.layer);
-      }
-    }
-
-    // Now find the smallest layer that is not occupied
-    int layer = 0;
-    while (occupiedLayers.contains(layer)) {
-      layer++;
-    }
-
-    return layer;
+    widget.controller.updateItems(arranged);
   }
 
   void recalculateCenter(double height) {
     setState(() {
       center = height / 2;
     });
-  }
-
-  double getElementLeftPosition(
-    double screenWidth,
-    TimelineItem item,
-    double width,
-  ) {
-    // Use centerTime as the zero point on the timeline
-    final startPosition =
-        (item.startTimestamp.toDouble() - centerTime.toDouble()) /
-        effectiveTimeScale *
-        screenWidth;
-
-    final endPosition =
-        (item.endTimestamp.toDouble() - centerTime.toDouble()) /
-        effectiveTimeScale *
-        screenWidth;
-
-    final leftPosition =
-        startPosition + (endPosition - startPosition) / 2 - width / 2;
-
-    return leftPosition + (screenWidth / 2);
-  }
-
-  double getElementWidth(
-    double screenWidth,
-    int startTimestamp,
-    int endTimestamp,
-  ) {
-    return (endTimestamp.toDouble() - startTimestamp.toDouble()) /
-        effectiveTimeScale *
-        screenWidth;
   }
 
   @override
@@ -190,19 +127,11 @@ class TimelineState extends State<Timeline> {
       children: [
         Positioned.fill(
           child: TimelineZoom(
-            zoom: zoom,
-            onZoomChanged:
-                (zoom) => setState(() {
-                  this.zoom = zoom;
-                }),
-            centerTime: centerTime,
-            onCenterTimeChanged:
-                (centerTime) => setState(() {
-                  this.centerTime = centerTime;
-                }),
+            zoom: (zoom) => widget.controller.zoom(zoom),
+            pan: (pan) => widget.controller.pan(pan),
             child: Stack(
               children:
-                  timestamps.map((item) {
+                  widget.controller.items.map((item) {
                     final startTime = DateTime.fromMillisecondsSinceEpoch(
                       item.startTimestamp,
                     );
@@ -214,16 +143,19 @@ class TimelineState extends State<Timeline> {
                     final endTimeString =
                         "${endTime.hour.toString().padLeft(2, '0')}:${endTime.minute.toString().padLeft(2, '0')}:${endTime.second.toString().padLeft(2, '0')}";
 
-                    final elementWidth = getElementWidth(
+                    final elementWidth = TimelineUtil.getElementWidth(
                       screenWidth,
+                      widget.controller.visibleTimeScale,
                       item.startTimestamp,
                       item.endTimestamp,
                     );
                     final elementHeight = 80.0;
 
                     final element = TimelineElement(
-                      left: getElementLeftPosition(
+                      left: TimelineUtil.getElementLeftPosition(
                         screenWidth,
+                        widget.controller.visibleTimeScale,
+                        widget.controller.visibleCenterTimestamp,
                         item,
                         elementWidth,
                       ),
@@ -244,10 +176,10 @@ class TimelineState extends State<Timeline> {
         Positioned.fill(
           child: Center(
             child: TimelineLine(
-              startTimestamp: widget.startTimestamp,
-              endTimestamp: widget.endTimestamp,
-              timescale: effectiveTimeScale,
-              centerTime: centerTime,
+              startTimestamp: widget.controller.visibleStartTimestamp,
+              endTimestamp: widget.controller.visibleEndTimestamp,
+              timescale: widget.controller.visibleTimeScale,
+              centerTime: widget.controller.visibleCenterTimestamp,
               tickEvery: 1000 * 60 * 5, // 5 minutes
             ),
           ),
@@ -268,36 +200,28 @@ class TimelineState extends State<Timeline> {
                 ),
               if (screenUtil.isBigScreen)
                 TimelineControls(
-                  onZoomIn:
-                      () => setState(() {
-                        zoom = (zoom * 1.2).clamp(0.1, 10.0);
-                      }),
-                  onZoomOut:
-                      () => setState(() {
-                        zoom = (zoom / 1.2).clamp(0.1, 10.0);
-                      }),
-                  onResetZoom:
-                      () => setState(() {
-                        zoom = 1.0;
-                      }),
+                  onZoomIn: () => widget.controller.zoom(1.2),
+                  onZoomOut: () => widget.controller.zoom(0.8),
+                  onResetZoom: () => widget.controller.resetZoom(),
                   onScrollLeft:
-                      () => setState(() {
-                        centerTime -= (effectiveTimeScale * 0.1).toInt();
-                      }),
+                      () => widget.controller.pan(
+                        -widget.controller.visibleTimeScale ~/ 10,
+                      ),
                   onScrollRight:
-                      () => setState(() {
-                        centerTime += (effectiveTimeScale * 0.1).toInt();
-                      }),
-                  onCenter:
-                      () => setState(() {
-                        centerTime =
-                            widget.startTimestamp +
-                            ((widget.endTimestamp - widget.startTimestamp) ~/
-                                2);
-                      }),
+                      () => widget.controller.pan(
+                        widget.controller.visibleTimeScale ~/ 10,
+                      ),
+                  onCenter: () => widget.controller.recenter(),
                 ),
             ],
           ),
+        ),
+        Positioned(left: 16, top: 16, child: FilterContainer()),
+        Positioned(
+          bottom: 0,
+          left: 0,
+          right: 0,
+          child: TimelineMiniMap(controller: widget.controller),
         ),
       ],
     );
