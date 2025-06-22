@@ -1,10 +1,10 @@
 import 'package:assignment_sem6/util/screen.dart';
 import 'package:assignment_sem6/util/timelineutil.dart';
 import 'package:assignment_sem6/widgets/view/filter/filtercontainer.dart';
-import 'package:assignment_sem6/widgets/view/timeline/minimap/timelineminimap.dart';
 import 'package:assignment_sem6/widgets/view/timeline/timelinecontroller.dart';
 import 'package:assignment_sem6/widgets/view/timeline/timelinecontrols.dart';
 import 'package:assignment_sem6/widgets/view/timeline/timelineelement.dart';
+import 'package:assignment_sem6/widgets/view/timeline/timelineitem.dart';
 import 'package:assignment_sem6/widgets/view/timeline/timelineline.dart';
 import 'package:assignment_sem6/widgets/view/timeline/timelinezoom.dart';
 import 'package:flutter/material.dart';
@@ -29,105 +29,12 @@ class TimelineState extends State<Timeline> {
   double _center = 99999;
   final ValueNotifier<int?> _hoveredIndex = ValueNotifier(null);
 
-  @override
-  void initState() {
-    super.initState();
-
-    final startTimestamp = widget.controller.startTimestamp ~/ 1000 * 1000;
-
-    arrangeElements([
-      TempPost(
-        startTimestamp: startTimestamp,
-        endTimestamp: startTimestamp + (1000 * 60 * 10),
-        name: "Post 1",
-        color: Colors.red,
-      ),
-      TempPost(
-        startTimestamp: startTimestamp + (1000 * 60 * 10),
-        endTimestamp: startTimestamp + (1000 * 60 * 20),
-        name: "Post 2",
-        color: Colors.blue,
-      ),
-      TempPost(
-        startTimestamp: startTimestamp + (1000 * 60 * 15),
-        endTimestamp: startTimestamp + (1000 * 60 * 30),
-        name: "Post 3",
-        color: Colors.green,
-      ),
-      TempPost(
-        startTimestamp: startTimestamp + (1000 * 60 * 23),
-        endTimestamp: startTimestamp + (1000 * 60 * 50),
-        name: "Post 4",
-        color: Colors.orange,
-      ),
-      TempPost(
-        startTimestamp: startTimestamp + (1000 * 60 * 25),
-        endTimestamp: startTimestamp + (1000 * 60 * 40),
-        name: "Post 5",
-        color: Colors.purple,
-      ),
-      TempPost(
-        startTimestamp: startTimestamp + (1000 * 60 * 27),
-        endTimestamp: startTimestamp + (1000 * 60 * 43),
-        name: "Post 7",
-        color: Colors.deepOrange,
-      ),
-      TempPost(
-        startTimestamp: startTimestamp + (1000 * 60 * 50),
-        endTimestamp: startTimestamp + (1000 * 60 * 60),
-        name: "Post 6",
-        color: Colors.yellow,
-      ),
-      for (int i = 7; i < 20; i++)
-        TempPost(
-          startTimestamp: startTimestamp + (1000 * 30 * (i - 1)),
-          endTimestamp: startTimestamp + (1000 * 30 * (i + 3)),
-          name: "Post $i",
-          color: Colors.primaries[i % Colors.primaries.length],
-        ),
-      for (int i = 7; i < 20; i++)
-        TempPost(
-          startTimestamp: startTimestamp + (1000 * 30 * (i - 1)),
-          endTimestamp: startTimestamp + (1000 * 30 * (i + 3)),
-          name: "Post $i",
-          color: Colors.primaries[i % Colors.primaries.length],
-        ),
-    ]);
-  }
-
   void _setPutToFront(int index) {
     _hoveredIndex.value = index;
   }
 
   void _clearPutToFront() {
     _hoveredIndex.value = null;
-  }
-
-  void arrangeElements(List<TempPost> posts) {
-    final sorted = posts;
-    sorted.sort((a, b) => a.startTimestamp.compareTo(b.startTimestamp));
-
-    final List<TimelineItem> arranged = [];
-
-    for (int i = 0; i < sorted.length; i++) {
-      final post = sorted[i];
-
-      int layer = TimelineUtil.resolveLayer(post, arranged);
-
-      arranged.add(
-        TimelineItem(
-          startTimestamp: post.startTimestamp,
-          endTimestamp: post.endTimestamp,
-          name: post.name,
-          height: 80.0,
-          width: 300.0,
-          layer: layer,
-          color: post.color,
-        ),
-      );
-    }
-
-    widget.controller.updateItems(arranged);
   }
 
   void recalculateCenter(double height) {
@@ -203,7 +110,8 @@ class TimelineState extends State<Timeline> {
       children: [
         Positioned.fill(
           child: TimelineZoom(
-            dragSensitivity: widget.controller.visibleTimeScale.toDouble() / screenWidth,
+            dragSensitivity:
+                widget.controller.visibleTimeScale.toDouble() / screenWidth,
             zoom: (zoom) => widget.controller.zoom(zoom),
             pan: (pan) => widget.controller.pan(pan),
             child: Stack(
@@ -280,47 +188,7 @@ class TimelineState extends State<Timeline> {
           top: 16,
           child: RepaintBoundary(child: FilterContainer()),
         ),
-        Positioned(
-          bottom: 0,
-          left: 0,
-          right: 0,
-          child: TimelineMiniMap(controller: widget.controller),
-        ),
       ],
     );
   }
-}
-
-class TempPost {
-  final int startTimestamp;
-  final int endTimestamp;
-  final String name;
-  final Color color;
-
-  const TempPost({
-    required this.startTimestamp,
-    required this.endTimestamp,
-    required this.name,
-    this.color = Colors.purple,
-  });
-}
-
-class TimelineItem {
-  final int startTimestamp;
-  final int endTimestamp;
-  final String name;
-  final double height;
-  final double width;
-  final int layer;
-  final Color color;
-
-  const TimelineItem({
-    required this.startTimestamp,
-    required this.endTimestamp,
-    required this.name,
-    required this.height,
-    required this.width,
-    this.color = Colors.purple,
-    this.layer = 0,
-  });
 }

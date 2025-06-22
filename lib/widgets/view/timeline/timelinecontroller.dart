@@ -1,5 +1,5 @@
 import 'package:assignment_sem6/util/timelineutil.dart';
-import 'package:assignment_sem6/widgets/view/timeline/timeline.dart';
+import 'package:assignment_sem6/widgets/view/timeline/timelineitem.dart';
 import 'package:flutter/material.dart';
 
 typedef Range = ({int start, int end});

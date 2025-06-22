@@ -1,4 +1,5 @@
-import 'package:assignment_sem6/widgets/view/timeline/timeline.dart';
+import 'package:assignment_sem6/screens/home.dart';
+import 'package:assignment_sem6/widgets/view/timeline/timelineitem.dart';
 
 class TimelineUtil {
   static int resolveLayer(TempPost post, List<TimelineItem> previousItems) {
