@@ -104,6 +104,8 @@ class TimelineState extends State<Timeline> {
     final screenWidth = screenUtil.width;
     final tickEvery = widget.controller.getTickEvery(screenWidth.toInt());
 
+    bool isCenteredVertically = widget.controller.items[0].layerOffset == 0;
+
     return Stack(
       key: _stackKey,
       children: [
@@ -148,6 +150,8 @@ class TimelineState extends State<Timeline> {
               timescale: widget.controller.visibleTimeScale,
               centerTime: widget.controller.visibleCenterTimestamp,
               tickEvery: tickEvery,
+              floating: !isCenteredVertically,
+              color: Theme.of(context).colorScheme.onSurface,
             ),
           ),
         ),

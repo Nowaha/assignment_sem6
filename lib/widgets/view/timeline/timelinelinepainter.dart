@@ -15,6 +15,7 @@ class TimelinePainter extends CustomPainter {
   final Color onSurfaceColor;
   final Color surfaceColor;
   final double screenWidth;
+  final bool floating;
 
   TimelinePainter({
     required this.centerTime,
@@ -26,6 +27,7 @@ class TimelinePainter extends CustomPainter {
     required this.onSurfaceColor,
     required this.surfaceColor,
     required this.screenWidth,
+    required this.floating,
   });
 
   String formatTimestamp(int timestamp) {
@@ -43,17 +45,18 @@ class TimelinePainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
+    final centerY = size.height / 2;
+    final timelineColor = !floating ? color : color.withAlpha(180);
+
     final paint =
         Paint()
-          ..color = color
+          ..color = timelineColor
           ..strokeWidth = timelineThickness;
-
-    final centerY = size.height / 2;
     canvas.drawLine(Offset(0, centerY), Offset(size.width, centerY), paint);
 
     final tickPaint =
         Paint()
-          ..color = color
+          ..color = timelineColor
           ..strokeWidth = tickWidth;
 
     for (int i = 0; i <= totalTicks; i++) {
@@ -73,16 +76,21 @@ class TimelinePainter extends CustomPainter {
       );
       textPainter.layout();
 
-      final backgroundRect = Rect.fromLTWH(
-        positionX - textPainter.width / 2 - 4,
-        centerY + tickHeight - textPainter.height / 2 - 4,
-        textPainter.width + 8,
-        textPainter.height + 8,
+      final backgroundRect = RRect.fromRectAndRadius(
+        Rect.fromLTWH(
+          positionX - textPainter.width / 2 - 6,
+          centerY + tickHeight - textPainter.height / 2 - 4,
+          textPainter.width + 12,
+          textPainter.height + 8,
+        ),
+        Radius.circular(8),
       );
-      canvas.drawRRect(
-        RRect.fromRectAndRadius(backgroundRect, Radius.circular(8)),
-        Paint()..color = surfaceColor,
-      );
+
+      if (floating) {
+        final shadowPath = Path()..addRRect(backgroundRect);
+        canvas.drawShadow(shadowPath, Colors.black, 4.0, false);
+      }
+      canvas.drawRRect(backgroundRect, Paint()..color = surfaceColor);
 
       final labelX = positionX - textPainter.width / 2;
       final labelY = centerY + tickHeight / 2 + 3;
@@ -103,6 +111,7 @@ class TimelinePainter extends CustomPainter {
         oldDelegate.timescale != timescale ||
         oldDelegate.tickEvery != tickEvery ||
         oldDelegate.surfaceColor != surfaceColor ||
-        oldDelegate.color != color;
+        oldDelegate.color != color ||
+        oldDelegate.floating != floating;
   }
 }

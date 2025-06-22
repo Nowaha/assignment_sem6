@@ -7,6 +7,8 @@ class TimelineLine extends StatelessWidget {
   final int tickEvery;
   final int timescale;
   final int centerTime;
+  final Color color;
+  final bool floating;
 
   const TimelineLine({
     super.key,
@@ -15,6 +17,8 @@ class TimelineLine extends StatelessWidget {
     required this.tickEvery,
     required this.timescale,
     required this.centerTime,
+    this.floating = false,
+    this.color = Colors.white,
   });
 
   @override
@@ -39,10 +43,11 @@ class TimelineLine extends StatelessWidget {
               totalTicks: (timescale / tickEvery).ceil(),
               firstTickTime:
                   (centerTime - timescale / 2).toInt() ~/ tickEvery * tickEvery,
-              color: theme.colorScheme.onSurface,
+              color: color,
               surfaceColor: theme.colorScheme.surface,
               onSurfaceColor: theme.colorScheme.onSurface,
               screenWidth: MediaQuery.of(context).size.width,
+              floating: floating,
             ),
           ),
         ),
