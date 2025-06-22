@@ -2,33 +2,39 @@ class SeekerInfo {
   static const double seekerHandleHeight = 8;
   static const double seekerHandleWidth = 4;
 
-  final double seekerStart;
-  final double seekerEnd;
+  final double seekerStartFraction;
+  final double seekerEndFraction;
 
-  int get seekerMiddle => (seekerStart + seekerEnd) ~/ 2;
+  double getSeekerStart(double width) => seekerStartFraction * width;
+  double getSeekerEnd(double width) => seekerEndFraction * width;
 
-  int leftHandleEnd(double leniency) =>
-      (seekerStart + (seekerHandleWidth / 2) + leniency).toInt();
+  int get seekerMiddle => (seekerStartFraction + seekerEndFraction) ~/ 2;
 
-  int rightHandleStart(double leniency) =>
-      (seekerEnd - (seekerHandleWidth / 2) - leniency).toInt();
+  int leftHandleEnd(double width, double leniency) =>
+      (getSeekerStart(width) + (seekerHandleWidth / 2) + leniency).toInt();
 
-  bool isWithinSeeker(double x) {
-    return x >= seekerStart + seekerHandleWidth &&
-        x <= seekerEnd - seekerHandleWidth;
+  int rightHandleStart(double width, double leniency) =>
+      (getSeekerEnd(width) - (seekerHandleWidth / 2) - leniency).toInt();
+
+  bool isWithinSeeker(double width, double x) {
+    return x >= getSeekerStart(width) + seekerHandleWidth &&
+        x <= getSeekerEnd(width) - seekerHandleWidth;
   }
 
-  bool isWithinLeftHandle(double x, double leniency) {
-    return x >= seekerStart - leniency &&
-        x <= seekerStart + seekerHandleWidth + leniency;
+  bool isWithinLeftHandle(double width, double x, double leniency) {
+    return x >= getSeekerStart(width) - leniency &&
+        x <= getSeekerStart(width) + seekerHandleWidth + leniency;
   }
 
-  bool isWithinRightHandle(double x, double leniency) {
-    return x >= seekerEnd - seekerHandleWidth - leniency &&
-        x <= seekerEnd + leniency;
+  bool isWithinRightHandle(double width, double x, double leniency) {
+    return x >= getSeekerEnd(width) - seekerHandleWidth - leniency &&
+        x <= getSeekerEnd(width) + leniency;
   }
 
-  const SeekerInfo({required this.seekerStart, required this.seekerEnd});
+  const SeekerInfo({
+    required this.seekerStartFraction,
+    required this.seekerEndFraction,
+  });
 
-  const SeekerInfo.zero() : seekerStart = 0, seekerEnd = 0;
+  const SeekerInfo.zero() : seekerStartFraction = 0, seekerEndFraction = 0;
 }

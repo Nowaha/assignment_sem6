@@ -18,6 +18,9 @@ class TimelineMinimapSeekerPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     if (seekerInfo == null) return;
 
+    final seekerStart = seekerInfo!.seekerStartFraction * size.width;
+    final seekerEnd = seekerInfo!.seekerEndFraction * size.width;
+
     final handleWidth = SeekerInfo.seekerHandleWidth;
     final handleHeight = SeekerInfo.seekerHandleHeight;
     final leftHandleWidth =
@@ -50,9 +53,9 @@ class TimelineMinimapSeekerPainter extends CustomPainter {
 
       canvas.drawRect(
         Rect.fromLTWH(
-          seekerInfo!.seekerStart,
+          seekerStart,
           0,
-          seekerInfo!.seekerEnd - seekerInfo!.seekerStart,
+          (seekerEnd - seekerStart) * size.width,
           size.height + handleHeight,
         ),
         seekerBarPaint,
@@ -60,12 +63,12 @@ class TimelineMinimapSeekerPainter extends CustomPainter {
     }
 
     canvas.drawRect(
-      Rect.fromLTWH(0, 0, seekerInfo!.seekerStart, size.height),
+      Rect.fromLTWH(0, 0, seekerStart, size.height),
       emptySpacePaint,
     );
     canvas.drawRect(
       Rect.fromLTWH(
-        seekerInfo!.seekerStart - leftHandleWidth / 2,
+        seekerStart - leftHandleWidth / 2,
         -leftHandleHeight,
         leftHandleWidth,
         size.height + leftHandleHeight,
@@ -74,17 +77,12 @@ class TimelineMinimapSeekerPainter extends CustomPainter {
     );
 
     canvas.drawRect(
-      Rect.fromLTWH(
-        seekerInfo!.seekerEnd,
-        0,
-        size.width - seekerInfo!.seekerEnd,
-        size.height,
-      ),
+      Rect.fromLTWH(seekerEnd, 0, size.width - seekerEnd, size.height),
       emptySpacePaint,
     );
     canvas.drawRect(
       Rect.fromLTWH(
-        seekerInfo!.seekerEnd - rightHandleWidth / 2,
+        seekerEnd - rightHandleWidth / 2,
         -rightHandleHeight,
         rightHandleWidth,
         size.height + rightHandleHeight,
@@ -95,7 +93,10 @@ class TimelineMinimapSeekerPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(TimelineMinimapSeekerPainter oldDelegate) =>
-      oldDelegate.seekerInfo != seekerInfo || oldDelegate.hovering != hovering;
+      oldDelegate.seekerInfo != seekerInfo ||
+      oldDelegate.hovering != hovering ||
+      oldDelegate.handleBarColor != handleBarColor ||
+      oldDelegate.seekerHoverColor != seekerHoverColor;
 }
 
 enum Hovering { leftHandle, rightHandle, seeker, sides, none }

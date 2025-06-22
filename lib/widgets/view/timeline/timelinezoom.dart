@@ -2,44 +2,40 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/physics.dart';
 
+typedef ShouldDelegateScaleUpdate = bool Function(ScaleUpdateDetails details);
+typedef OnDelegateScaleUpdate = void Function(ScaleUpdateDetails details);
+typedef OnDelegateRelease = void Function(ScaleEndDetails details);
+
 class TimelineZoom extends StatefulWidget {
   final Function(double) zoom;
   final Function(int) pan;
-  late final double dragSensitivity;
+  final double dragSensitivity;
   final Widget child;
 
-  final double? minX;
-  final double? maxX;
-  final Function(ScaleUpdateDetails details, double dragSensitivity)?
-  onOutOfRangeClick;
-  final Function? onOutOfRangeRelease;
+  final ShouldDelegateScaleUpdate? shouldDelegateScaleUpdate;
+  final OnDelegateScaleUpdate? onDelegateScaleUpdate;
+  final OnDelegateRelease? onDelegateRelease;
 
-  // ignore: prefer_const_constructors_in_immutables
-  TimelineZoom({
+  const TimelineZoom({
     super.key,
     required this.zoom,
     required this.pan,
     required this.dragSensitivity,
     required this.child,
-    this.minX,
-    this.maxX,
-    this.onOutOfRangeClick,
-    this.onOutOfRangeRelease,
-  });
+  }) : shouldDelegateScaleUpdate = null,
+       onDelegateScaleUpdate = null,
+       onDelegateRelease = null;
 
-  TimelineZoom.calculatedSensitivity({
+  const TimelineZoom.delegate({
     super.key,
     required this.zoom,
     required this.pan,
-    required double maxWidth,
+    required this.dragSensitivity,
     required this.child,
-    this.minX,
-    this.maxX,
-    this.onOutOfRangeClick,
-    this.onOutOfRangeRelease,
-  }) {
-    dragSensitivity = maxWidth;
-  }
+    required this.shouldDelegateScaleUpdate,
+    required this.onDelegateScaleUpdate,
+    required this.onDelegateRelease,
+  });
 
   @override
   State<StatefulWidget> createState() => _TimelineZoomState();
@@ -84,7 +80,7 @@ class _TimelineZoomState extends State<TimelineZoom>
     _animationController.animateWith(simulation);
   }
 
-  bool _blocked = false;
+  bool _delegated = false;
   bool _pointerDown = false;
 
   @override
@@ -111,15 +107,11 @@ class _TimelineZoomState extends State<TimelineZoom>
             widget.zoom(zoomChange);
           } else {
             if (details.pointerCount == 1 && !_pointerDown) {
-              if (_blocked ||
-                  (widget.minX != null &&
-                      widget.maxX != null &&
-                      (details.localFocalPoint.dx < widget.minX! ||
-                          details.localFocalPoint.dx > widget.maxX!))) {
-                if (!_blocked) _blocked = true;
-                if (widget.onOutOfRangeClick != null) {
-                  widget.onOutOfRangeClick!(details, widget.dragSensitivity);
-                }
+              if (_delegated ||
+                  widget.shouldDelegateScaleUpdate != null &&
+                      widget.shouldDelegateScaleUpdate!(details)) {
+                _delegated = true;
+                widget.onDelegateScaleUpdate?.call(details);
                 return;
               }
             }
@@ -132,14 +124,14 @@ class _TimelineZoomState extends State<TimelineZoom>
           }
         },
         onScaleEnd: (details) {
-          if (_blocked) {
-            _blocked = false;
-            if (widget.onOutOfRangeRelease != null) {
-              widget.onOutOfRangeRelease!();
-            }
+          _pointerDown = false;
+
+          if (_delegated) {
+            _delegated = false;
+            widget.onDelegateRelease?.call(details);
             return;
           }
-          _pointerDown = false;
+
           final velocity =
               details.velocity.pixelsPerSecond.dx * widget.dragSensitivity;
           _runFling(velocity);

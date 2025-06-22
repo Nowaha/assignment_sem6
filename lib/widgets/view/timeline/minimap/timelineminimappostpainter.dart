@@ -17,9 +17,19 @@ class TimelineMinimapPostPainter extends CustomPainter {
       0,
       (max, item) => item.layer > max ? item.layer : max,
     );
+    int layersOnBottom = maxLayer ~/ 2;
 
-    final layerHeight = size.height / maxLayer;
-    final timelinePosition = maxLayer * layerHeight * (2 / 3) - (layerHeight / 2);
+    final maxHeight = size.height - 6.0;
+    final layerHeight = maxHeight / (maxLayer + 1);
+    final timelinePosition = maxHeight - (layersOnBottom * layerHeight);
+    
+
+    int spacing = switch (maxLayer) {
+      < 4 => layerHeight ~/ 3,
+      < 10 => 4,
+      >= 10 && < 16 => 2,
+      _ => 1,
+    };
 
     final startTimestamp = controller.effectiveStartTimestamp;
     final endTimestamp = controller.effectiveEndTimestamp;
@@ -44,13 +54,19 @@ class TimelineMinimapPostPainter extends CustomPainter {
 
       double top;
       if (isHanging) {
-        top = timelinePosition + ((layerOnHalf - 1) * layerHeight);
+        top =
+            timelinePosition + ((layerOnHalf - 1) * layerHeight) + spacing;
       } else {
-        top = timelinePosition - (layerOnHalf * layerHeight);
+        top = timelinePosition - (layerOnHalf * layerHeight) + spacing;
       }
 
       canvas.drawRect(
-        Rect.fromLTWH(startX + 4, top + 4, endX - startX - 4, layerHeight - 4),
+        Rect.fromLTWH(
+          startX,
+          top,
+          endX - startX - spacing,
+          layerHeight - spacing,
+        ),
         Paint()
           ..color = item.color
           ..style = PaintingStyle.fill,
