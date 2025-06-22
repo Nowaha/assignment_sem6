@@ -1,5 +1,6 @@
 import 'package:assignment_sem6/util/timelineutil.dart';
 import 'package:assignment_sem6/widgets/view/timeline/timelineitem.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 typedef Range = ({int start, int end});
@@ -141,10 +142,10 @@ class TimelineController extends ChangeNotifier {
 
   static Range _zoom(int center, Range old, double factor) {
     final difference = (old.end - old.start) ~/ 2;
-    final newDifference = (difference / factor).toInt();
+    final newDifference = (difference / factor);
     final newStart = center - newDifference;
     final newEnd = center + newDifference;
-    return (start: newStart, end: newEnd);
+    return (start: newStart.toInt(), end: newEnd.toInt());
   }
 
   void zoom(double factor) {

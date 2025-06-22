@@ -24,7 +24,6 @@ class _TimelineMiniMapState extends State<TimelineMiniMap> {
   static const _leniency = 4.0;
   SeekerInfo? _seekerInfo;
   Hovering _hovering = Hovering.none;
-  bool _pointerDown = false;
 
   @override
   void initState() {
@@ -157,13 +156,13 @@ class _TimelineMiniMapState extends State<TimelineMiniMap> {
         }
       },
       onDelegateRelease: (_) {
-        _draggingLeftHandle = false;
-        _draggingRightHandle = false;
-        _hovering = Hovering.none;
+        setState(() {
+          _draggingLeftHandle = false;
+          _draggingRightHandle = false;
+        });
       },
-      zoom: (zoom) {
-        widget.controller.zoom(1 / zoom);
-      },
+      invertGestureZoom: true,
+      zoom: widget.controller.zoom,
       pan: (pan) {
         widget.controller.pan(-pan);
       },
@@ -192,12 +191,8 @@ class _TimelineMiniMapState extends State<TimelineMiniMap> {
           cursor: switch (_hovering) {
             Hovering.leftHandle => SystemMouseCursors.resizeLeft,
             Hovering.rightHandle => SystemMouseCursors.resizeRight,
-            Hovering.seeker =>
-              _pointerDown
-                  ? SystemMouseCursors.grabbing
-                  : SystemMouseCursors.grab,
-            Hovering.sides => SystemMouseCursors.click,
-            Hovering.none => SystemMouseCursors.basic,
+            Hovering.seeker => SystemMouseCursors.click,
+            _ => SystemMouseCursors.basic,
           },
           child: CustomPaint(
             painter: TimelineMinimapPostPainter(

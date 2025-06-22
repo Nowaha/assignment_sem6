@@ -11,6 +11,8 @@ class TimelineZoom extends StatefulWidget {
   final Function(int) pan;
   final double dragSensitivity;
   final Widget child;
+  final bool invertGesturePan;
+  final bool invertGestureZoom;
 
   final ShouldDelegateScaleUpdate? shouldDelegateScaleUpdate;
   final OnDelegateScaleUpdate? onDelegateScaleUpdate;
@@ -22,6 +24,8 @@ class TimelineZoom extends StatefulWidget {
     required this.pan,
     required this.dragSensitivity,
     required this.child,
+    this.invertGesturePan = false,
+    this.invertGestureZoom = false,
   }) : shouldDelegateScaleUpdate = null,
        onDelegateScaleUpdate = null,
        onDelegateRelease = null;
@@ -35,6 +39,8 @@ class TimelineZoom extends StatefulWidget {
     required this.shouldDelegateScaleUpdate,
     required this.onDelegateScaleUpdate,
     required this.onDelegateRelease,
+    this.invertGesturePan = false,
+    this.invertGestureZoom = false,
   });
 
   @override
@@ -89,7 +95,11 @@ class _TimelineZoomState extends State<TimelineZoom>
       onPointerSignal: (pointerSignal) {
         if (pointerSignal is PointerScrollEvent) {
           if (pointerSignal.scrollDelta.dy != 0) {
-            widget.zoom(pointerSignal.scrollDelta.dy * 0.001);
+            if (pointerSignal.scrollDelta.dy < 0) {
+              widget.zoom(1.1);
+            } else {
+              widget.zoom(0.9);
+            }
           }
           if (pointerSignal.scrollDelta.dx != 0) {
             widget.pan(
@@ -104,7 +114,7 @@ class _TimelineZoomState extends State<TimelineZoom>
           if (details.scale != 1.0) {
             final scaleDelta = details.scale - 1.0;
             final zoomChange = 1 + scaleDelta * 0.2;
-            widget.zoom(zoomChange);
+            widget.zoom(widget.invertGestureZoom ? 1 / zoomChange : zoomChange);
           } else {
             if (details.pointerCount == 1 && !_pointerDown) {
               if (_delegated ||
