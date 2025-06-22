@@ -1,3 +1,4 @@
+import 'package:assignment_sem6/widgets/view/timeline/timelineitem.dart';
 import 'package:flutter/material.dart';
 import 'package:assignment_sem6/widgets/view/timeline/timelinecontroller.dart';
 
@@ -13,16 +14,28 @@ class TimelineMinimapPostPainter extends CustomPainter {
       return;
     }
 
-    int maxLayer = controller.items.fold<int>(
-      0,
-      (max, item) => item.layer > max ? item.layer : max,
-    );
+    int maxLayer = 0;
+    List<TimelineItem> clipped = [];
+    for (final item in controller.items) {
+      if (item.layer > maxLayer) {
+        if (item.layer <= 10) {
+          maxLayer = item.layer;
+          continue;
+        }
+
+        if (controller.visibleEndTimestamp >= item.startTimestamp &&
+            controller.visibleStartTimestamp <= item.endTimestamp) {
+          maxLayer = item.layer;
+          continue;
+        }
+        clipped.add(item);
+      }
+    }
     int layersOnBottom = maxLayer ~/ 2;
 
     final maxHeight = size.height - 6.0;
     final layerHeight = maxHeight / (maxLayer + 1);
     final timelinePosition = maxHeight - (layersOnBottom * layerHeight);
-    
 
     int spacing = switch (maxLayer) {
       < 4 => layerHeight ~/ 3,
@@ -37,6 +50,10 @@ class TimelineMinimapPostPainter extends CustomPainter {
     final totalDuration = (endTimestamp - startTimestamp).toDouble();
 
     for (final item in controller.items) {
+      if (item.layer > maxLayer) {
+        continue;
+      }
+
       final startX =
           ((item.startTimestamp - startTimestamp) / totalDuration) * size.width;
       final endX =
@@ -54,10 +71,9 @@ class TimelineMinimapPostPainter extends CustomPainter {
 
       double top;
       if (isHanging) {
-        top =
-            timelinePosition + ((layerOnHalf - 1) * layerHeight) + spacing;
+        top = timelinePosition + ((layerOnHalf - 1) * layerHeight) + spacing;
       } else {
-        top = timelinePosition - (layerOnHalf * layerHeight) + spacing;
+        top = timelinePosition - ((layerOnHalf - 0.5) * layerHeight) - spacing;
       }
 
       canvas.drawRect(
