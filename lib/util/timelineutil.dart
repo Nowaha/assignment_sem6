@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:assignment_sem6/screens/home.dart';
 import 'package:assignment_sem6/widgets/view/timeline/timelineitem.dart';
 
@@ -11,7 +9,7 @@ class TimelineUtil {
     layers.add(1);
     layers.add(2);
     layers.add(-1);
-    // 3, -2, 4, -3, 5, -4, ..., 100, -100
+    // 3, -2, 4, -3, 5, -4, ..., 100, -99
     for (int i = 3; i <= 100; i++) {
       layers.add(i);
       layers.add(-(i - 1));
