@@ -1,25 +1,42 @@
+import 'dart:math';
+
 import 'package:assignment_sem6/screens/home.dart';
 import 'package:assignment_sem6/widgets/view/timeline/timelineitem.dart';
 
 class TimelineUtil {
+  static final Set<int> _layers = _generateLayers();
+
+  static Set<int> _generateLayers() {
+    Set<int> layers = {};
+    layers.add(1);
+    layers.add(2);
+    layers.add(-1);
+    // 3, -2, 4, -3, 5, -4, ..., 100, -100
+    for (int i = 3; i <= 100; i++) {
+      layers.add(i);
+      layers.add(-(i - 1));
+    }
+
+    return layers;
+  }
+
   static int resolveLayer(TempPost post, List<TimelineItem> previousItems) {
     final occupiedLayers = <int>{};
-
     for (int i = previousItems.length - 1; i >= 0; i--) {
       final item = previousItems[i];
 
       if (post.startTimestamp < item.endTimestamp) {
-        occupiedLayers.add(item.layer);
+        occupiedLayers.add(item.rawLayer);
       }
     }
 
-    // Now find the smallest layer that is not occupied
-    int layer = 0;
-    while (occupiedLayers.contains(layer)) {
-      layer++;
+    for (final layer in _layers) {
+      if (!occupiedLayers.contains(layer)) {
+        return layer;
+      }
     }
 
-    return layer;
+    throw Exception("No available layer found for post: ${post.name}");
   }
 
   static double getElementLeftPosition(

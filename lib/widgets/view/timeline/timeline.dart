@@ -71,6 +71,7 @@ class TimelineState extends State<Timeline> {
 
     final element = TimelineElement(
       index: index,
+      item: item,
       onHover: () => _setPutToFront(index),
       onLeave: _clearPutToFront,
       left: TimelineUtil.getElementLeftPosition(
@@ -82,12 +83,9 @@ class TimelineState extends State<Timeline> {
       ),
       center: _center,
       verticalOffset: widget.controller.verticalOffset,
-      layer: item.layer,
       width: elementWidth,
       height: elementHeight,
-      color: item.color,
       startTime: startTimeString,
-      name: item.name,
       endTime: endTimeString,
     );
     return element;

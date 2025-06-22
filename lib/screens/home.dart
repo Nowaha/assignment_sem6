@@ -28,65 +28,67 @@ class _HomePageState extends State<HomePage> with ToastMixin {
   @override
   void initState() {
     final startTimestamp = Time.nowAsTimestamp() ~/ 1000 * 1000;
+    final secondHour = startTimestamp + (1000 * 60 * 30);
 
     _timelineController = TimelineController.withTimeScale(
       items: [],
       startTimestamp: startTimestamp,
-      endTimestamp: startTimestamp + (1000 * 60 * 60), // 1 hour
+      endTimestamp:
+          startTimestamp + (1000 * 60 * 60 * 1.5).toInt(), // 1.5 hours
       timeScale: 1000 * 60 * 30, // half an hour
     );
 
     arrangeElements([
       TempPost(
-        startTimestamp: startTimestamp,
-        endTimestamp: startTimestamp + (1000 * 60 * 10),
+        startTimestamp: secondHour,
+        endTimestamp: secondHour + (1000 * 60 * 10),
         name: "Post 1",
         color: Colors.red,
       ),
       TempPost(
-        startTimestamp: startTimestamp + (1000 * 60 * 10),
-        endTimestamp: startTimestamp + (1000 * 60 * 20),
+        startTimestamp: secondHour + (1000 * 60 * 10),
+        endTimestamp: secondHour + (1000 * 60 * 15),
         name: "Post 2",
         color: Colors.blue,
       ),
       TempPost(
-        startTimestamp: startTimestamp + (1000 * 60 * 15),
-        endTimestamp: startTimestamp + (1000 * 60 * 30),
+        startTimestamp: secondHour + (1000 * 60 * 10),
+        endTimestamp: secondHour + (1000 * 60 * 20),
         name: "Post 3",
         color: Colors.green,
       ),
       TempPost(
-        startTimestamp: startTimestamp + (1000 * 60 * 23),
-        endTimestamp: startTimestamp + (1000 * 60 * 50),
+        startTimestamp: secondHour + (1000 * 60 * 23),
+        endTimestamp: secondHour + (1000 * 60 * 50),
         name: "Post 4",
         color: Colors.orange,
       ),
       TempPost(
-        startTimestamp: startTimestamp + (1000 * 60 * 25),
-        endTimestamp: startTimestamp + (1000 * 60 * 40),
+        startTimestamp: secondHour + (1000 * 60 * 25),
+        endTimestamp: secondHour + (1000 * 60 * 40),
         name: "Post 5",
         color: Colors.purple,
       ),
       TempPost(
-        startTimestamp: startTimestamp + (1000 * 60 * 27),
-        endTimestamp: startTimestamp + (1000 * 60 * 43),
+        startTimestamp: secondHour + (1000 * 60 * 27),
+        endTimestamp: secondHour + (1000 * 60 * 43),
         name: "Post 7",
         color: Colors.deepOrange,
       ),
       TempPost(
-        startTimestamp: startTimestamp + (1000 * 60 * 50),
-        endTimestamp: startTimestamp + (1000 * 60 * 60),
+        startTimestamp: secondHour + (1000 * 60 * 50),
+        endTimestamp: secondHour + (1000 * 60 * 60),
         name: "Post 6",
         color: Colors.yellow,
       ),
-      for (int i = 7; i < 20; i++)
+      for (int i = 7; i < 15; i++)
         TempPost(
           startTimestamp: startTimestamp + (1000 * 30 * (i * 1.5).toInt()),
           endTimestamp: startTimestamp + (1000 * 30 * (i + 20)),
           name: "Post $i",
           color: Colors.primaries[i % Colors.primaries.length],
         ),
-      for (int i = 7; i < 20; i++)
+      for (int i = 7; i < 15; i++)
         TempPost(
           startTimestamp: startTimestamp + (1000 * 30 * (i - 1)),
           endTimestamp: startTimestamp + (1000 * 30 * (i + 20)),
@@ -116,7 +118,7 @@ class _HomePageState extends State<HomePage> with ToastMixin {
           name: post.name,
           height: 80.0,
           width: 300.0,
-          layer: layer,
+          rawLayer: layer,
           color: post.color,
         ),
       );

@@ -17,15 +17,15 @@ class TimelineMinimapPostPainter extends CustomPainter {
     int maxLayer = 0;
     List<TimelineItem> clipped = [];
     for (final item in controller.items) {
-      if (item.layer > maxLayer) {
-        if (item.layer <= 10) {
-          maxLayer = item.layer;
+      if (item.rawLayer > maxLayer) {
+        if (item.rawLayer <= 10) {
+          maxLayer = item.rawLayer;
           continue;
         }
 
         if (controller.visibleEndTimestamp >= item.startTimestamp &&
             controller.visibleStartTimestamp <= item.endTimestamp) {
-          maxLayer = item.layer;
+          maxLayer = item.rawLayer;
           continue;
         }
         clipped.add(item);
@@ -50,7 +50,7 @@ class TimelineMinimapPostPainter extends CustomPainter {
     final totalDuration = (endTimestamp - startTimestamp).toDouble();
 
     for (final item in controller.items) {
-      if (item.layer > maxLayer) {
+      if (item.rawLayer > maxLayer) {
         continue;
       }
 
@@ -59,14 +59,14 @@ class TimelineMinimapPostPainter extends CustomPainter {
       final endX =
           ((item.endTimestamp - startTimestamp) / totalDuration) * size.width;
 
-      bool isHanging = item.layer > 0 && item.layer % 2 == 0;
+      bool isHanging = item.rawLayer > 0 && item.rawLayer % 2 == 0;
       int layerOnHalf;
-      if (item.layer == 0) {
+      if (item.rawLayer == 0) {
         layerOnHalf = 1;
-      } else if (item.layer % 2 == 0) {
-        layerOnHalf = item.layer ~/ 2;
+      } else if (item.rawLayer % 2 == 0) {
+        layerOnHalf = item.rawLayer ~/ 2;
       } else {
-        layerOnHalf = ((item.layer + 1) ~/ 2) + 1;
+        layerOnHalf = ((item.rawLayer + 1) ~/ 2) + 1;
       }
 
       double top;

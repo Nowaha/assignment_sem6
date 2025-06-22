@@ -1,3 +1,4 @@
+import 'package:assignment_sem6/util/time.dart';
 import 'package:assignment_sem6/util/timelineutil.dart';
 import 'package:assignment_sem6/widgets/view/timeline/timelineitem.dart';
 import 'package:flutter/foundation.dart';
@@ -100,7 +101,9 @@ class TimelineController extends ChangeNotifier {
 
   void updateItems(List<TimelineItem> newItems) {
     items = newItems;
-    items.sort((a, b) => b.layer.compareTo(a.layer));
+    items.sort(
+      (a, b) => b.effectiveLayer.abs().compareTo(a.effectiveLayer.abs()),
+    );
     notifyListeners();
   }
 
@@ -207,9 +210,93 @@ class TimelineController extends ChangeNotifier {
     notifyListeners();
   }
 
+  double _calculateLayerOffset(
+    double verticalOffset,
+    double itemHeight,
+    int divisor,
+  ) {
+    if (divisor == 1) {
+      return -(verticalOffset / itemHeight).roundToDouble();
+    }
+    return -((verticalOffset / itemHeight) * divisor).roundToDouble() / divisor;
+  }
+
   void adjustVerticalOffset(int by) {
-    _verticalOffset += by;
-    notifyListeners();
+    if (by == 0) return;
+    if (items.isEmpty) return;
+
+    final height = items[0].height;
+
+    final oldLayerOffset = _calculateLayerOffset(
+      _verticalOffset,
+      height,
+      2,
+    );
+
+    double verticalOffset = _verticalOffset + by;
+    double layerOffset = _calculateLayerOffset(
+      verticalOffset,
+      height,
+      2,
+    );
+    if (layerOffset == oldLayerOffset) {
+      _verticalOffset = verticalOffset;
+      notifyListeners();
+      return;
+    }
+
+    int maxLayer = 1;
+    int minLayer = -1;
+    for (final item in items) {
+      if (item.rawLayer > 0) {
+        if (item.rawLayer > maxLayer) {
+          maxLayer = item.rawLayer;
+        }
+      } else {
+        if (item.rawLayer < minLayer) {
+          minLayer = item.rawLayer;
+        }
+      }
+    }
+
+    _verticalOffset = clampDouble(verticalOffset, minLayer * height, maxLayer * height);
+
+    List<TimelineItem> newItems = [];
+    for (final item in items) {
+      double offset = layerOffset;
+      int direction = item.rawLayer < 0 ? 1 : -1;
+
+      bool isOnZero = item.rawLayer + layerOffset == 0;
+      if (isOnZero) {
+        offset += direction * 0.5;
+      }
+
+      bool normallyOnHalf =
+          (item.rawLayer + offset < 0 && item.rawLayer < 0) ||
+          (item.rawLayer + offset > 0 && item.rawLayer > 0);
+
+      if (!normallyOnHalf) {
+        if (isOnZero) {
+          offset += direction * 0.5;
+        } else {
+          offset += direction * 1.0;
+        }
+      }
+
+      if (!normallyOnHalf && (item.rawLayer + offset).abs() == 0.5) {
+        offset += direction * 1;
+      }
+
+      if (item.name == "Post 12" && item.rawLayer < 0) {
+        print(
+          "[${Time.nowAsTimestamp()} - ${item.name}] oldLayerOffset: $oldLayerOffset, layerOffset: $offset, newEffectiveLayer: $offset, normallyOnHalf: $normallyOnHalf",
+        );
+      }
+
+      newItems.add(item.copyWith(layerOffset: offset));
+    }
+
+    updateItems(newItems);
   }
 
   void reset() {
