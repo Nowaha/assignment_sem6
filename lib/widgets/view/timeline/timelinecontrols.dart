@@ -7,6 +7,8 @@ class TimelineControls extends StatelessWidget {
   final VoidCallback onResetZoom;
   final VoidCallback onScrollLeft;
   final VoidCallback onScrollRight;
+  final VoidCallback onScrollUp;
+  final VoidCallback onScrollDown;
   final VoidCallback onCenter;
 
   const TimelineControls({
@@ -16,6 +18,8 @@ class TimelineControls extends StatelessWidget {
     required this.onResetZoom,
     required this.onScrollLeft,
     required this.onScrollRight,
+    required this.onScrollUp,
+    required this.onScrollDown,
     required this.onCenter,
   });
 
@@ -65,6 +69,21 @@ class TimelineControls extends StatelessWidget {
                 tooltip: "Center",
                 onPressed: onCenter,
                 icon: const Icon(Icons.center_focus_strong),
+              ),
+            ],
+          ),
+          Row(
+            spacing: 8,
+            children: [
+              IconButton.filled(
+                tooltip: "Scroll up",
+                onPressed: onScrollUp,
+                icon: const Icon(Icons.arrow_upward),
+              ),
+              IconButton.filled(
+                tooltip: "Scroll down",
+                onPressed: onScrollDown,
+                icon: const Icon(Icons.arrow_downward),
               ),
             ],
           ),

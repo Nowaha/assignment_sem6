@@ -9,6 +9,7 @@ typedef OnDelegateRelease = void Function(ScaleEndDetails details);
 class TimelineZoom extends StatefulWidget {
   final Function(double) zoom;
   final Function(int) pan;
+  final Function(int) panUp;
   final double dragSensitivity;
   final Widget child;
   final bool invertGesturePan;
@@ -22,6 +23,7 @@ class TimelineZoom extends StatefulWidget {
     super.key,
     required this.zoom,
     required this.pan,
+    required this.panUp,
     required this.dragSensitivity,
     required this.child,
     this.invertGesturePan = false,
@@ -34,6 +36,7 @@ class TimelineZoom extends StatefulWidget {
     super.key,
     required this.zoom,
     required this.pan,
+    required this.panUp,
     required this.dragSensitivity,
     required this.child,
     required this.shouldDelegateScaleUpdate,
@@ -128,9 +131,14 @@ class _TimelineZoomState extends State<TimelineZoom>
 
             _pointerDown = true;
 
-            widget.pan(
-              (-details.focalPointDelta.dx * widget.dragSensitivity).toInt(),
-            );
+            int pan =
+                (-details.focalPointDelta.dx * widget.dragSensitivity).toInt();
+            widget.pan(pan);
+
+            if (details.focalPointDelta.dx < 2 &&
+                details.focalPointDelta.dx > -2) {
+              widget.panUp((details.focalPointDelta.dy).toInt());
+            }
           }
         },
         onScaleEnd: (details) {

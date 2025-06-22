@@ -15,6 +15,8 @@ class TimelineController extends ChangeNotifier {
 
   int _initialTimeScale;
 
+  double _verticalOffset = 0;
+
   TimelineController({
     required List<TimelineItem> items,
     required int startTimestamp,
@@ -23,6 +25,7 @@ class TimelineController extends ChangeNotifier {
     required int visibleEndTimestamp,
     required int initialTimeScale,
     int centerOffset = 0,
+    int verticalOffset = 0,
     double zoom = 1.0,
   }) : _items = items,
        _startTimestamp = startTimestamp,
@@ -57,6 +60,8 @@ class TimelineController extends ChangeNotifier {
   int get startTimestamp => _startTimestamp;
   int get endTimestamp => _endTimestamp;
   int get centerTimestamp => (_startTimestamp + _endTimestamp) ~/ 2;
+  int get initialTimeScale => _initialTimeScale;
+  double get verticalOffset => _verticalOffset;
   Range get range => (start: _startTimestamp, end: _endTimestamp);
 
   int get effectiveStartTimestamp => _startTimestamp - leeway;
@@ -199,6 +204,11 @@ class TimelineController extends ChangeNotifier {
     }
 
     _visibleEndTimestamp = newEnd;
+    notifyListeners();
+  }
+
+  void adjustVerticalOffset(int by) {
+    _verticalOffset += by;
     notifyListeners();
   }
 

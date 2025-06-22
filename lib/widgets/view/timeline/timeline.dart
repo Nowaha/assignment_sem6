@@ -81,6 +81,7 @@ class TimelineState extends State<Timeline> {
         elementWidth,
       ),
       center: _center,
+      verticalOffset: widget.controller.verticalOffset,
       layer: item.layer,
       width: elementWidth,
       height: elementHeight,
@@ -114,6 +115,7 @@ class TimelineState extends State<Timeline> {
                 widget.controller.visibleTimeScale.toDouble() / screenWidth,
             zoom: (zoom) => widget.controller.zoom(zoom),
             pan: (pan) => widget.controller.pan(pan),
+            panUp: (pan) => widget.controller.adjustVerticalOffset(pan),
             child: Stack(
               children: [
                 for (int i = 0; i < widget.controller.items.length; i++)
@@ -178,6 +180,9 @@ class TimelineState extends State<Timeline> {
                       () => widget.controller.pan(
                         widget.controller.visibleTimeScale ~/ 10,
                       ),
+                  onScrollUp: () => widget.controller.adjustVerticalOffset(-50),
+                  onScrollDown:
+                      () => widget.controller.adjustVerticalOffset(50),
                   onCenter: () => widget.controller.recenter(),
                 ),
             ],

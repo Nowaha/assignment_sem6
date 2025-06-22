@@ -166,6 +166,7 @@ class _TimelineMiniMapState extends State<TimelineMiniMap> {
       pan: (pan) {
         widget.controller.pan(-pan);
       },
+      panUp: (_) {},
       child: Container(
         height: widget.height,
         decoration: BoxDecoration(
