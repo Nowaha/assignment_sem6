@@ -9,8 +9,6 @@ class TimelineMinimapPostPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final int leeway = controller.leeway;
-
     if (controller.items.isEmpty) {
       return;
     }
@@ -20,22 +18,19 @@ class TimelineMinimapPostPainter extends CustomPainter {
       (max, item) => item.layer > max ? item.layer : max,
     );
 
-    final layerHeight = size.height / (maxLayer + 1);
-    final timelinePosition = maxLayer * layerHeight * (2 / 3);
+    final layerHeight = size.height / maxLayer;
+    final timelinePosition = maxLayer * layerHeight * (2 / 3) - (layerHeight / 2);
 
-    final totalDuration =
-        (controller.endTimestamp - controller.startTimestamp).toDouble();
-    final leewayFraction = leeway / totalDuration;
+    final startTimestamp = controller.effectiveStartTimestamp;
+    final endTimestamp = controller.effectiveEndTimestamp;
+
+    final totalDuration = (endTimestamp - startTimestamp).toDouble();
 
     for (final item in controller.items) {
       final startX =
-          ((item.startTimestamp - controller.startTimestamp) / totalDuration +
-              leewayFraction) *
-          (size.width / (1 + 2 * leewayFraction));
+          ((item.startTimestamp - startTimestamp) / totalDuration) * size.width;
       final endX =
-          ((item.endTimestamp - controller.startTimestamp) / totalDuration +
-              leewayFraction) *
-          (size.width / (1 + 2 * leewayFraction));
+          ((item.endTimestamp - startTimestamp) / totalDuration) * size.width;
 
       bool isHanging = item.layer > 0 && item.layer % 2 == 0;
       int layerOnHalf;

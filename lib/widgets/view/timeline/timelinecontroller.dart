@@ -163,6 +163,44 @@ class TimelineController extends ChangeNotifier {
     updateVisibleRange(newRange.start, newRange.end);
   }
 
+  void adjustVisibleStart(int by) {
+    final newStart = (_visibleStartTimestamp + by).toInt();
+
+    if (newStart < effectiveStartTimestamp) {
+      _visibleStartTimestamp = effectiveStartTimestamp;
+      notifyListeners();
+      return;
+    }
+
+    if (newStart > _visibleEndTimestamp - leeway) {
+      _visibleStartTimestamp = _visibleEndTimestamp - leeway;
+      notifyListeners();
+      return;
+    }
+
+    _visibleStartTimestamp = newStart;
+    notifyListeners();
+  }
+
+  void adjustVisibleEnd(int by) {
+    final newEnd = (_visibleEndTimestamp + by).toInt();
+
+    if (newEnd > effectiveEndTimestamp) {
+      _visibleEndTimestamp = effectiveStartTimestamp;
+      notifyListeners();
+      return;
+    }
+
+    if (newEnd < _visibleStartTimestamp + leeway) {
+      _visibleEndTimestamp = _visibleStartTimestamp + leeway;
+      notifyListeners();
+      return;
+    }
+
+    _visibleEndTimestamp = newEnd;
+    notifyListeners();
+  }
+
   void reset() {
     _visibleStartTimestamp = _startTimestamp;
     _visibleEndTimestamp = _endTimestamp;

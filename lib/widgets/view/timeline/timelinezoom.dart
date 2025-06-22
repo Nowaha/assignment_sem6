@@ -8,6 +8,12 @@ class TimelineZoom extends StatefulWidget {
   late final double dragSensitivity;
   final Widget child;
 
+  final double? minX;
+  final double? maxX;
+  final Function(ScaleUpdateDetails details, double dragSensitivity)?
+  onOutOfRangeClick;
+  final Function? onOutOfRangeRelease;
+
   // ignore: prefer_const_constructors_in_immutables
   TimelineZoom({
     super.key,
@@ -15,6 +21,10 @@ class TimelineZoom extends StatefulWidget {
     required this.pan,
     required this.dragSensitivity,
     required this.child,
+    this.minX,
+    this.maxX,
+    this.onOutOfRangeClick,
+    this.onOutOfRangeRelease,
   });
 
   TimelineZoom.calculatedSensitivity({
@@ -23,6 +33,10 @@ class TimelineZoom extends StatefulWidget {
     required this.pan,
     required double maxWidth,
     required this.child,
+    this.minX,
+    this.maxX,
+    this.onOutOfRangeClick,
+    this.onOutOfRangeRelease,
   }) {
     dragSensitivity = maxWidth;
   }
@@ -70,6 +84,9 @@ class _TimelineZoomState extends State<TimelineZoom>
     _animationController.animateWith(simulation);
   }
 
+  bool _blocked = false;
+  bool _pointerDown = false;
+
   @override
   Widget build(BuildContext context) {
     return Listener(
@@ -93,12 +110,36 @@ class _TimelineZoomState extends State<TimelineZoom>
             final zoomChange = 1 + scaleDelta * 0.2;
             widget.zoom(zoomChange);
           } else {
+            if (details.pointerCount == 1 && !_pointerDown) {
+              if (_blocked ||
+                  (widget.minX != null &&
+                      widget.maxX != null &&
+                      (details.localFocalPoint.dx < widget.minX! ||
+                          details.localFocalPoint.dx > widget.maxX!))) {
+                if (!_blocked) _blocked = true;
+                if (widget.onOutOfRangeClick != null) {
+                  widget.onOutOfRangeClick!(details, widget.dragSensitivity);
+                }
+                return;
+              }
+            }
+
+            _pointerDown = true;
+
             widget.pan(
               (-details.focalPointDelta.dx * widget.dragSensitivity).toInt(),
             );
           }
         },
         onScaleEnd: (details) {
+          if (_blocked) {
+            _blocked = false;
+            if (widget.onOutOfRangeRelease != null) {
+              widget.onOutOfRangeRelease!();
+            }
+            return;
+          }
+          _pointerDown = false;
           final velocity =
               details.velocity.pixelsPerSecond.dx * widget.dragSensitivity;
           _runFling(velocity);
