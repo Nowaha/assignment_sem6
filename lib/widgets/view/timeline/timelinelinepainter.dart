@@ -101,6 +101,8 @@ class TimelinePainter extends CustomPainter {
   bool shouldRepaint(covariant TimelinePainter oldDelegate) {
     return oldDelegate.centerTime != centerTime ||
         oldDelegate.timescale != timescale ||
-        oldDelegate.tickEvery != tickEvery;
+        oldDelegate.tickEvery != tickEvery ||
+        oldDelegate.surfaceColor != surfaceColor ||
+        oldDelegate.color != color;
   }
 }
