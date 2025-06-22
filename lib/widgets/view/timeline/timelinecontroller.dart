@@ -227,18 +227,10 @@ class TimelineController extends ChangeNotifier {
 
     final height = items[0].height;
 
-    final oldLayerOffset = _calculateLayerOffset(
-      _verticalOffset,
-      height,
-      2,
-    );
+    final oldLayerOffset = _calculateLayerOffset(_verticalOffset, height, 2);
 
     double verticalOffset = _verticalOffset + by;
-    double layerOffset = _calculateLayerOffset(
-      verticalOffset,
-      height,
-      2,
-    );
+    double layerOffset = _calculateLayerOffset(verticalOffset, height, 2);
     if (layerOffset == oldLayerOffset) {
       _verticalOffset = verticalOffset;
       notifyListeners();
@@ -259,7 +251,11 @@ class TimelineController extends ChangeNotifier {
       }
     }
 
-    _verticalOffset = clampDouble(verticalOffset, minLayer * height, maxLayer * height);
+    _verticalOffset = clampDouble(
+      verticalOffset,
+      minLayer * height,
+      maxLayer * height,
+    );
 
     List<TimelineItem> newItems = [];
     for (final item in items) {

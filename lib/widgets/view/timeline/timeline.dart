@@ -104,8 +104,6 @@ class TimelineState extends State<Timeline> {
     final screenWidth = screenUtil.width;
     final tickEvery = widget.controller.getTickEvery(screenWidth.toInt());
 
-    bool isCenteredVertically = widget.controller.items[0].layerOffset == 0;
-
     return Stack(
       key: _stackKey,
       children: [
@@ -143,16 +141,16 @@ class TimelineState extends State<Timeline> {
           ),
         ),
         Positioned.fill(
-          child: Center(
-            child: TimelineLine(
-              startTimestamp: widget.controller.visibleStartTimestamp,
-              endTimestamp: widget.controller.visibleEndTimestamp,
-              timescale: widget.controller.visibleTimeScale,
-              centerTime: widget.controller.visibleCenterTimestamp,
-              tickEvery: tickEvery,
-              floating: !isCenteredVertically,
-              color: Theme.of(context).colorScheme.onSurface,
-            ),
+          child: TimelineLine(
+            startTimestamp: widget.controller.visibleStartTimestamp,
+            endTimestamp: widget.controller.visibleEndTimestamp,
+            timescale: widget.controller.visibleTimeScale,
+            centerTime: widget.controller.visibleCenterTimestamp,
+            tickEvery: tickEvery,
+            color: Theme.of(context).colorScheme.onSurface,
+            offset:
+                widget.controller.items[0].layerOffset *
+                widget.controller.items[0].height,
           ),
         ),
         Positioned(

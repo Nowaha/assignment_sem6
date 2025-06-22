@@ -49,59 +49,6 @@ class TimelineElement extends StatefulWidget {
       _top = center;
     }
 
-    // if (name == "Post 8") {
-    //   print(
-    //     "verticalOffset: $verticalOffset, effectiveVerticalOffset: $effectiveVerticalOffset, % snap ${verticalOffset % snap}",
-    //   );
-    // }
-
-    // double theoreticalHeight;
-
-    // int layerOnHalf;
-    // if (layer == 0) {
-    //   layerOnHalf = 1;
-    //   theoreticalHeight = height;
-    // } else if (layer % 2 == 0) {
-    //   layerOnHalf = layer ~/ 2;
-
-    //   if (layer == 1) {
-    //     theoreticalHeight = height;
-    //   } else {
-    //     theoreticalHeight = height + ((layerOnHalf - 1) * height * 0.75);
-    //   }
-    // } else {
-    //   layerOnHalf = ((layer + 1) ~/ 2) + 1;
-    //   theoreticalHeight = height + ((layerOnHalf - 1) * height * 0.75);
-    // }
-
-    // if (layer > 0 && layer % 2 == 0) {
-    //   double bottom = center + effectiveVerticalOffset + theoreticalHeight;
-    //   if (bottom >= center && bottom - headerHeight >= center) {
-    //     _isHanging = true;
-    //     _top = center;
-
-    //     theoreticalHeight = bottom - center;
-    //   } else {
-    //     _isHanging = false;
-
-    //     final theoreticalTop =
-    //         (center - theoreticalHeight) + effectiveVerticalOffset;
-    //     _top = theoreticalTop;
-    //   }
-    // } else {
-    //   final theoreticalTop =
-    //       (center - theoreticalHeight) + effectiveVerticalOffset;
-
-    //   if (theoreticalTop > center || theoreticalTop + headerHeight > center) {
-    //     _top = center;
-    //     _isHanging = true;
-    //   } else {
-    //     _top = theoreticalTop;
-    //     theoreticalHeight = center - theoreticalTop;
-    //     _isHanging = false;
-    //   }
-    // }
-
     _textColor =
         item.color.computeLuminance() > 0.5 ? Colors.black : Colors.white;
   }
@@ -146,9 +93,9 @@ class _TimelineElementState extends State<TimelineElement> {
           child: Container(
             decoration: BoxDecoration(
               color:
-                  !_isHovered
-                      ? widget.item.color.withAlpha(126)
-                      : widget.item.color,
+                  _isHovered
+                      ? widget.item.color.withAlpha(175)
+                      : widget.item.color.withAlpha(150),
               border: Border(
                 left: BorderSide(color: widget.item.color, width: 4),
                 right: BorderSide(color: widget.item.color, width: 4),

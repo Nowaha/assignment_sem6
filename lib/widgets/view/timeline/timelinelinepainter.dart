@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:assignment_sem6/extension/color.dart';
 
 class TimelinePainter extends CustomPainter {
-  static const timelineThickness = 6.0;
+  static const timelineThickness = 4.0;
   static const tickHeight = 24.0;
-  static const tickWidth = 5.0;
+  static const tickWidth = 4.0;
   static const tickLabelFontSize = 14.0;
 
   final int centerTime;
@@ -11,11 +12,13 @@ class TimelinePainter extends CustomPainter {
   final int tickEvery;
   final int totalTicks;
   final int firstTickTime;
+  final double offset;
   final Color color;
+  final Color floatingColor;
   final Color onSurfaceColor;
   final Color surfaceColor;
   final double screenWidth;
-  final bool floating;
+  final bool isDarkMode;
 
   TimelinePainter({
     required this.centerTime,
@@ -24,10 +27,12 @@ class TimelinePainter extends CustomPainter {
     required this.totalTicks,
     required this.firstTickTime,
     required this.color,
+    required this.floatingColor,
     required this.onSurfaceColor,
     required this.surfaceColor,
     required this.screenWidth,
-    required this.floating,
+    required this.isDarkMode,
+    this.offset = 0.0,
   });
 
   String formatTimestamp(int timestamp) {
@@ -45,19 +50,41 @@ class TimelinePainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
+    bool floating = offset != 0;
+
     final centerY = size.height / 2;
-    final timelineColor = !floating ? color : color.withAlpha(180);
+    final timelineColor = floating ? floatingColor : color;
+    final shadowColor = timelineColor.darken(isDarkMode ? 0.7 : 0.5);
+    final ghostColor =
+        isDarkMode
+            ? onSurfaceColor.withAlpha(25)
+            : onSurfaceColor.withAlpha(50);
+
+    if (floating) {
+      canvas.drawLine(
+        Offset(0, centerY - offset),
+        Offset(size.width, centerY - offset),
+        Paint()
+          ..color = ghostColor
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = timelineThickness,
+      );
+    }
 
     final paint =
         Paint()
           ..color = timelineColor
           ..strokeWidth = timelineThickness;
-    canvas.drawLine(Offset(0, centerY), Offset(size.width, centerY), paint);
 
-    final tickPaint =
+    if (floating) {
+      canvas.drawLine(
+        Offset(0, centerY + 4),
+        Offset(size.width, centerY + 4),
         Paint()
-          ..color = timelineColor
-          ..strokeWidth = tickWidth;
+          ..color = shadowColor
+          ..strokeWidth = timelineThickness,
+      );
+    }
 
     for (int i = 0; i <= totalTicks; i++) {
       final tickTime = firstTickTime + i * tickEvery;
@@ -66,43 +93,112 @@ class TimelinePainter extends CustomPainter {
 
       if (positionX < 0 || positionX > size.width) continue;
 
+      bool isSignificantTick = tickTime % (tickEvery * 5) == 0;
+      double appliedTickHeight =
+          isSignificantTick ? tickHeight : tickHeight * 0.75;
+      double appliedTickWidth = isSignificantTick ? tickWidth : tickWidth * 0.8;
+
+      final tickPaint =
+          Paint()
+            ..color =
+                isSignificantTick ? timelineColor : timelineColor.darken(0.4)
+            ..strokeWidth = appliedTickWidth
+            ..style = PaintingStyle.stroke;
+
+      double tallLineStrokeWidth =
+          isSignificantTick ? appliedTickWidth * .9 : appliedTickWidth * .5;
+      canvas.drawLine(
+        Offset(positionX + appliedTickWidth / 2 - tallLineStrokeWidth * 0.5, 0),
+        Offset(
+          positionX + appliedTickWidth / 2 - tallLineStrokeWidth,
+          size.height,
+        ),
+        Paint()
+          ..color = onSurfaceColor.withAlpha(isSignificantTick ? 40 : 20)
+          ..strokeWidth = tallLineStrokeWidth,
+      );
+
+      if (floating) {
+        canvas.drawLine(
+          Offset(
+            positionX + appliedTickWidth / 2,
+            centerY - appliedTickHeight / 2 + 2,
+          ),
+          Offset(
+            positionX + appliedTickWidth / 2,
+            centerY + appliedTickHeight / 2 + 2,
+          ),
+          Paint()
+            ..color = shadowColor
+            ..strokeWidth = tickPaint.strokeWidth * 1.25,
+        );
+      }
+
+      canvas.drawLine(
+        Offset(positionX, centerY - appliedTickHeight / 2),
+        Offset(positionX, centerY + appliedTickHeight / 2),
+        tickPaint,
+      );
+
+      if (floating) {
+        canvas.drawLine(
+          Offset(positionX, centerY - offset - appliedTickHeight / 2),
+          Offset(positionX, centerY - offset + appliedTickHeight / 2),
+          Paint()
+            ..color = ghostColor
+            ..style = PaintingStyle.stroke
+            ..strokeWidth = tickPaint.strokeWidth,
+        );
+      }
+
       final textPainter = TextPainter(
         text: TextSpan(
           text: formatTimestamp(tickTime),
-          style: TextStyle(color: onSurfaceColor, fontSize: tickLabelFontSize),
+          style: TextStyle(
+            color: onSurfaceColor,
+            fontSize:
+                isSignificantTick ? tickLabelFontSize : tickLabelFontSize * 0.9,
+            fontWeight: FontWeight.w500,
+          ),
         ),
         textAlign: TextAlign.center,
         textDirection: TextDirection.ltr,
       );
       textPainter.layout();
 
-      final backgroundRect = RRect.fromRectAndRadius(
-        Rect.fromLTWH(
-          positionX - textPainter.width / 2 - 6,
-          centerY + tickHeight - textPainter.height / 2 - 4,
-          textPainter.width + 12,
-          textPainter.height + 8,
-        ),
-        Radius.circular(8),
+      final backgroundRect = Rect.fromLTWH(
+        positionX - textPainter.width / 2 - 6,
+        centerY + tickHeight - textPainter.height / 2 - 4,
+        textPainter.width + 12,
+        textPainter.height + 8,
       );
 
       if (floating) {
-        final shadowPath = Path()..addRRect(backgroundRect);
-        canvas.drawShadow(shadowPath, Colors.black, 4.0, false);
+        canvas.drawRRect(
+          RRect.fromRectAndRadius(
+            Rect.fromLTWH(
+              backgroundRect.left + 1,
+              backgroundRect.top + 1,
+              backgroundRect.width + 1,
+              backgroundRect.height + 1,
+            ),
+            Radius.circular(8),
+          ),
+          Paint()..color = shadowColor,
+        );
       }
-      canvas.drawRRect(backgroundRect, Paint()..color = surfaceColor);
+      canvas.drawRRect(
+        RRect.fromRectAndRadius(backgroundRect, Radius.circular(8)),
+        Paint()..color = surfaceColor,
+      );
 
       final labelX = positionX - textPainter.width / 2;
-      final labelY = centerY + tickHeight / 2 + 3;
+      final labelY = centerY + tickHeight / 2 + 2;
 
       textPainter.paint(canvas, Offset(labelX, labelY));
-
-      canvas.drawLine(
-        Offset(positionX, centerY - tickHeight / 2),
-        Offset(positionX, centerY + tickHeight / 2),
-        tickPaint,
-      );
     }
+
+    canvas.drawLine(Offset(0, centerY), Offset(size.width, centerY), paint);
   }
 
   @override
@@ -112,6 +208,6 @@ class TimelinePainter extends CustomPainter {
         oldDelegate.tickEvery != tickEvery ||
         oldDelegate.surfaceColor != surfaceColor ||
         oldDelegate.color != color ||
-        oldDelegate.floating != floating;
+        oldDelegate.offset != offset;
   }
 }

@@ -8,7 +8,7 @@ class TimelineLine extends StatelessWidget {
   final int timescale;
   final int centerTime;
   final Color color;
-  final bool floating;
+  final double offset;
 
   const TimelineLine({
     super.key,
@@ -17,8 +17,8 @@ class TimelineLine extends StatelessWidget {
     required this.tickEvery,
     required this.timescale,
     required this.centerTime,
-    this.floating = false,
     this.color = Colors.white,
+    this.offset = 0.0,
   });
 
   @override
@@ -30,25 +30,32 @@ class TimelineLine extends StatelessWidget {
 
     firstTickTime = (firstTickTime ~/ tickEvery) * tickEvery;
 
+    bool isDarkMode = theme.brightness == Brightness.dark;
+
+    Color floatingColor;
+    if (isDarkMode) {
+      floatingColor = theme.colorScheme.primary;
+    } else {
+      floatingColor = Colors.white;
+    }
+
     return RepaintBoundary(
       child: IgnorePointer(
-        child: SizedBox(
-          height: 80,
-          width: double.infinity,
-          child: CustomPaint(
-            painter: TimelinePainter(
-              centerTime: centerTime,
-              timescale: timescale,
-              tickEvery: tickEvery,
-              totalTicks: (timescale / tickEvery).ceil(),
-              firstTickTime:
-                  (centerTime - timescale / 2).toInt() ~/ tickEvery * tickEvery,
-              color: color,
-              surfaceColor: theme.colorScheme.surface,
-              onSurfaceColor: theme.colorScheme.onSurface,
-              screenWidth: MediaQuery.of(context).size.width,
-              floating: floating,
-            ),
+        child: CustomPaint(
+          painter: TimelinePainter(
+            centerTime: centerTime,
+            timescale: timescale,
+            tickEvery: tickEvery,
+            totalTicks: (timescale / tickEvery).ceil(),
+            firstTickTime:
+                (centerTime - timescale / 2).toInt() ~/ tickEvery * tickEvery,
+            color: color,
+            floatingColor: floatingColor,
+            surfaceColor: theme.colorScheme.surface,
+            onSurfaceColor: theme.colorScheme.onSurface,
+            screenWidth: MediaQuery.of(context).size.width,
+            isDarkMode: isDarkMode,
+            offset: offset,
           ),
         ),
       ),
