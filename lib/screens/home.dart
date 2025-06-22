@@ -81,15 +81,15 @@ class _HomePageState extends State<HomePage> with ToastMixin {
       ),
       for (int i = 7; i < 20; i++)
         TempPost(
-          startTimestamp: startTimestamp + (1000 * 30 * (i - 1)),
-          endTimestamp: startTimestamp + (1000 * 30 * (i + 3)),
+          startTimestamp: startTimestamp + (1000 * 30 * (i * 1.5).toInt()),
+          endTimestamp: startTimestamp + (1000 * 30 * (i + 20)),
           name: "Post $i",
           color: Colors.primaries[i % Colors.primaries.length],
         ),
       for (int i = 7; i < 20; i++)
         TempPost(
           startTimestamp: startTimestamp + (1000 * 30 * (i - 1)),
-          endTimestamp: startTimestamp + (1000 * 30 * (i + 3)),
+          endTimestamp: startTimestamp + (1000 * 30 * (i + 20)),
           name: "Post $i",
           color: Colors.primaries[i % Colors.primaries.length],
         ),
@@ -185,18 +185,22 @@ class _HomePageState extends State<HomePage> with ToastMixin {
               ],
         ),
       ],
-      floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.add),
-        onPressed: () {
-          if (user == null) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text("You must be logged in to post.")),
-            );
-            return;
-          }
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.only(bottom: 95),
+        child: FloatingActionButton(
+          tooltip: "Create Post",
+          onPressed: () {
+            if (user == null) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text("You must be logged in to post.")),
+              );
+              return;
+            }
 
-          context.goNamed("createPost");
-        },
+            context.goNamed("createPost");
+          },
+          child: Icon(Icons.add),
+        ),
       ),
       child: Stack(
         children: [
