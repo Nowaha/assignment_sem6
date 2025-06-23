@@ -1,3 +1,4 @@
+import 'package:assignment_sem6/widgets/view/timeline/painter/datespainter.dart';
 import 'package:flutter/material.dart';
 import 'package:assignment_sem6/extension/color.dart';
 
@@ -7,6 +8,10 @@ class TimelinePainter extends CustomPainter {
   static const tickWidth = 4.0;
   static const tickLabelFontSize = 14.0;
 
+  final int startTimestamp;
+  final int endTimestamp;
+  final int visibleStartTimestamp;
+  final int visibleEndTimestamp;
   final int centerTime;
   final int timescale;
   final int tickEvery;
@@ -21,6 +26,10 @@ class TimelinePainter extends CustomPainter {
   final bool isDarkMode;
 
   TimelinePainter({
+    required this.startTimestamp,
+    required this.endTimestamp,
+    required this.visibleStartTimestamp,
+    required this.visibleEndTimestamp,
     required this.centerTime,
     required this.timescale,
     required this.tickEvery,
@@ -199,6 +208,17 @@ class TimelinePainter extends CustomPainter {
     }
 
     canvas.drawLine(Offset(0, centerY), Offset(size.width, centerY), paint);
+
+    DatesPainter(
+      startTimestamp: visibleStartTimestamp,
+      endTimestamp: visibleEndTimestamp,
+      visibleStartTimestamp: visibleStartTimestamp,
+      visibleEndTimestamp: visibleEndTimestamp,
+      centerTime: centerTime,
+      timescale: timescale,
+      surfaceColor: surfaceColor,
+      onSurfaceColor: onSurfaceColor,
+    ).paint(canvas, size);
   }
 
   @override

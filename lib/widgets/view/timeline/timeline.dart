@@ -142,8 +142,10 @@ class TimelineState extends State<Timeline> {
         ),
         Positioned.fill(
           child: TimelineLine(
-            startTimestamp: widget.controller.visibleStartTimestamp,
-            endTimestamp: widget.controller.visibleEndTimestamp,
+            startTimestamp: widget.controller.startTimestamp,
+            endTimestamp: widget.controller.endTimestamp,
+            visibleStartTimestamp: widget.controller.visibleStartTimestamp,
+            visibleEndTimestamp: widget.controller.visibleEndTimestamp,
             timescale: widget.controller.visibleTimeScale,
             centerTime: widget.controller.visibleCenterTimestamp,
             tickEvery: tickEvery,

@@ -27,57 +27,59 @@ class _HomePageState extends State<HomePage> with ToastMixin {
 
   @override
   void initState() {
-    final startTimestamp = Time.nowAsTimestamp() ~/ 1000 * 1000;
-    final secondHour = startTimestamp + (1000 * 60 * 30);
+    final startTimestamp =
+        (Time.nowAsTimestamp() ~/ 1000 * 1000) -
+        (1000 * 60 * 60 * 24 * 2); // 2 days ago
+    final secondDay = startTimestamp + (1000 * 60 * 60 * 24); // 24 hours later
 
     _timelineController = TimelineController.withTimeScale(
       items: [],
       startTimestamp: startTimestamp,
       endTimestamp:
-          startTimestamp + (1000 * 60 * 60 * 1.5).toInt(), // 1.5 hours
+          startTimestamp + (1000 * 60 * 60 * 24 * 2).toInt(), // 2 days later
       timeScale: 1000 * 60 * 30, // half an hour
     );
 
     arrangeElements([
       TempPost(
-        startTimestamp: secondHour,
-        endTimestamp: secondHour + (1000 * 60 * 10),
+        startTimestamp: secondDay,
+        endTimestamp: secondDay + (1000 * 60 * 10),
         name: "Post 1",
         color: Colors.red,
       ),
       TempPost(
-        startTimestamp: secondHour + (1000 * 60 * 10),
-        endTimestamp: secondHour + (1000 * 60 * 15),
+        startTimestamp: secondDay + (1000 * 60 * 10),
+        endTimestamp: secondDay + (1000 * 60 * 15),
         name: "Post 2",
         color: Colors.blue,
       ),
       TempPost(
-        startTimestamp: secondHour + (1000 * 60 * 10),
-        endTimestamp: secondHour + (1000 * 60 * 20),
+        startTimestamp: secondDay + (1000 * 60 * 10),
+        endTimestamp: secondDay + (1000 * 60 * 20),
         name: "Post 3",
         color: Colors.green,
       ),
       TempPost(
-        startTimestamp: secondHour + (1000 * 60 * 23),
-        endTimestamp: secondHour + (1000 * 60 * 50),
+        startTimestamp: secondDay + (1000 * 60 * 23),
+        endTimestamp: secondDay + (1000 * 60 * 50),
         name: "Post 4",
         color: Colors.orange,
       ),
       TempPost(
-        startTimestamp: secondHour + (1000 * 60 * 25),
-        endTimestamp: secondHour + (1000 * 60 * 40),
+        startTimestamp: secondDay + (1000 * 60 * 25),
+        endTimestamp: secondDay + (1000 * 60 * 40),
         name: "Post 5",
         color: Colors.purple,
       ),
       TempPost(
-        startTimestamp: secondHour + (1000 * 60 * 27),
-        endTimestamp: secondHour + (1000 * 60 * 43),
+        startTimestamp: secondDay + (1000 * 60 * 27),
+        endTimestamp: secondDay + (1000 * 60 * 43),
         name: "Post 7",
         color: Colors.deepOrange,
       ),
       TempPost(
-        startTimestamp: secondHour + (1000 * 60 * 50),
-        endTimestamp: secondHour + (1000 * 60 * 60),
+        startTimestamp: secondDay + (1000 * 60 * 50),
+        endTimestamp: secondDay + (1000 * 60 * 60),
         name: "Post 6",
         color: Colors.yellow,
       ),

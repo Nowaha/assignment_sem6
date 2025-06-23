@@ -1,9 +1,11 @@
-import 'package:assignment_sem6/widgets/view/timeline/timelinelinepainter.dart';
+import 'package:assignment_sem6/widgets/view/timeline/painter/timelinelinepainter.dart';
 import 'package:flutter/material.dart';
 
 class TimelineLine extends StatelessWidget {
   final int startTimestamp;
   final int endTimestamp;
+  final int visibleStartTimestamp;
+  final int visibleEndTimestamp;
   final int tickEvery;
   final int timescale;
   final int centerTime;
@@ -14,6 +16,8 @@ class TimelineLine extends StatelessWidget {
     super.key,
     required this.startTimestamp,
     required this.endTimestamp,
+    required this.visibleStartTimestamp,
+    required this.visibleEndTimestamp,
     required this.tickEvery,
     required this.timescale,
     required this.centerTime,
@@ -43,6 +47,10 @@ class TimelineLine extends StatelessWidget {
       child: IgnorePointer(
         child: CustomPaint(
           painter: TimelinePainter(
+            startTimestamp: startTimestamp,
+            endTimestamp: endTimestamp,
+            visibleStartTimestamp: visibleStartTimestamp,
+            visibleEndTimestamp: visibleEndTimestamp,
             centerTime: centerTime,
             timescale: timescale,
             tickEvery: tickEvery,
