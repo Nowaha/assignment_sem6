@@ -24,10 +24,6 @@ class Timeline extends StatefulWidget {
 }
 
 class TimelineState extends State<Timeline> {
-  final GlobalKey _stackKey = GlobalKey();
-
-  double _width = -1;
-  double _height = -1;
   final ValueNotifier<int?> _hoveredIndex = ValueNotifier(null);
 
   void _setPutToFront(int index) {
@@ -38,7 +34,13 @@ class TimelineState extends State<Timeline> {
     _hoveredIndex.value = null;
   }
 
-  Widget _buildChild(TimelineItem item, int index, int tickEvery) {
+  Widget _buildChild(
+    TimelineItem item,
+    double screenWidth,
+    double screenHeight,
+    int index,
+    int tickEvery,
+  ) {
     final startTime = DateTime.fromMillisecondsSinceEpoch(item.startTimestamp);
     final endTime = DateTime.fromMillisecondsSinceEpoch(item.endTimestamp);
     String startTimeString =
@@ -52,7 +54,7 @@ class TimelineState extends State<Timeline> {
     }
 
     final elementWidth = TimelineUtil.getElementWidth(
-      _width,
+      screenWidth,
       widget.controller.visibleTimeScale,
       item.startTimestamp,
       item.endTimestamp,
@@ -65,13 +67,13 @@ class TimelineState extends State<Timeline> {
       onHover: () => _setPutToFront(index),
       onLeave: _clearPutToFront,
       left: TimelineUtil.getElementLeftPosition(
-        _width,
+        screenWidth,
         widget.controller.visibleTimeScale,
         widget.controller.visibleCenterTimestamp,
         item,
         elementWidth,
       ),
-      center: _height / 2,
+      center: screenHeight / 2,
       verticalOffset: widget.controller.verticalOffset,
       width: elementWidth,
       height: elementHeight,
@@ -83,125 +85,122 @@ class TimelineState extends State<Timeline> {
 
   @override
   Widget build(BuildContext context) {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final stackSize = _stackKey.currentContext?.size;
-      if (stackSize == null) return;
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final size = Size(constraints.maxWidth, constraints.maxHeight);
+        return ListenableBuilder(
+          listenable: widget.controller,
+          builder: (context, _) {
+            final screenUtil = ScreenUtil(context);
 
-      bool anyChanges = false;
-      if (_width != stackSize.width) {
-        final diff = stackSize.width - _width;
+            final tickEvery = widget.controller.getTickEvery(
+              size.width.toInt(),
+            );
 
-        _width = stackSize.width;
-        anyChanges = true;
-
-        final timeScale = widget.controller.visibleTimeScale;
-        final change = ((diff / _width) * timeScale).toInt();
-        widget.controller.adjustVisibleStart(-(change ~/ 2));
-        widget.controller.adjustVisibleEnd(change ~/ 2);
-      }
-
-      if (_height != stackSize.height) {
-        _height = stackSize.height;
-        anyChanges = true;
-      }
-
-      if (anyChanges) setState(() {});
-    });
-
-    final screenUtil = ScreenUtil(context);
-    if (_width <= 0) {
-      _width = screenUtil.width;
-    }
-
-    final tickEvery = widget.controller.getTickEvery(_width.toInt());
-
-    return Stack(
-      key: _stackKey,
-      children: [
-        Positioned.fill(
-          child: TimelineZoom(
-            dragSensitivity:
-                widget.controller.visibleTimeScale.toDouble() / _width,
-            zoom: (zoom) => widget.controller.zoom(zoom),
-            pan: (pan) => widget.controller.pan(pan),
-            panUp: (pan) => widget.controller.adjustVerticalOffset(pan),
-            child: Stack(
+            return Stack(
               children: [
-                for (int i = 0; i < widget.controller.items.length; i++)
-                  _buildChild(widget.controller.items[i], i, tickEvery),
+                Positioned.fill(
+                  child: TimelineZoom(
+                    dragSensitivity:
+                        widget.controller.visibleTimeScale.toDouble() /
+                        size.width,
+                    zoom: (zoom) => widget.controller.zoom(zoom),
+                    pan: (pan) => widget.controller.pan(pan),
+                    panUp: (pan) => widget.controller.adjustVerticalOffset(pan),
+                    child: Stack(
+                      children: [
+                        for (int i = 0; i < widget.controller.items.length; i++)
+                          _buildChild(
+                            widget.controller.items[i],
+                            size.width,
+                            size.height,
+                            i,
+                            tickEvery,
+                          ),
 
-                ValueListenableBuilder<int?>(
-                  valueListenable: _hoveredIndex,
-                  builder: (_, hoveredIndex, __) {
-                    if (hoveredIndex == null) return const SizedBox.shrink();
-                    return _buildChild(
-                      widget.controller.items[hoveredIndex],
-                      hoveredIndex,
-                      tickEvery,
-                    );
-                  },
+                        ValueListenableBuilder<int?>(
+                          valueListenable: _hoveredIndex,
+                          builder: (_, hoveredIndex, __) {
+                            if (hoveredIndex == null) {
+                              return const SizedBox.shrink();
+                            }
+
+                            return _buildChild(
+                              widget.controller.items[hoveredIndex],
+                              size.width,
+                              size.height,
+                              hoveredIndex,
+                              tickEvery,
+                            );
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                Positioned.fill(
+                  child: TimelineLine(
+                    startTimestamp: widget.controller.startTimestamp,
+                    endTimestamp: widget.controller.endTimestamp,
+                    visibleStartTimestamp:
+                        widget.controller.visibleStartTimestamp,
+                    visibleEndTimestamp: widget.controller.visibleEndTimestamp,
+                    timescale: widget.controller.visibleTimeScale,
+                    centerTime: widget.controller.visibleCenterTimestamp,
+                    tickEvery: tickEvery,
+                    color: Theme.of(context).colorScheme.onSurface,
+                    offset: widget.controller.verticalOffset,
+                    offsetRounded:
+                        -widget.controller.items[0].layerOffset *
+                        widget.controller.items[0].height,
+                  ),
+                ),
+                Positioned(
+                  right: 16,
+                  top: 16,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    spacing: 16,
+                    children: [
+                      if (widget.onMapButtonPressed != null)
+                        IconButton.filled(
+                          onPressed: widget.onMapButtonPressed,
+                          icon: const Icon(Icons.map),
+                          iconSize: 32,
+                          padding: EdgeInsets.all(16),
+                        ),
+                      if (screenUtil.isBigScreen)
+                        TimelineControls(
+                          onZoomIn: () => widget.controller.zoom(1.2),
+                          onZoomOut: () => widget.controller.zoom(0.8),
+                          onResetZoom: () => widget.controller.resetZoom(),
+                          onScrollLeft:
+                              () => widget.controller.pan(
+                                -widget.controller.visibleTimeScale ~/ 10,
+                              ),
+                          onScrollRight:
+                              () => widget.controller.pan(
+                                widget.controller.visibleTimeScale ~/ 10,
+                              ),
+                          onScrollUp:
+                              () => widget.controller.adjustVerticalOffset(-50),
+                          onScrollDown:
+                              () => widget.controller.adjustVerticalOffset(50),
+                          onCenter: () => widget.controller.recenter(),
+                        ),
+                    ],
+                  ),
+                ),
+                Positioned(
+                  left: 16,
+                  top: 16,
+                  child: RepaintBoundary(child: FilterContainer()),
                 ),
               ],
-            ),
-          ),
-        ),
-        Positioned.fill(
-          child: TimelineLine(
-            startTimestamp: widget.controller.startTimestamp,
-            endTimestamp: widget.controller.endTimestamp,
-            visibleStartTimestamp: widget.controller.visibleStartTimestamp,
-            visibleEndTimestamp: widget.controller.visibleEndTimestamp,
-            timescale: widget.controller.visibleTimeScale,
-            centerTime: widget.controller.visibleCenterTimestamp,
-            tickEvery: tickEvery,
-            color: Theme.of(context).colorScheme.onSurface,
-            offset: widget.controller.verticalOffset,
-            offsetRounded:
-                -widget.controller.items[0].layerOffset *
-                widget.controller.items[0].height,
-          ),
-        ),
-        Positioned(
-          right: 16,
-          top: 16,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            spacing: 16,
-            children: [
-              if (widget.onMapButtonPressed != null)
-                IconButton.filled(
-                  onPressed: widget.onMapButtonPressed,
-                  icon: const Icon(Icons.map),
-                  iconSize: 32,
-                  padding: EdgeInsets.all(16),
-                ),
-              if (screenUtil.isBigScreen)
-                TimelineControls(
-                  onZoomIn: () => widget.controller.zoom(1.2),
-                  onZoomOut: () => widget.controller.zoom(0.8),
-                  onResetZoom: () => widget.controller.resetZoom(),
-                  onScrollLeft:
-                      () => widget.controller.pan(
-                        -widget.controller.visibleTimeScale ~/ 10,
-                      ),
-                  onScrollRight:
-                      () => widget.controller.pan(
-                        widget.controller.visibleTimeScale ~/ 10,
-                      ),
-                  onScrollUp: () => widget.controller.adjustVerticalOffset(-50),
-                  onScrollDown:
-                      () => widget.controller.adjustVerticalOffset(50),
-                  onCenter: () => widget.controller.recenter(),
-                ),
-            ],
-          ),
-        ),
-        Positioned(
-          left: 16,
-          top: 16,
-          child: RepaintBoundary(child: FilterContainer()),
-        ),
-      ],
+            );
+          },
+        );
+      },
     );
   }
 }
