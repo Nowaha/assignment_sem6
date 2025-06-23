@@ -78,26 +78,49 @@ class TimelineUtil {
     return _roundToNiceInterval(timescale ~/ targetTicks);
   }
 
-  static int _roundToNiceInterval(int intervalMs) {
-    const niceValues = [
-      1000,
-      2000,
-      5000,
-      10000,
-      15000,
-      30000,
-      60000,
-      120000,
-      300000,
-      600000,
-      1800000,
-      3600000,
-    ];
+  static const niceValues = [
+    1000,
+    2000,
+    5000,
+    10000,
+    15000,
+    30000,
+    60000,
+    120000,
+    300000,
+    600000,
+    1800000,
+    3600000,
+    7200000,
+    14400000,
+  ];
 
+  static int _roundToNiceInterval(int intervalMs) {
     for (final value in niceValues) {
       if (intervalMs <= value) return value;
     }
 
     return intervalMs; // fallback
+  }
+
+  static String formatInterval(int intervalMs) {
+    final seconds = (intervalMs / 1000).floor();
+    final minutes = (seconds / 60).floor();
+    final hours = (minutes / 60).floor();
+
+    String result = "";
+    if (hours > 0) {
+      result += '${hours}h ';
+    }
+    if (minutes % 60 > 0) {
+      result += '${minutes % 60}m ';
+    }
+    if (seconds % 60 > 0) {
+      result += '${seconds % 60}s';
+    }
+    if (result.isEmpty) {
+      result = '0s';
+    }
+    return result.trim();
   }
 }

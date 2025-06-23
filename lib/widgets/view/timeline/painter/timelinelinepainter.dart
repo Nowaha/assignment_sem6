@@ -1,6 +1,7 @@
 import 'package:assignment_sem6/widgets/view/timeline/painter/dashedlinepainter.dart';
 import 'package:assignment_sem6/widgets/view/timeline/painter/datespainter.dart';
-import 'package:flutter/material.dart';
+import 'package:assignment_sem6/widgets/view/timeline/painter/scalepainter.dart';
+import 'package:flutter/material.dart' hide Align;
 import 'package:assignment_sem6/extension/color.dart';
 
 class TimelinePainter extends CustomPainter {
@@ -14,7 +15,7 @@ class TimelinePainter extends CustomPainter {
   final int visibleStartTimestamp;
   final int visibleEndTimestamp;
   final int centerTime;
-  final int timescale;
+  final int timeScale;
   final int tickEvery;
   final int totalTicks;
   final int firstTickTime;
@@ -33,7 +34,7 @@ class TimelinePainter extends CustomPainter {
     required this.visibleStartTimestamp,
     required this.visibleEndTimestamp,
     required this.centerTime,
-    required this.timescale,
+    required this.timeScale,
     required this.tickEvery,
     required this.totalTicks,
     required this.firstTickTime,
@@ -110,7 +111,7 @@ class TimelinePainter extends CustomPainter {
     for (int i = 0; i <= totalTicks; i++) {
       final tickTime = firstTickTime + i * tickEvery;
       final timeDiff = tickTime - centerTime;
-      final positionX = size.width / 2 + (timeDiff / timescale) * size.width;
+      final positionX = size.width / 2 + (timeDiff / timeScale) * size.width;
 
       if (positionX < 0 || positionX > size.width) continue;
 
@@ -227,16 +228,31 @@ class TimelinePainter extends CustomPainter {
       visibleStartTimestamp: visibleStartTimestamp,
       visibleEndTimestamp: visibleEndTimestamp,
       centerTime: centerTime,
-      timescale: timescale,
+      timescale: timeScale,
       surfaceColor: surfaceColor,
       onSurfaceColor: onSurfaceColor,
     ).paint(canvas, size);
+
+    ScalePainter(
+      position: Offset(size.width - 100, 50),
+      timelineWidth: size.width,
+      timelineThickness: timelineThickness,
+      tickHeight: tickHeight,
+      tickWidth: tickWidth,
+      scaleDownFactor: .8,
+      timeScale: timeScale,
+      tickEvery: tickEvery,
+      visibleStartTimestamp: visibleStartTimestamp,
+      timelineColor: color,
+      surfaceColor: surfaceColor,
+      align: Align.right,
+    ).paint(canvas, Size(100, 100));
   }
 
   @override
   bool shouldRepaint(covariant TimelinePainter oldDelegate) {
     return oldDelegate.centerTime != centerTime ||
-        oldDelegate.timescale != timescale ||
+        oldDelegate.timeScale != timeScale ||
         oldDelegate.tickEvery != tickEvery ||
         oldDelegate.surfaceColor != surfaceColor ||
         oldDelegate.color != color ||

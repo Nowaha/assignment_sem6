@@ -54,7 +54,7 @@ class TimelineLine extends StatelessWidget {
             visibleStartTimestamp: visibleStartTimestamp,
             visibleEndTimestamp: visibleEndTimestamp,
             centerTime: centerTime,
-            timescale: timescale,
+            timeScale: timescale,
             tickEvery: tickEvery,
             totalTicks: (timescale / tickEvery).ceil(),
             firstTickTime:
