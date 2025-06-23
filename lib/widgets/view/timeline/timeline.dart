@@ -26,7 +26,8 @@ class Timeline extends StatefulWidget {
 class TimelineState extends State<Timeline> {
   final GlobalKey _stackKey = GlobalKey();
 
-  double _center = 99999;
+  double _width = -1;
+  double _height = -1;
   final ValueNotifier<int?> _hoveredIndex = ValueNotifier(null);
 
   void _setPutToFront(int index) {
@@ -37,18 +38,7 @@ class TimelineState extends State<Timeline> {
     _hoveredIndex.value = null;
   }
 
-  void recalculateCenter(double height) {
-    setState(() {
-      _center = height / 2;
-    });
-  }
-
-  Widget _buildChild(
-    TimelineItem item,
-    int index,
-    double screenWidth,
-    int tickEvery,
-  ) {
+  Widget _buildChild(TimelineItem item, int index, int tickEvery) {
     final startTime = DateTime.fromMillisecondsSinceEpoch(item.startTimestamp);
     final endTime = DateTime.fromMillisecondsSinceEpoch(item.endTimestamp);
     String startTimeString =
@@ -62,7 +52,7 @@ class TimelineState extends State<Timeline> {
     }
 
     final elementWidth = TimelineUtil.getElementWidth(
-      screenWidth,
+      _width,
       widget.controller.visibleTimeScale,
       item.startTimestamp,
       item.endTimestamp,
@@ -75,13 +65,13 @@ class TimelineState extends State<Timeline> {
       onHover: () => _setPutToFront(index),
       onLeave: _clearPutToFront,
       left: TimelineUtil.getElementLeftPosition(
-        screenWidth,
+        _width,
         widget.controller.visibleTimeScale,
         widget.controller.visibleCenterTimestamp,
         item,
         elementWidth,
       ),
-      center: _center,
+      center: _height / 2,
       verticalOffset: widget.controller.verticalOffset,
       width: elementWidth,
       height: elementHeight,
@@ -94,15 +84,36 @@ class TimelineState extends State<Timeline> {
   @override
   Widget build(BuildContext context) {
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final stackHeight = _stackKey.currentContext?.size?.height;
-      if (stackHeight != null) {
-        recalculateCenter(stackHeight);
+      final stackSize = _stackKey.currentContext?.size;
+      if (stackSize == null) return;
+
+      bool anyChanges = false;
+      if (_width != stackSize.width) {
+        final diff = stackSize.width - _width;
+
+        _width = stackSize.width;
+        anyChanges = true;
+
+        final timeScale = widget.controller.visibleTimeScale;
+        final change = ((diff / _width) * timeScale).toInt();
+        widget.controller.adjustVisibleStart(-(change ~/ 2));
+        widget.controller.adjustVisibleEnd(change ~/ 2);
       }
+
+      if (_height != stackSize.height) {
+        _height = stackSize.height;
+        anyChanges = true;
+      }
+
+      if (anyChanges) setState(() {});
     });
 
     final screenUtil = ScreenUtil(context);
-    final screenWidth = screenUtil.width;
-    final tickEvery = widget.controller.getTickEvery(screenWidth.toInt());
+    if (_width <= 0) {
+      _width = screenUtil.width;
+    }
+
+    final tickEvery = widget.controller.getTickEvery(_width.toInt());
 
     return Stack(
       key: _stackKey,
@@ -110,19 +121,14 @@ class TimelineState extends State<Timeline> {
         Positioned.fill(
           child: TimelineZoom(
             dragSensitivity:
-                widget.controller.visibleTimeScale.toDouble() / screenWidth,
+                widget.controller.visibleTimeScale.toDouble() / _width,
             zoom: (zoom) => widget.controller.zoom(zoom),
             pan: (pan) => widget.controller.pan(pan),
             panUp: (pan) => widget.controller.adjustVerticalOffset(pan),
             child: Stack(
               children: [
                 for (int i = 0; i < widget.controller.items.length; i++)
-                  _buildChild(
-                    widget.controller.items[i],
-                    i,
-                    screenWidth,
-                    tickEvery,
-                  ),
+                  _buildChild(widget.controller.items[i], i, tickEvery),
 
                 ValueListenableBuilder<int?>(
                   valueListenable: _hoveredIndex,
@@ -131,7 +137,6 @@ class TimelineState extends State<Timeline> {
                     return _buildChild(
                       widget.controller.items[hoveredIndex],
                       hoveredIndex,
-                      screenWidth,
                       tickEvery,
                     );
                   },
