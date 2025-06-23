@@ -27,8 +27,8 @@ class SeekerInfo {
   }
 
   bool isWithinRightHandle(double width, double x, double leniency) {
-    return x >= getSeekerEnd(width) - seekerHandleWidth - leniency &&
-        x <= getSeekerEnd(width) + leniency;
+    return x >= getSeekerEnd(width) - leniency &&
+        x <= getSeekerEnd(width) + seekerHandleWidth + leniency;
   }
 
   const SeekerInfo({
