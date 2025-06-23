@@ -44,7 +44,18 @@ class DatesPainter extends CustomPainter {
     final textPainter = _getDateTextPainter(visibleStartTimestamp);
 
     double startX = 0.0;
-    final startY = size.height - textPainter.height - 100;
+    final startY = size.height - textPainter.height - edgePadding;
+
+    final endTextPainter = _getDateTextPainter(
+      visibleEndTimestamp,
+      textAlign: TextAlign.right,
+    );
+    final endDayCalc = _calculateDatePosition(
+      size.width,
+      startY,
+      endTextPainter,
+      fromRight: true,
+    );
 
     int? leftmostX;
     int startOfNextDay = startOfVisibleDay + dayMs;
@@ -68,11 +79,27 @@ class DatesPainter extends CustomPainter {
         strokeWidth: 2.0,
       ).paint(canvas, size);
 
+      CalculationResult nextDayCalc = _calculateDatePosition(
+        clampedX,
+        startY,
+        nextTextPainter,
+      );
+
+      const animated = 16;
+      final yOffsetIfNeeded = nextDayCalc.startY - nextDayCalc.endY;
+      double yOffset = 0.0;
+      if (nextDayCalc.endX > endDayCalc.startX) {
+        yOffset = yOffsetIfNeeded;
+      } else if (nextDayCalc.endX + animated > endDayCalc.startX) {
+        final progress = nextDayCalc.endX + animated - endDayCalc.startX;
+        yOffset = yOffsetIfNeeded * (progress / animated);
+      }
+
       DrawResult nextDayResult = _calculateAndDrawDate(
         canvas,
         nextTextPainter,
         clampedX,
-        startY,
+        startY + yOffset,
       );
 
       if (leftmostX == null || nextDayResult.startX < leftmostX) {
@@ -82,34 +109,18 @@ class DatesPainter extends CustomPainter {
       startOfNextDay += dayMs;
     }
 
-    final currentDayResult = _calculateDatePosition(
-      startX,
-      startY,
-      textPainter,
-    );
+    final currentDayCalc = _calculateDatePosition(startX, startY, textPainter);
 
     if (leftmostX != null &&
-        currentDayResult.endX + spaceBetweenDates >= leftmostX) {
-      startX -= (currentDayResult.endX + spaceBetweenDates - leftmostX);
+        currentDayCalc.endX + spaceBetweenDates >= leftmostX) {
+      startX -= (currentDayCalc.endX + spaceBetweenDates - leftmostX);
 
       _calculateAndDrawDate(canvas, textPainter, startX, startY);
     } else {
-      _drawDate(canvas, textPainter, currentDayResult);
+      _drawDate(canvas, textPainter, currentDayCalc);
     }
 
-    // Draw end date
-    final endTextPainter = _getDateTextPainter(
-      visibleEndTimestamp,
-      textAlign: TextAlign.right,
-    );
-    final endTextCalc = _calculateDatePosition(
-      size.width,
-      startY,
-      endTextPainter,
-      fromRight: true,
-    );
-
-    _drawDate(canvas, endTextPainter, endTextCalc);
+    _drawDate(canvas, endTextPainter, endDayCalc);
   }
 
   TextPainter _getDateTextPainter(
