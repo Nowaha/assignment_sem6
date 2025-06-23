@@ -113,9 +113,24 @@ class DatesPainter extends CustomPainter {
 
     if (leftmostX != null &&
         currentDayCalc.endX + spaceBetweenDates >= leftmostX) {
-      startX -= (currentDayCalc.endX + spaceBetweenDates - leftmostX);
+      final timeOnly = _getDateTextPainter(
+        visibleStartTimestamp,
+        hideDate: true,
+      );
 
-      _calculateAndDrawDate(canvas, textPainter, startX, startY);
+      final dateOnly = _getDateTextPainter(
+        visibleStartTimestamp,
+        hideTime: true,
+      );
+
+      _calculateAndDrawDate(
+        canvas,
+        dateOnly,
+        startX - (currentDayCalc.endX + spaceBetweenDates - leftmostX),
+        startY,
+        dateOnly: true,
+      );
+      _calculateAndDrawDate(canvas, timeOnly, startX, startY, timeOnly: true);
     } else {
       _drawDate(canvas, textPainter, currentDayCalc);
     }
@@ -126,15 +141,26 @@ class DatesPainter extends CustomPainter {
   TextPainter _getDateTextPainter(
     int timestamp, {
     TextAlign textAlign = TextAlign.left,
+    bool hideTime = false,
+    bool hideDate = false,
   }) => TextPainter(
     text: TextSpan(
-      text:
-          "${DateUtil.formatTime(timestamp, true)}\n${DateUtil.formatDate(timestamp)}",
+      text: DateUtil.formatTime(timestamp, true),
       style: TextStyle(
-        color: onSurfaceColor,
+        color: hideTime ? Colors.transparent : onSurfaceColor,
         fontSize: 16.0,
-        fontWeight: FontWeight.w500,
       ),
+      children: [
+        TextSpan(text: "\n"),
+        TextSpan(
+          text: DateUtil.formatDate(timestamp),
+          style: TextStyle(
+            color: hideDate ? Colors.transparent : onSurfaceColor,
+            fontSize: 16.0,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+      ],
     ),
     textAlign: textAlign,
     textDirection: TextDirection.ltr,
@@ -176,29 +202,52 @@ class DatesPainter extends CustomPainter {
     Canvas canvas,
     TextPainter textPainter,
     double x,
-    double y,
-  ) {
+    double y, {
+    bool timeOnly = false,
+    bool dateOnly = false,
+  }) {
     return _drawDate(
       canvas,
       textPainter,
       _calculateDatePosition(x, y, textPainter),
+      timeOnly: timeOnly,
+      dateOnly: dateOnly,
     );
   }
 
   DrawResult _drawDate(
     Canvas canvas,
     TextPainter textPainter,
-    CalculationResult calculations,
-  ) {
+    CalculationResult calculations, {
+    bool timeOnly = false,
+    bool dateOnly = false,
+  }) {
     final rectX = calculations.startX;
-    final rectHeight = calculations.endY - calculations.startY;
-    final rectY = calculations.startY;
     final rectWidth = calculations.endX - calculations.startX;
+    final rectY = calculations.startY;
+    final rectHeight = calculations.endY - calculations.startY;
+
+    final double backgroundY, backgroundHeight;
+
+    final half = rectHeight / 2;
+    if (timeOnly) {
+      backgroundY = rectY;
+      backgroundHeight = rectHeight - half;
+    } else if (dateOnly) {
+      backgroundY = rectY + half;
+      backgroundHeight = rectHeight - half;
+    } else {
+      backgroundY = rectY;
+      backgroundHeight = rectHeight;
+    }
 
     canvas.drawRRect(
-      RRect.fromRectAndRadius(
-        Rect.fromLTWH(rectX, rectY, rectWidth, rectHeight),
-        Radius.circular(8),
+      RRect.fromRectAndCorners(
+        Rect.fromLTWH(rectX, backgroundY, rectWidth, backgroundHeight),
+        topLeft: !dateOnly ? Radius.circular(8) : Radius.zero,
+        topRight: !dateOnly ? Radius.circular(8) : Radius.zero,
+        bottomLeft: !timeOnly ? Radius.circular(8) : Radius.zero,
+        bottomRight: !timeOnly ? Radius.circular(8) : Radius.zero,
       ),
       Paint()
         ..color = surfaceColor
