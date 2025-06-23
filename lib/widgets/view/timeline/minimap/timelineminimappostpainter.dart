@@ -1,8 +1,9 @@
-import 'package:assignment_sem6/widgets/view/timeline/timelineitem.dart';
 import 'package:flutter/material.dart';
 import 'package:assignment_sem6/widgets/view/timeline/timelinecontroller.dart';
 
 class TimelineMinimapPostPainter extends CustomPainter {
+  static const double timelineThickness = 2.0;
+
   final TimelineController controller;
   final Color timelineColor;
 
@@ -15,29 +16,23 @@ class TimelineMinimapPostPainter extends CustomPainter {
     }
 
     int maxLayer = 0;
-    List<TimelineItem> clipped = [];
+    int minLayer = 0;
     for (final item in controller.items) {
       if (item.rawLayer > maxLayer) {
-        if (item.rawLayer <= 10) {
-          maxLayer = item.rawLayer;
-          continue;
-        }
-
-        if (controller.visibleEndTimestamp >= item.startTimestamp &&
-            controller.visibleStartTimestamp <= item.endTimestamp) {
-          maxLayer = item.rawLayer;
-          continue;
-        }
-        clipped.add(item);
+        maxLayer = item.rawLayer;
+      } else if (item.rawLayer < minLayer) {
+        minLayer = item.rawLayer;
       }
     }
-    int layersOnBottom = maxLayer ~/ 2;
+    final totalLayers = maxLayer.abs() + minLayer.abs();
+
+    if (maxLayer == 0) return;
 
     final maxHeight = size.height - 6.0;
-    final layerHeight = maxHeight / (maxLayer + 1);
-    final timelinePosition = maxHeight - (layersOnBottom * layerHeight);
+    final layerHeight = maxHeight / totalLayers;
+    final timelinePosition = maxHeight - (minLayer.abs() * layerHeight);
 
-    int spacing = switch (maxLayer) {
+    int spacing = switch (totalLayers) {
       < 4 => layerHeight ~/ 3,
       < 10 => 4,
       >= 10 && < 16 => 2,
@@ -46,57 +41,46 @@ class TimelineMinimapPostPainter extends CustomPainter {
 
     final startTimestamp = controller.effectiveStartTimestamp;
     final endTimestamp = controller.effectiveEndTimestamp;
-
     final totalDuration = (endTimestamp - startTimestamp).toDouble();
 
     for (final item in controller.items) {
-      if (item.rawLayer > maxLayer) {
-        continue;
-      }
-
       final startX =
-          ((item.startTimestamp - startTimestamp) / totalDuration) * size.width;
+          ((item.startTimestamp + 1000 * 60 - startTimestamp) / totalDuration) *
+          size.width;
       final endX =
-          ((item.endTimestamp - startTimestamp) / totalDuration) * size.width;
+          ((item.endTimestamp - 1000 * 60 - startTimestamp) / totalDuration) *
+          size.width;
 
-      bool isHanging = item.rawLayer > 0 && item.rawLayer % 2 == 0;
-      int layerOnHalf;
-      if (item.rawLayer == 0) {
-        layerOnHalf = 1;
-      } else if (item.rawLayer % 2 == 0) {
-        layerOnHalf = item.rawLayer ~/ 2;
-      } else {
-        layerOnHalf = ((item.rawLayer + 1) ~/ 2) + 1;
-      }
+      final isHanging = item.rawLayer < 0;
+      final layer = item.rawLayer.abs();
 
       double top;
       if (isHanging) {
-        top = timelinePosition + ((layerOnHalf - 1) * layerHeight) + spacing;
+        top = timelinePosition + ((layer - 1) * layerHeight) + spacing;
       } else {
-        top = timelinePosition - ((layerOnHalf - 0.5) * layerHeight) - spacing;
+        top =
+            timelinePosition -
+            ((layer - 0.5) * layerHeight) -
+            spacing -
+            timelineThickness;
       }
 
       canvas.drawRect(
-        Rect.fromLTWH(
-          startX,
-          top,
-          endX - startX - spacing,
-          layerHeight - spacing,
-        ),
+        Rect.fromLTWH(startX, top, endX - startX, layerHeight - spacing),
         Paint()
           ..color = item.color
           ..style = PaintingStyle.fill,
       );
     }
 
-    if (maxLayer > 1) {
+    if (minLayer < 0) {
       canvas.drawLine(
-        Offset(0, timelinePosition + 1.5),
-        Offset(size.width, timelinePosition + 1.5),
+        Offset(0, timelinePosition + timelineThickness / 2),
+        Offset(size.width, timelinePosition + timelineThickness / 2),
         Paint()
           ..color = timelineColor
           ..style = PaintingStyle.stroke
-          ..strokeWidth = 3.0,
+          ..strokeWidth = timelineThickness,
       );
     }
   }
