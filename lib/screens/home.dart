@@ -190,7 +190,7 @@ class _HomePageState extends State<HomePage> with ToastMixin {
         ),
       ],
       floatingActionButton: Padding(
-        padding: const EdgeInsets.only(bottom: 95),
+        padding: EdgeInsets.only(bottom: activeView.fabOffset),
         child: FloatingActionButton(
           tooltip: "Create Post",
           onPressed: () {
@@ -245,12 +245,13 @@ class _HomePageState extends State<HomePage> with ToastMixin {
 }
 
 enum ActiveView {
-  timeline("Timeline View"),
-  map("Map View");
+  timeline("Timeline View", 150.0),
+  map("Map View", 90.0);
 
   final String title;
+  final double fabOffset;
 
-  const ActiveView(this.title);
+  const ActiveView(this.title, this.fabOffset);
 }
 
 class TempPost {
