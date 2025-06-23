@@ -132,7 +132,7 @@ class DatesPainter extends CustomPainter {
           "${DateUtil.formatTime(timestamp, true)}\n${DateUtil.formatDate(timestamp)}",
       style: TextStyle(
         color: onSurfaceColor,
-        fontSize: 22.0,
+        fontSize: 16.0,
         fontWeight: FontWeight.w500,
       ),
     ),
