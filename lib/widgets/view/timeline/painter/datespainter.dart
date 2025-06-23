@@ -41,10 +41,10 @@ class DatesPainter extends CustomPainter {
     final startOfDay = DateTime(date.year, date.month, date.day);
     final startOfVisibleDay = startOfDay.millisecondsSinceEpoch;
 
-    final textPainter = _getDateTextPainter(startOfVisibleDay);
+    final textPainter = _getDateTextPainter(visibleStartTimestamp);
 
     double startX = 0.0;
-    final startY = size.height - textPainter.height - 90;
+    final startY = size.height - textPainter.height - 100;
 
     int? leftmostX;
     int startOfNextDay = startOfVisibleDay + dayMs;
@@ -71,7 +71,6 @@ class DatesPainter extends CustomPainter {
       DrawResult nextDayResult = _calculateAndDrawDate(
         canvas,
         nextTextPainter,
-        startOfNextDay,
         clampedX,
         startY,
       );
@@ -93,40 +92,66 @@ class DatesPainter extends CustomPainter {
         currentDayResult.endX + spaceBetweenDates >= leftmostX) {
       startX -= (currentDayResult.endX + spaceBetweenDates - leftmostX);
 
-      _calculateAndDrawDate(
-        canvas,
-        textPainter,
-        startOfVisibleDay,
-        startX,
-        startY,
-      );
+      _calculateAndDrawDate(canvas, textPainter, startX, startY);
     } else {
       _drawDate(canvas, textPainter, currentDayResult);
     }
+
+    // Draw end date
+    final endTextPainter = _getDateTextPainter(
+      visibleEndTimestamp,
+      textAlign: TextAlign.right,
+    );
+    final endTextCalc = _calculateDatePosition(
+      size.width,
+      startY,
+      endTextPainter,
+      fromRight: true,
+    );
+
+    _drawDate(canvas, endTextPainter, endTextCalc);
   }
 
-  TextPainter _getDateTextPainter(int timestamp) => TextPainter(
+  TextPainter _getDateTextPainter(
+    int timestamp, {
+    TextAlign textAlign = TextAlign.left,
+  }) => TextPainter(
     text: TextSpan(
-      text: DateUtil.formatDate(timestamp),
+      text:
+          "${DateUtil.formatTime(timestamp, true)}\n${DateUtil.formatDate(timestamp)}",
       style: TextStyle(
         color: onSurfaceColor,
-        fontSize: 20.0,
+        fontSize: 22.0,
         fontWeight: FontWeight.w500,
       ),
     ),
-    textAlign: TextAlign.center,
+    textAlign: textAlign,
     textDirection: TextDirection.ltr,
   )..layout();
 
   CalculationResult _calculateDatePosition(
     double x,
     double y,
-    TextPainter textPainter,
-  ) {
-    final rectX = x + edgePadding;
-    final rectHeight = textPainter.height - edgePadding + textPaddingY * 2;
-    final rectY = y - rectHeight / 2;
+    TextPainter textPainter, {
+    bool fromRight = false,
+    bool fromBottom = true,
+  }) {
+    final rectX;
+    final rectY;
     final rectWidth = textPainter.width + textPaddingX * 2;
+    final rectHeight = textPainter.height + textPaddingY * 2;
+
+    if (!fromRight) {
+      rectX = x + edgePadding;
+    } else {
+      rectX = x - edgePadding - textPainter.width - textPaddingX * 2;
+    }
+
+    if (fromBottom) {
+      rectY = y - edgePadding;
+    } else {
+      rectY = y + edgePadding + textPainter.height + textPaddingY * 2;
+    }
 
     return (
       startX: rectX,
@@ -139,7 +164,6 @@ class DatesPainter extends CustomPainter {
   DrawResult _calculateAndDrawDate(
     Canvas canvas,
     TextPainter textPainter,
-    int timestamp,
     double x,
     double y,
   ) {
