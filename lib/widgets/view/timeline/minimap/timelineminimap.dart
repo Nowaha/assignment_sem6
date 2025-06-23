@@ -197,7 +197,9 @@ class _TimelineMiniMapState extends State<TimelineMiniMap> {
           },
           child: CustomPaint(
             painter: TimelineMinimapPostPainter(
-              widget.controller,
+              items: widget.controller.items,
+              startTimestamp: widget.controller.effectiveStartTimestamp,
+              endTimestamp: widget.controller.effectiveEndTimestamp,
               timelineColor: Theme.of(context).colorScheme.onSurface,
             ),
             foregroundPainter: TimelineMinimapSeekerPainter(
