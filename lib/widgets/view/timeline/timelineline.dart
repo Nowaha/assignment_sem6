@@ -11,6 +11,7 @@ class TimelineLine extends StatelessWidget {
   final int centerTime;
   final Color color;
   final double offset;
+  final double offsetRounded;
 
   const TimelineLine({
     super.key,
@@ -23,6 +24,7 @@ class TimelineLine extends StatelessWidget {
     required this.centerTime,
     this.color = Colors.white,
     this.offset = 0.0,
+    this.offsetRounded = 0.0,
   });
 
   @override
@@ -64,6 +66,7 @@ class TimelineLine extends StatelessWidget {
             screenWidth: MediaQuery.of(context).size.width,
             isDarkMode: isDarkMode,
             offset: offset,
+            offsetRounded: offsetRounded,
           ),
         ),
       ),

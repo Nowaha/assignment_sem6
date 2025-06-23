@@ -150,8 +150,9 @@ class TimelineState extends State<Timeline> {
             centerTime: widget.controller.visibleCenterTimestamp,
             tickEvery: tickEvery,
             color: Theme.of(context).colorScheme.onSurface,
-            offset:
-                widget.controller.items[0].layerOffset *
+            offset: widget.controller.verticalOffset,
+            offsetRounded:
+                -widget.controller.items[0].layerOffset *
                 widget.controller.items[0].height,
           ),
         ),

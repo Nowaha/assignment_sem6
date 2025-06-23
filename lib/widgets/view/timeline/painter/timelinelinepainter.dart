@@ -1,3 +1,4 @@
+import 'package:assignment_sem6/widgets/view/timeline/painter/dashedlinepainter.dart';
 import 'package:assignment_sem6/widgets/view/timeline/painter/datespainter.dart';
 import 'package:flutter/material.dart';
 import 'package:assignment_sem6/extension/color.dart';
@@ -18,6 +19,7 @@ class TimelinePainter extends CustomPainter {
   final int totalTicks;
   final int firstTickTime;
   final double offset;
+  final double offsetRounded;
   final Color color;
   final Color floatingColor;
   final Color onSurfaceColor;
@@ -42,6 +44,7 @@ class TimelinePainter extends CustomPainter {
     required this.screenWidth,
     required this.isDarkMode,
     this.offset = 0.0,
+    this.offsetRounded = 0.0,
   });
 
   String formatTimestamp(int timestamp) {
@@ -59,7 +62,8 @@ class TimelinePainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    bool floating = offset != 0;
+    double offsetAdjusted = offset.abs() < 20 ? 0 : offset;
+    bool floating = offsetAdjusted != 0;
 
     final centerY = size.height / 2;
     final timelineColor = floating ? floatingColor : color;
@@ -70,9 +74,17 @@ class TimelinePainter extends CustomPainter {
             : onSurfaceColor.withAlpha(50);
 
     if (floating) {
+      DashedLinePainter.horizontal(
+        y: centerY - offsetAdjusted,
+        dashHeight: 4.0,
+        dashSpacing: 4.0,
+        color: ghostColor,
+        strokeWidth: 2.0,
+      ).paint(canvas, size);
+
       canvas.drawLine(
-        Offset(0, centerY - offset),
-        Offset(size.width, centerY - offset),
+        Offset(0, centerY - offsetRounded),
+        Offset(size.width, centerY - offsetRounded),
         Paint()
           ..color = ghostColor
           ..style = PaintingStyle.stroke
@@ -151,8 +163,8 @@ class TimelinePainter extends CustomPainter {
 
       if (floating) {
         canvas.drawLine(
-          Offset(positionX, centerY - offset - appliedTickHeight / 2),
-          Offset(positionX, centerY - offset + appliedTickHeight / 2),
+          Offset(positionX, centerY - offsetRounded - appliedTickHeight / 2),
+          Offset(positionX, centerY - offsetRounded + appliedTickHeight / 2),
           Paint()
             ..color = ghostColor
             ..style = PaintingStyle.stroke
