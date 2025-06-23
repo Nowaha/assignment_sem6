@@ -170,7 +170,7 @@ class _TimelineMiniMapState extends State<TimelineMiniMap> {
       child: Container(
         height: widget.height,
         decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.surface.withAlpha(200),
+          color: Theme.of(context).colorScheme.surface,
           boxShadow: [
             BoxShadow(
               color: Colors.black.withAlpha(126),

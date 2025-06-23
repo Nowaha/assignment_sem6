@@ -206,36 +206,41 @@ class _HomePageState extends State<HomePage> with ToastMixin {
           child: Icon(Icons.add),
         ),
       ),
-      child: Stack(
+      child: Column(
         children: [
-          Positioned.fill(
-            child: Visibility(
-              visible: activeView == ActiveView.timeline,
-              maintainState: true,
-              child: RepaintBoundary(
-                child: TimelineView(
-                  controller: _timelineController,
-                  onMapButtonPressed: () => _setActiveView(ActiveView.map),
+          Expanded(
+            child: Stack(
+              children: [
+                Positioned.fill(
+                  child: Visibility(
+                    visible: activeView == ActiveView.timeline,
+                    maintainState: true,
+                    child: RepaintBoundary(
+                      child: TimelineView(
+                        controller: _timelineController,
+                        onMapButtonPressed:
+                            () => _setActiveView(ActiveView.map),
+                      ),
+                    ),
+                  ),
                 ),
-              ),
+                Positioned.fill(
+                  child: Visibility(
+                    visible: activeView == ActiveView.map,
+                    maintainState: true,
+                    child: RepaintBoundary(
+                      child: MapView(
+                        onTimelineButtonPressed:
+                            () => _setActiveView(ActiveView.timeline),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
-          Positioned.fill(
-            child: Visibility(
-              visible: activeView == ActiveView.map,
-              maintainState: true,
-              child: RepaintBoundary(
-                child: MapView(
-                  onTimelineButtonPressed:
-                      () => _setActiveView(ActiveView.timeline),
-                ),
-              ),
-            ),
-          ),
-          Positioned(
-            bottom: 0,
-            left: 0,
-            right: 0,
+          SizedBox(
+            width: double.infinity,
             child: TimelineMiniMap(controller: _timelineController),
           ),
         ],
