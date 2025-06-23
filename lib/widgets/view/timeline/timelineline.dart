@@ -63,7 +63,7 @@ class TimelineLine extends StatelessWidget {
             floatingColor: floatingColor,
             surfaceColor: theme.colorScheme.surface,
             onSurfaceColor: theme.colorScheme.onSurface,
-            screenWidth: MediaQuery.of(context).size.width,
+            screenWidth: MediaQuery.sizeOf(context).width,
             isDarkMode: isDarkMode,
             offset: offset,
             offsetRounded: offsetRounded,

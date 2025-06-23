@@ -9,11 +9,13 @@ import 'package:flutter/services.dart';
 class TimelineMiniMap extends StatefulWidget {
   final TimelineController controller;
   final double height;
+  final Function(bool show)? setShowZoom;
 
   const TimelineMiniMap({
     super.key,
     required this.controller,
     this.height = 90.0,
+    this.setShowZoom,
   });
 
   @override
@@ -83,6 +85,11 @@ class _TimelineMiniMapState extends State<TimelineMiniMap> {
     }
 
     if (_hovering != newHovering) {
+      if (newHovering == Hovering.seeker || newHovering == Hovering.sides) {
+        widget.setShowZoom?.call(true);
+      } else {
+        widget.setShowZoom?.call(false);
+      }
       setState(() {
         _hovering = newHovering;
       });
@@ -91,6 +98,7 @@ class _TimelineMiniMapState extends State<TimelineMiniMap> {
 
   void _onExit(PointerExitEvent event) {
     if (_hovering != Hovering.none) {
+      widget.setShowZoom?.call(false);
       setState(() {
         _hovering = Hovering.none;
       });

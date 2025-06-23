@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:assignment_sem6/mixin/toastmixin.dart';
 import 'package:assignment_sem6/screens/view/map.dart';
 import 'package:assignment_sem6/screens/view/timeline.dart';
@@ -6,9 +8,11 @@ import 'package:assignment_sem6/util/time.dart';
 import 'package:assignment_sem6/util/timelineutil.dart';
 import 'package:assignment_sem6/widgets/screen.dart';
 import 'package:assignment_sem6/widgets/view/timeline/minimap/timelineminimap.dart';
+import 'package:assignment_sem6/widgets/view/timeline/minimap/timelineminimapzoom.dart';
 import 'package:assignment_sem6/widgets/view/timeline/timelinecontroller.dart';
 import 'package:assignment_sem6/widgets/view/timeline/timelineitem.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
@@ -24,6 +28,21 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> with ToastMixin {
   late final TimelineController _timelineController;
   ActiveView activeView = ActiveView.timeline;
+  bool _showZoom = false;
+
+  void _setShowZoom(bool show) {
+    if (_showZoom == show) return;
+
+    if (show) {
+      HapticFeedback.lightImpact();
+    } else {
+      HapticFeedback.mediumImpact();
+    }
+
+    setState(() {
+      _showZoom = show;
+    });
+  }
 
   @override
   void initState() {
@@ -31,15 +50,16 @@ class _HomePageState extends State<HomePage> with ToastMixin {
         (Time.nowAsTimestamp() ~/ 1000 * 1000) -
         (1000 * 60 * 60 * 24 * 2); // 2 days ago
     final secondDay = startTimestamp + (1000 * 60 * 60 * 24); // 24 hours later
-
+    final endTimestamp =
+        startTimestamp + (1000 * 60 * 60 * 24 * 2).toInt(); // 2 days later
     _timelineController = TimelineController.withTimeScale(
       items: [],
       startTimestamp: startTimestamp,
-      endTimestamp:
-          startTimestamp + (1000 * 60 * 60 * 24 * 2).toInt(), // 2 days later
+      endTimestamp: endTimestamp,
       timeScale: 1000 * 60 * 30, // half an hour
     );
 
+    final random = Random();
     arrangeElements([
       TempPost(
         startTimestamp: secondDay,
@@ -83,19 +103,15 @@ class _HomePageState extends State<HomePage> with ToastMixin {
         name: "Post 6",
         color: Colors.yellow,
       ),
-      for (int i = 7; i < 15; i++)
+      for (int i = startTimestamp; i < endTimestamp; i += 1000 * 60 * 30)
         TempPost(
-          startTimestamp: startTimestamp + (1000 * 30 * (i * 1.5).toInt()),
-          endTimestamp: startTimestamp + (1000 * 30 * (i + 20)),
-          name: "Post $i",
-          color: Colors.primaries[i % Colors.primaries.length],
-        ),
-      for (int i = 7; i < 15; i++)
-        TempPost(
-          startTimestamp: startTimestamp + (1000 * 30 * (i - 1)),
-          endTimestamp: startTimestamp + (1000 * 30 * (i + 20)),
-          name: "Post $i",
-          color: Colors.primaries[i % Colors.primaries.length],
+          startTimestamp: i.toInt(),
+          endTimestamp:
+              i.toInt() + (1000 * 60 * (15 + (5 * random.nextInt(10)))),
+          name: "Post ${(i - startTimestamp) ~/ (1000 * 60 * 30)}",
+          color:
+              Colors.primaries[(i ~/ (1000 * 60 * 30)) %
+                  Colors.primaries.length],
         ),
     ]);
 
@@ -127,6 +143,14 @@ class _HomePageState extends State<HomePage> with ToastMixin {
     }
 
     _timelineController.updateItems(arranged);
+
+    print("Arranged ${arranged.length} posts:");
+    for (final item in arranged) {
+      print(
+        "Post: ${item.name}, Start: ${item.startTimestamp}, "
+        "End: ${item.endTimestamp}, Layer: ${item.rawLayer}",
+      );
+    }
   }
 
   void _setActiveView(ActiveView view) {
@@ -236,12 +260,53 @@ class _HomePageState extends State<HomePage> with ToastMixin {
                     ),
                   ),
                 ),
+                ListenableBuilder(
+                  listenable: _timelineController,
+                  builder: (context, _) {
+                    const double width = 400.0;
+                    final screenWidth = MediaQuery.sizeOf(context).width;
+                    final int fullLength =
+                        _timelineController.effectiveEndTimestamp -
+                        _timelineController.effectiveStartTimestamp;
+                    final int visibleCenter =
+                        _timelineController.visibleCenterTimestamp;
+                    final double fraction =
+                        (visibleCenter -
+                            _timelineController.effectiveStartTimestamp) /
+                        fullLength;
+                    final double left = fraction * screenWidth - 0.5 * width;
+                    final bool tooSmall = screenWidth - width <= 0.0;
+                    final double clamped =
+                       tooSmall
+                            ? 0.0
+                            : left.clamp(0.0, screenWidth - width);
+
+                    return Positioned(
+                      bottom: 0,
+                      left: tooSmall ? 16.0 : clamped,
+                      right: tooSmall? 16.0 : null,
+                      child: TimelineMinimapZoom(
+                        width: width,
+                        height: 90,
+                        controller: _timelineController,
+                        visible: _showZoom,
+                      ),
+                    );
+                  },
+                ),
               ],
             ),
           ),
-          SizedBox(
-            width: double.infinity,
-            child: TimelineMiniMap(controller: _timelineController),
+          ListenableBuilder(
+            listenable: _timelineController,
+            builder:
+                (context, _) => SizedBox(
+                  width: double.infinity,
+                  child: TimelineMiniMap(
+                    controller: _timelineController,
+                    setShowZoom: _setShowZoom,
+                  ),
+                ),
           ),
         ],
       ),
