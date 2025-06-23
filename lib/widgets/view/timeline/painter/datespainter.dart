@@ -60,7 +60,7 @@ class DatesPainter extends CustomPainter {
       final clampedX = max(xBase, startX);
 
       final lineX = centeredX + nextTextPainter.width / 2;
-      DashedLinePainter(
+      DashedLinePainter.vertical(
         x: lineX,
         dashHeight: 4.0,
         dashSpacing: 4.0,
