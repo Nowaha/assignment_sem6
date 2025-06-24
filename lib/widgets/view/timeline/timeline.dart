@@ -4,12 +4,13 @@ import 'package:assignment_sem6/widgets/view/filter/filtercontainer.dart';
 import 'package:assignment_sem6/widgets/view/timeline/timelinecontroller.dart';
 import 'package:assignment_sem6/widgets/view/timeline/timelinecontrols.dart';
 import 'package:assignment_sem6/widgets/view/timeline/timelineelement.dart';
-import 'package:assignment_sem6/widgets/view/timeline/timelineitem.dart';
+import 'package:assignment_sem6/widgets/view/timeline/item/timelineitem.dart';
 import 'package:assignment_sem6/widgets/view/timeline/timelineline.dart';
 import 'package:assignment_sem6/widgets/view/timeline/timelinezoom.dart';
 import 'package:flutter/material.dart';
 
 class Timeline extends StatefulWidget {
+  static const timelineItemHeight = 80.0;
   final TimelineController controller;
   final VoidCallback? onMapButtonPressed;
 
@@ -152,7 +153,7 @@ class TimelineState extends State<Timeline> {
                     offset: widget.controller.verticalOffset,
                     offsetRounded:
                         -widget.controller.items[0].layerOffset *
-                        widget.controller.items[0].height,
+                        Timeline.timelineItemHeight,
                   ),
                 ),
                 Positioned(

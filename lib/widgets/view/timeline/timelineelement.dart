@@ -1,4 +1,4 @@
-import 'package:assignment_sem6/widgets/view/timeline/timelineitem.dart';
+import 'package:assignment_sem6/widgets/view/timeline/item/timelineitem.dart';
 import 'package:flutter/material.dart';
 
 class TimelineElement extends StatefulWidget {
@@ -79,79 +79,112 @@ class _TimelineElementState extends State<TimelineElement> {
     });
   }
 
+  Size _getSize(TextSpan textSpan) {
+    final painter = TextPainter(
+      text: textSpan,
+      textDirection: TextDirection.ltr,
+      maxLines: 1,
+    )..layout();
+    return painter.size;
+  }
+
   @override
-  Widget build(BuildContext context) => Positioned(
-    left: widget.left,
-    top: widget._top,
-    child: RepaintBoundary(
+  Widget build(BuildContext context) {
+    final startSpan = TextSpan(
+      text: widget.startTime,
+      style: TextStyle(color: widget._textColor),
+    );
+    final startSize = _getSize(startSpan);
+
+    final nameSpan = TextSpan(
+      text: widget.item.name,
+      style: TextStyle(color: widget._textColor, fontWeight: FontWeight.bold),
+    );
+    final nameSize = _getSize(nameSpan);
+
+    final endSpan = TextSpan(
+      text: widget.endTime,
+      style: TextStyle(color: widget._textColor),
+    );
+    final endSize = _getSize(endSpan);
+
+    final totalWidth =
+        startSize.width + nameSize.width + endSize.width + 36 + 32;
+
+    final Widget textRow;
+    if (widget.width > totalWidth) {
+      textRow = Row(
+        spacing: 12,
+        children: [
+          Text.rich(startSpan),
+          Expanded(child: Text.rich(nameSpan, overflow: TextOverflow.ellipsis)),
+          Text.rich(endSpan),
+        ],
+      );
+    } else if (widget.width > startSize.width + nameSize.width + 12 + 32) {
+      textRow = Row(
+        spacing: 12,
+        children: [
+          Text.rich(startSpan),
+          Expanded(child: Text.rich(nameSpan, overflow: TextOverflow.ellipsis)),
+        ],
+      );
+    } else if (widget.width > startSize.width + 32) {
+      textRow = Text.rich(startSpan, textAlign: TextAlign.start);
+    } else {
+      textRow = SizedBox(height: nameSize.height);
+    }
+
+    return Positioned(
+      left: widget.left,
+      top: widget._top,
       child: MouseRegion(
         onEnter: _onHover,
         onExit: _onLeave,
-        child: SizedBox(
-          width: widget.width,
-          height: widget._finalHeight,
-          child: Container(
-            decoration: BoxDecoration(
-              color:
-                  _isHovered
-                      ? widget.item.color.withAlpha(175)
-                      : widget.item.color.withAlpha(150),
-              border: Border(
-                left: BorderSide(color: widget.item.color, width: 4),
-                right: BorderSide(color: widget.item.color, width: 4),
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withAlpha(126),
-                  blurRadius: 8.0,
-                  offset: const Offset(2, 2),
+        child: Tooltip(
+          message:
+              "${widget.item.name}\n(${widget.startTime} - ${widget.endTime})",
+          child: SizedBox(
+            width: widget.width,
+            height: widget._finalHeight,
+            child: Container(
+              decoration: BoxDecoration(
+                color:
+                    _isHovered
+                        ? widget.item.color.withAlpha(175)
+                        : widget.item.color.withAlpha(150),
+                border: Border(
+                  left: BorderSide(color: widget.item.color, width: 4),
+                  right: BorderSide(color: widget.item.color, width: 4),
                 ),
-              ],
-            ),
-            child: Column(
-              mainAxisAlignment:
-                  widget._isHanging
-                      ? MainAxisAlignment.end
-                      : MainAxisAlignment.start,
-              children: [
-                Container(
-                  color: widget.item.color,
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Tooltip(
-                      message: widget.item.name,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        spacing: 12,
-                        children: [
-                          Text(
-                            widget.startTime,
-                            style: TextStyle(color: widget._textColor),
-                          ),
-                          Expanded(
-                            child: Text(
-                              widget.item.name,
-                              overflow: TextOverflow.ellipsis,
-                              style: TextStyle(
-                                color: widget._textColor,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                          Text(
-                            widget.endTime,
-                            style: TextStyle(color: widget._textColor),
-                          ),
-                        ],
-                      ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withAlpha(126),
+                    blurRadius: 8.0,
+                    offset: const Offset(2, 2),
+                  ),
+                ],
+              ),
+              child: Column(
+                mainAxisAlignment:
+                    widget._isHanging
+                        ? MainAxisAlignment.end
+                        : MainAxisAlignment.start,
+                children: [
+                  Container(
+                    color: widget.item.color,
+                    alignment: Alignment.centerLeft,
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: textRow,
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),
       ),
-    ),
-  );
+    );
+  }
 }

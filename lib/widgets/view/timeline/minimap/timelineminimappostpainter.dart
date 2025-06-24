@@ -1,6 +1,6 @@
 import 'dart:math';
 
-import 'package:assignment_sem6/widgets/view/timeline/timelineitem.dart';
+import 'package:assignment_sem6/widgets/view/timeline/item/timelineitem.dart';
 import 'package:flutter/material.dart';
 
 class TimelineMinimapPostPainter extends CustomPainter {

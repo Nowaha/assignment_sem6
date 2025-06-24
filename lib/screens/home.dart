@@ -7,10 +7,11 @@ import 'package:assignment_sem6/state/authstate.dart';
 import 'package:assignment_sem6/util/time.dart';
 import 'package:assignment_sem6/util/timelineutil.dart';
 import 'package:assignment_sem6/widgets/screen.dart';
+import 'package:assignment_sem6/widgets/view/timeline/item/basictimelineitem.dart';
 import 'package:assignment_sem6/widgets/view/timeline/minimap/timelineminimap.dart';
 import 'package:assignment_sem6/widgets/view/timeline/minimap/timelineminimapzoom.dart';
 import 'package:assignment_sem6/widgets/view/timeline/timelinecontroller.dart';
-import 'package:assignment_sem6/widgets/view/timeline/timelineitem.dart';
+import 'package:assignment_sem6/widgets/view/timeline/item/timelineitem.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
@@ -26,9 +27,13 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> with ToastMixin {
+  late final List<TempPost> _posts;
   late final TimelineController _timelineController;
-  ActiveView activeView = ActiveView.timeline;
+  ActiveView _activeView = ActiveView.timeline;
   bool _showZoom = false;
+
+  double visibleStart = -1;
+  double visibleEnd = -1;
 
   void _setShowZoom(bool show) {
     if (_showZoom == show) return;
@@ -60,7 +65,7 @@ class _HomePageState extends State<HomePage> with ToastMixin {
     );
 
     final random = Random();
-    arrangeElements([
+    _posts = [
       TempPost(
         startTimestamp: secondDay,
         endTimestamp: secondDay + (1000 * 60 * 10),
@@ -113,7 +118,17 @@ class _HomePageState extends State<HomePage> with ToastMixin {
               Colors.primaries[(i ~/ (1000 * 60 * 30)) %
                   Colors.primaries.length],
         ),
-    ]);
+    ];
+    arrangeElements(_posts);
+
+    // _timelineController.addListener(() {
+    //   if (visibleStart != _timelineController.visibleStartTimestamp ||
+    //       visibleEnd != _timelineController.visibleEndTimestamp) {
+    //     visibleStart = _timelineController.visibleStartTimestamp.toDouble();
+    //     visibleEnd = _timelineController.visibleEndTimestamp.toDouble();
+    //     arrangeElements(_posts);
+    //   }
+    // });
 
     super.initState();
   }
@@ -127,36 +142,87 @@ class _HomePageState extends State<HomePage> with ToastMixin {
     for (int i = 0; i < sorted.length; i++) {
       final post = sorted[i];
 
-      int layer = TimelineUtil.resolveLayer(post, arranged);
+      int layer = TimelineUtil.resolveLayer(post.startTimestamp, arranged);
 
       arranged.add(
-        TimelineItem(
+        BasicTimelineItem(
           startTimestamp: post.startTimestamp,
           endTimestamp: post.endTimestamp,
           name: post.name,
-          height: 80.0,
-          width: 300.0,
           rawLayer: layer,
+          layerOffset: 0.0,
           color: post.color,
         ),
       );
     }
 
-    _timelineController.updateItems(arranged);
+    // final int minVisualWidth = _timelineController.visibleTimeScale ~/ 50;
+    // final grouped = groupSmallItems(
+    //   arranged,
+    //   minWidth: minVisualWidth.toDouble(),
+    // );
 
-    print("Arranged ${arranged.length} posts:");
-    for (final item in arranged) {
-      print(
-        "Post: ${item.name}, Start: ${item.startTimestamp}, "
-        "End: ${item.endTimestamp}, Layer: ${item.rawLayer}",
-      );
-    }
+    _timelineController.updateItems(arranged);
   }
 
+  // List<TimelineItem> groupSmallItems(
+  //   List<TimelineItem> items, {
+  //   double minWidth = 4.0,
+  // }) {
+  //   final List<TimelineItem> result = [];
+  //   final List<TimelineItem> groupedItems = [];
+
+  //   for (int i = 0; i < items.length; i++) {
+  //     final item = items[i];
+
+  //     if (item.endTimestamp - item.startTimestamp < minWidth) {
+  //       groupedItems.add(
+  //         item.copyWith(
+  //           rawLayer: TimelineUtil.resolveLayer(item.startTimestamp, result),
+  //         ),
+  //       );
+  //     } else {
+  //       if (groupedItems.isNotEmpty) {
+  //         if (groupedItems.length > 1) {
+  //           int count = groupedItems.fold(
+  //             0,
+  //             (total, item) => total + item.count,
+  //           );
+  //           final group = TimelineItemGroup(
+  //             name: "$count Grouped Items",
+  //             color: Colors.grey,
+  //             items: groupedItems,
+  //             rawLayer: 0,
+  //           );
+  //           result.add(
+  //             group.copyWith(
+  //               rawLayer: TimelineUtil.resolveLayer(
+  //                 group.startTimestamp,
+  //                 result,
+  //               ),
+  //             ),
+  //           );
+  //         } else {
+  //           result.addAll(groupedItems);
+  //         }
+  //       }
+
+  //       groupedItems.clear();
+  //       result.add(
+  //         item.copyWith(
+  //           rawLayer: TimelineUtil.resolveLayer(item.startTimestamp, result),
+  //         ),
+  //       );
+  //     }
+  //   }
+
+  //   return result;
+  // }
+
   void _setActiveView(ActiveView view) {
-    if (activeView == view) return;
+    if (_activeView == view) return;
     setState(() {
-      activeView = view;
+      _activeView = view;
     });
   }
 
@@ -171,7 +237,7 @@ class _HomePageState extends State<HomePage> with ToastMixin {
     final user = authState.getCurrentUser;
 
     return Screen(
-      title: Text(activeView.title),
+      title: Text(_activeView.title),
       padding: EdgeInsets.zero,
       appBarActions: [
         IconButton(onPressed: () {}, icon: Icon(Icons.notifications)),
@@ -214,7 +280,7 @@ class _HomePageState extends State<HomePage> with ToastMixin {
         ),
       ],
       floatingActionButton: Padding(
-        padding: EdgeInsets.only(bottom: activeView.fabOffset),
+        padding: EdgeInsets.only(bottom: _activeView.fabOffset),
         child: FloatingActionButton(
           tooltip: "Create Post",
           onPressed: () {
@@ -237,7 +303,7 @@ class _HomePageState extends State<HomePage> with ToastMixin {
               children: [
                 Positioned.fill(
                   child: Visibility(
-                    visible: activeView == ActiveView.timeline,
+                    visible: _activeView == ActiveView.timeline,
                     maintainState: true,
                     child: RepaintBoundary(
                       child: TimelineView(
@@ -250,7 +316,7 @@ class _HomePageState extends State<HomePage> with ToastMixin {
                 ),
                 Positioned.fill(
                   child: Visibility(
-                    visible: activeView == ActiveView.map,
+                    visible: _activeView == ActiveView.map,
                     maintainState: true,
                     child: RepaintBoundary(
                       child: MapView(
@@ -277,14 +343,12 @@ class _HomePageState extends State<HomePage> with ToastMixin {
                     final double left = fraction * screenWidth - 0.5 * width;
                     final bool tooSmall = screenWidth - width <= 0.0;
                     final double clamped =
-                       tooSmall
-                            ? 0.0
-                            : left.clamp(0.0, screenWidth - width);
+                        tooSmall ? 0.0 : left.clamp(0.0, screenWidth - width);
 
                     return Positioned(
                       bottom: 0,
                       left: tooSmall ? 16.0 : clamped,
-                      right: tooSmall? 16.0 : null,
+                      right: tooSmall ? 16.0 : null,
                       child: TimelineMinimapZoom(
                         width: width,
                         height: 90,

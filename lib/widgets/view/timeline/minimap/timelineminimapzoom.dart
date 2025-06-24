@@ -1,6 +1,6 @@
 import 'package:assignment_sem6/widgets/view/timeline/minimap/timelineminimappostpainter.dart';
 import 'package:assignment_sem6/widgets/view/timeline/timelinecontroller.dart';
-import 'package:assignment_sem6/widgets/view/timeline/timelineitem.dart';
+import 'package:assignment_sem6/widgets/view/timeline/item/timelineitem.dart';
 import 'package:flutter/material.dart';
 
 class TimelineMinimapZoom extends StatefulWidget {

@@ -1,8 +1,10 @@
 import 'package:assignment_sem6/util/time.dart';
 import 'package:assignment_sem6/util/timelineutil.dart';
-import 'package:assignment_sem6/widgets/view/timeline/timelineitem.dart';
+import 'package:assignment_sem6/widgets/view/timeline/item/timelineitem.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+
+import 'timeline.dart';
 
 typedef Range = ({int start, int end});
 
@@ -102,7 +104,7 @@ class TimelineController extends ChangeNotifier {
   void updateItems(List<TimelineItem> newItems) {
     items = newItems;
     items.sort(
-      (a, b) => b.effectiveLayer.abs().compareTo(a.effectiveLayer.abs()),
+      (a, b) => b.rawLayer.abs().compareTo(a.rawLayer.abs()),
     );
     notifyListeners();
   }
@@ -225,7 +227,7 @@ class TimelineController extends ChangeNotifier {
     if (by == 0) return;
     if (items.isEmpty) return;
 
-    final height = items[0].height;
+    final height = Timeline.timelineItemHeight;
 
     final oldLayerOffset = _calculateLayerOffset(_verticalOffset, height, 2);
 

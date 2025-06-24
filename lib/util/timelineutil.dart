@@ -1,5 +1,4 @@
-import 'package:assignment_sem6/screens/home.dart';
-import 'package:assignment_sem6/widgets/view/timeline/timelineitem.dart';
+import 'package:assignment_sem6/widgets/view/timeline/item/timelineitem.dart';
 
 class TimelineUtil {
   static final Set<int> _layers = _generateLayers();
@@ -18,12 +17,15 @@ class TimelineUtil {
     return layers;
   }
 
-  static int resolveLayer(TempPost post, List<TimelineItem> previousItems) {
+  static int resolveLayer(
+    int startTimestamp,
+    List<TimelineItem> previousItems,
+  ) {
     final occupiedLayers = <int>{};
     for (int i = previousItems.length - 1; i >= 0; i--) {
       final item = previousItems[i];
 
-      if (post.startTimestamp < item.endTimestamp) {
+      if (startTimestamp < item.endTimestamp) {
         occupiedLayers.add(item.rawLayer);
       }
     }
@@ -34,7 +36,7 @@ class TimelineUtil {
       }
     }
 
-    throw Exception("No available layer found for post: ${post.name}");
+    throw Exception("No available layer found.");
   }
 
   static double getElementLeftPosition(
