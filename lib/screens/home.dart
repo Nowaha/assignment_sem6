@@ -15,6 +15,7 @@ import 'package:assignment_sem6/widgets/view/timeline/item/timelineitem.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
+import 'package:latlong2/latlong.dart';
 import 'package:provider/provider.dart';
 
 class HomePage extends StatefulWidget {
@@ -29,7 +30,9 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> with ToastMixin {
   late final List<TempPost> _posts;
   late final TimelineController _timelineController;
-  ActiveView _activeView = ActiveView.timeline;
+  final ValueNotifier<ActiveView> _activeView = ValueNotifier(
+    ActiveView.timeline,
+  );
   bool _showZoom = false;
 
   double visibleStart = -1;
@@ -48,6 +51,11 @@ class _HomePageState extends State<HomePage> with ToastMixin {
       _showZoom = show;
     });
   }
+
+  LatLng generateLocation(Random random) => LatLng(
+    41.8719 + random.nextDouble() * 0.5 - 0.05,
+    12.5674 + random.nextDouble() * 0.5 - 0.05,
+  );
 
   @override
   void initState() {
@@ -71,49 +79,57 @@ class _HomePageState extends State<HomePage> with ToastMixin {
         endTimestamp: secondDay + (1000 * 60 * 10),
         name: "Post 1",
         color: Colors.red,
+        location: generateLocation(random),
       ),
       TempPost(
         startTimestamp: secondDay + (1000 * 60 * 10),
         endTimestamp: secondDay + (1000 * 60 * 15),
         name: "Post 2",
         color: Colors.blue,
+        location: generateLocation(random),
       ),
       TempPost(
         startTimestamp: secondDay + (1000 * 60 * 10),
         endTimestamp: secondDay + (1000 * 60 * 20),
         name: "Post 3",
         color: Colors.green,
+        location: generateLocation(random),
       ),
       TempPost(
         startTimestamp: secondDay + (1000 * 60 * 23),
         endTimestamp: secondDay + (1000 * 60 * 50),
         name: "Post 4",
         color: Colors.orange,
+        location: generateLocation(random),
       ),
       TempPost(
         startTimestamp: secondDay + (1000 * 60 * 25),
         endTimestamp: secondDay + (1000 * 60 * 40),
         name: "Post 5",
         color: Colors.purple,
+        location: generateLocation(random),
       ),
       TempPost(
         startTimestamp: secondDay + (1000 * 60 * 27),
         endTimestamp: secondDay + (1000 * 60 * 43),
         name: "Post 7",
         color: Colors.deepOrange,
+        location: generateLocation(random),
       ),
       TempPost(
         startTimestamp: secondDay + (1000 * 60 * 50),
         endTimestamp: secondDay + (1000 * 60 * 60),
         name: "Post 6",
         color: Colors.yellow,
+        location: generateLocation(random),
       ),
       for (int i = 0; i < 10; i++)
         TempPost(
           startTimestamp: secondDay + (1000 * 60 * 50) + (1000 * i),
           endTimestamp: secondDay + (1000 * 60 * 50) + 1000 * (i + 1),
           name: "Post small",
-          color:  Colors.primaries[i],
+          color: Colors.primaries[i],
+          location: generateLocation(random),
         ),
       for (int i = startTimestamp; i < endTimestamp; i += 1000 * 60 * 30)
         TempPost(
@@ -124,6 +140,7 @@ class _HomePageState extends State<HomePage> with ToastMixin {
           color:
               Colors.primaries[(i ~/ (1000 * 60 * 30)) %
                   Colors.primaries.length],
+          location: generateLocation(random),
         ),
     ];
     arrangeElements(_posts);
@@ -159,6 +176,7 @@ class _HomePageState extends State<HomePage> with ToastMixin {
           rawLayer: layer,
           layerOffset: 0.0,
           color: post.color,
+          location: post.location,
         ),
       );
     }
@@ -227,10 +245,9 @@ class _HomePageState extends State<HomePage> with ToastMixin {
   // }
 
   void _setActiveView(ActiveView view) {
-    if (_activeView == view) return;
-    setState(() {
-      _activeView = view;
-    });
+    if (_activeView.value == view) return;
+    HapticFeedback.lightImpact();
+    _activeView.value = view;
   }
 
   void _logout() {
@@ -244,7 +261,7 @@ class _HomePageState extends State<HomePage> with ToastMixin {
     final user = authState.getCurrentUser;
 
     return Screen(
-      title: Text(_activeView.title),
+      title: Text(_activeView.value.title),
       padding: EdgeInsets.zero,
       appBarActions: [
         IconButton(onPressed: () {}, icon: Icon(Icons.notifications)),
@@ -287,7 +304,7 @@ class _HomePageState extends State<HomePage> with ToastMixin {
         ),
       ],
       floatingActionButton: Padding(
-        padding: EdgeInsets.only(bottom: _activeView.fabOffset),
+        padding: EdgeInsets.only(bottom: _activeView.value.fabOffset),
         child: FloatingActionButton(
           tooltip: "Create Post",
           onPressed: () {
@@ -303,83 +320,93 @@ class _HomePageState extends State<HomePage> with ToastMixin {
           child: Icon(Icons.add),
         ),
       ),
-      child: Column(
-        children: [
-          Expanded(
-            child: Stack(
+      child: ListenableBuilder(
+        listenable: _activeView,
+        builder:
+            (context, _) => Column(
               children: [
-                Positioned.fill(
-                  child: Visibility(
-                    visible: _activeView == ActiveView.timeline,
-                    maintainState: true,
-                    child: RepaintBoundary(
-                      child: TimelineView(
-                        controller: _timelineController,
-                        onMapButtonPressed:
-                            () => _setActiveView(ActiveView.map),
+                Expanded(
+                  child: Stack(
+                    children: [
+                      Positioned.fill(
+                        child: Visibility(
+                          visible: _activeView.value == ActiveView.timeline,
+                          maintainState: true,
+                          child: RepaintBoundary(
+                            child: TimelineView(
+                              controller: _timelineController,
+                              onMapButtonPressed:
+                                  () => _setActiveView(ActiveView.map),
+                            ),
+                          ),
+                        ),
                       ),
-                    ),
-                  ),
-                ),
-                Positioned.fill(
-                  child: Visibility(
-                    visible: _activeView == ActiveView.map,
-                    maintainState: true,
-                    child: RepaintBoundary(
-                      child: MapView(
-                        onTimelineButtonPressed:
-                            () => _setActiveView(ActiveView.timeline),
+                      Positioned.fill(
+                        child: Visibility(
+                          visible: _activeView.value == ActiveView.map,
+                          maintainState: true,
+                          child: RepaintBoundary(
+                            child: MapView(
+                              controller: _timelineController,
+                              onTimelineButtonPressed:
+                                  () => _setActiveView(ActiveView.timeline),
+                              activeView: _activeView,
+                            ),
+                          ),
+                        ),
                       ),
-                    ),
+                      ListenableBuilder(
+                        listenable: _timelineController,
+                        builder: (context, _) {
+                          const double width = 400.0;
+                          final screenWidth = MediaQuery.sizeOf(context).width;
+                          final int fullLength =
+                              _timelineController.effectiveEndTimestamp -
+                              _timelineController.effectiveStartTimestamp;
+                          final int visibleCenter =
+                              _timelineController.visibleCenterTimestamp;
+                          final double fraction =
+                              (visibleCenter -
+                                  _timelineController.effectiveStartTimestamp) /
+                              fullLength;
+                          final double left =
+                              fraction * screenWidth - 0.5 * width;
+                          final bool tooSmall = screenWidth - width <= 0.0;
+                          final double clamped =
+                              tooSmall
+                                  ? 0.0
+                                  : left.clamp(0.0, screenWidth - width);
+
+                          return Positioned(
+                            bottom: 0,
+                            left: tooSmall ? 16.0 : clamped,
+                            right: tooSmall ? 16.0 : null,
+                            child: TimelineMinimapZoom(
+                              width: width,
+                              fullWidth: screenWidth,
+                              height: 90,
+                              controller: _timelineController,
+                              visible: _showZoom,
+                            ),
+                          );
+                        },
+                      ),
+                    ],
                   ),
                 ),
                 ListenableBuilder(
                   listenable: _timelineController,
-                  builder: (context, _) {
-                    const double width = 400.0;
-                    final screenWidth = MediaQuery.sizeOf(context).width;
-                    final int fullLength =
-                        _timelineController.effectiveEndTimestamp -
-                        _timelineController.effectiveStartTimestamp;
-                    final int visibleCenter =
-                        _timelineController.visibleCenterTimestamp;
-                    final double fraction =
-                        (visibleCenter -
-                            _timelineController.effectiveStartTimestamp) /
-                        fullLength;
-                    final double left = fraction * screenWidth - 0.5 * width;
-                    final bool tooSmall = screenWidth - width <= 0.0;
-                    final double clamped =
-                        tooSmall ? 0.0 : left.clamp(0.0, screenWidth - width);
-
-                    return Positioned(
-                      bottom: 0,
-                      left: tooSmall ? 16.0 : clamped,
-                      right: tooSmall ? 16.0 : null,
-                      child: TimelineMinimapZoom(
-                        width: width,
-                        height: 90,
-                        controller: _timelineController,
-                        visible: _showZoom,
+                  builder:
+                      (context, _) => SizedBox(
+                        width: double.infinity,
+                        child: TimelineMiniMap(
+                          controller: _timelineController,
+                          setShowZoom: _setShowZoom,
+                        ),
                       ),
-                    );
-                  },
                 ),
               ],
             ),
-          ),
-          ListenableBuilder(
-            listenable: _timelineController,
-            builder:
-                (context, _) => SizedBox(
-                  width: double.infinity,
-                  child: TimelineMiniMap(
-                    controller: _timelineController,
-                    setShowZoom: _setShowZoom,
-                  ),
-                ),
-          ),
-        ],
       ),
     );
   }
@@ -400,11 +427,13 @@ class TempPost {
   final int endTimestamp;
   final String name;
   final Color color;
+  final LatLng location;
 
   const TempPost({
     required this.startTimestamp,
     required this.endTimestamp,
     required this.name,
     this.color = Colors.purple,
+    required this.location,
   });
 }

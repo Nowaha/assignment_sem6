@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:latlong2/latlong.dart';
 
 abstract class TimelineItem {
   final String name;
   final Color color;
+  final LatLng location;
   late final int startTimestamp;
   late final int endTimestamp;
   late final int rawLayer;
@@ -15,6 +17,7 @@ abstract class TimelineItem {
   TimelineItem({
     required this.name,
     this.color = Colors.purple,
+    required this.location,
     required this.startTimestamp,
     required this.endTimestamp,
     required this.rawLayer,
