@@ -8,7 +8,7 @@ class ScalePainter extends CustomPainter {
 
   final Offset position;
   final double timelineWidth;
-  final double timelineThickness;
+  final num timelineThickness;
   final double tickHeight;
   final double tickWidth;
   final int timeScale;
@@ -38,7 +38,7 @@ class ScalePainter extends CustomPainter {
     final paint =
         Paint()
           ..color = timelineColor
-          ..strokeWidth = timelineThickness;
+          ..strokeWidth = timelineThickness.toDouble();
 
     final width = (timelineWidth / timeScale * tickEvery);
     final double startX, endX;

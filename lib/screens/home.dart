@@ -7,6 +7,7 @@ import 'package:assignment_sem6/state/authstate.dart';
 import 'package:assignment_sem6/util/time.dart';
 import 'package:assignment_sem6/util/timelineutil.dart';
 import 'package:assignment_sem6/widgets/screen.dart';
+import 'package:assignment_sem6/widgets/view/filter/filtercontainer.dart';
 import 'package:assignment_sem6/widgets/view/timeline/item/basictimelineitem.dart';
 import 'package:assignment_sem6/widgets/view/timeline/minimap/timelineminimap.dart';
 import 'package:assignment_sem6/widgets/view/timeline/minimap/timelineminimapzoom.dart';
@@ -123,14 +124,14 @@ class _HomePageState extends State<HomePage> with ToastMixin {
         color: Colors.yellow,
         location: generateLocation(random),
       ),
-      for (int i = 0; i < 10; i++)
-        TempPost(
-          startTimestamp: secondDay + (1000 * 60 * 50) + (1000 * i),
-          endTimestamp: secondDay + (1000 * 60 * 50) + 1000 * (i + 1),
-          name: "Post small",
-          color: Colors.primaries[i],
-          location: generateLocation(random),
-        ),
+      // for (int i = 0; i < 10; i++)
+      //   TempPost(
+      //     startTimestamp: secondDay + (1000 * 60 * 50) + (1000 * i),
+      //     endTimestamp: secondDay + (1000 * 60 * 50) + 1000 * (i + 1),
+      //     name: "Post small",
+      //     color: Colors.primaries[i],
+      //     location: generateLocation(random),
+      //   ),
       for (int i = startTimestamp; i < endTimestamp; i += 1000 * 60 * 30)
         TempPost(
           startTimestamp: i.toInt(),
@@ -391,6 +392,11 @@ class _HomePageState extends State<HomePage> with ToastMixin {
                           );
                         },
                       ),
+                      Positioned(
+                        left: 16,
+                        top: 16,
+                        child: RepaintBoundary(child: FilterContainer()),
+                      ),
                     ],
                   ),
                 ),
@@ -414,7 +420,7 @@ class _HomePageState extends State<HomePage> with ToastMixin {
 
 enum ActiveView {
   timeline("Timeline View", 150.0),
-  map("Map View", 90.0);
+  map("Map View", 150.0);
 
   final String title;
   final double fabOffset;

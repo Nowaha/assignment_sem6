@@ -1,6 +1,5 @@
 import 'package:assignment_sem6/util/screen.dart';
 import 'package:assignment_sem6/util/timelineutil.dart';
-import 'package:assignment_sem6/widgets/view/filter/filtercontainer.dart';
 import 'package:assignment_sem6/widgets/view/timeline/timelinecontroller.dart';
 import 'package:assignment_sem6/widgets/view/timeline/timelinecontrols.dart';
 import 'package:assignment_sem6/widgets/view/timeline/timelineelement.dart';
@@ -188,11 +187,6 @@ class TimelineState extends State<Timeline> {
                         ),
                     ],
                   ),
-                ),
-                Positioned(
-                  left: 16,
-                  top: 16,
-                  child: RepaintBoundary(child: FilterContainer()),
                 ),
               ],
             );

@@ -1,4 +1,5 @@
 import 'package:assignment_sem6/widgets/view/filter/filter.dart';
+import 'package:assignment_sem6/widgets/view/filter/search.dart';
 import 'package:flutter/material.dart';
 
 class FilterContainer extends StatelessWidget {
@@ -31,7 +32,7 @@ class FilterContainer extends StatelessWidget {
             "Search & Filters",
             style: Theme.of(context).textTheme.titleMedium,
           ),
-          // SearchWidget(),
+          SearchWidget(),
           FilterWidget(),
         ],
       ),
