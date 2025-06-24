@@ -1,4 +1,5 @@
 import 'package:assignment_sem6/util/timelineutil.dart';
+import 'package:assignment_sem6/widgets/view/timeline/painter/tickpainter.dart';
 import 'package:flutter/material.dart';
 
 class ScalePainter extends CustomPainter {
@@ -21,8 +22,6 @@ class ScalePainter extends CustomPainter {
     required this.position,
     required this.timelineWidth,
     required timelineThickness,
-    required tickHeight,
-    required tickWidth,
     required scaleDownFactor,
     required this.timeScale,
     required this.tickEvery,
@@ -31,8 +30,8 @@ class ScalePainter extends CustomPainter {
     required this.surfaceColor,
     this.align = Align.center,
   }) : timelineThickness = timelineThickness * scaleDownFactor,
-       tickHeight = tickHeight * scaleDownFactor,
-       tickWidth = tickWidth * scaleDownFactor;
+       tickHeight = TickPainter.tickHeight * scaleDownFactor,
+       tickWidth = TickPainter.tickWidth * scaleDownFactor;
 
   @override
   void paint(Canvas canvas, Size size) {

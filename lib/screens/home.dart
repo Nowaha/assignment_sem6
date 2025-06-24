@@ -108,6 +108,13 @@ class _HomePageState extends State<HomePage> with ToastMixin {
         name: "Post 6",
         color: Colors.yellow,
       ),
+      for (int i = 0; i < 10; i++)
+        TempPost(
+          startTimestamp: secondDay + (1000 * 60 * 50) + (1000 * i),
+          endTimestamp: secondDay + (1000 * 60 * 50) + 1000 * (i + 1),
+          name: "Post small",
+          color:  Colors.primaries[i],
+        ),
       for (int i = startTimestamp; i < endTimestamp; i += 1000 * 60 * 30)
         TempPost(
           startTimestamp: i.toInt(),

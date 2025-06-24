@@ -1,8 +1,6 @@
-import 'package:assignment_sem6/util/time.dart';
 import 'package:assignment_sem6/util/timelineutil.dart';
 import 'package:assignment_sem6/widgets/view/timeline/item/timelineitem.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
 
 import 'timeline.dart';
 
@@ -103,9 +101,7 @@ class TimelineController extends ChangeNotifier {
 
   void updateItems(List<TimelineItem> newItems) {
     items = newItems;
-    items.sort(
-      (a, b) => b.rawLayer.abs().compareTo(a.rawLayer.abs()),
-    );
+    items.sort((a, b) => b.effectiveLayer.abs().compareTo(a.effectiveLayer.abs()));
     notifyListeners();
   }
 
@@ -212,16 +208,6 @@ class TimelineController extends ChangeNotifier {
     notifyListeners();
   }
 
-  double _calculateLayerOffset(
-    double verticalOffset,
-    double itemHeight,
-    int divisor,
-  ) {
-    if (divisor == 1) {
-      return -(verticalOffset / itemHeight).roundToDouble();
-    }
-    return -((verticalOffset / itemHeight) * divisor).roundToDouble() / divisor;
-  }
 
   void adjustVerticalOffset(int by) {
     if (by == 0) return;
@@ -229,10 +215,10 @@ class TimelineController extends ChangeNotifier {
 
     final height = Timeline.timelineItemHeight;
 
-    final oldLayerOffset = _calculateLayerOffset(_verticalOffset, height, 2);
+    final oldLayerOffset = TimelineUtil.calculateLayerOffset(_verticalOffset, height, 2);
 
     double verticalOffset = _verticalOffset + by;
-    double layerOffset = _calculateLayerOffset(verticalOffset, height, 2);
+    double layerOffset = TimelineUtil.calculateLayerOffset(verticalOffset, height, 2);
     if (layerOffset == oldLayerOffset) {
       _verticalOffset = verticalOffset;
       notifyListeners();
@@ -283,12 +269,6 @@ class TimelineController extends ChangeNotifier {
 
       if (!normallyOnHalf && (item.rawLayer + offset).abs() == 0.5) {
         offset += direction * 1;
-      }
-
-      if (item.name == "Post 12" && item.rawLayer < 0) {
-        print(
-          "[${Time.nowAsTimestamp()} - ${item.name}] oldLayerOffset: $oldLayerOffset, layerOffset: $offset, newEffectiveLayer: $offset, normallyOnHalf: $normallyOnHalf",
-        );
       }
 
       newItems.add(item.copyWith(layerOffset: offset));

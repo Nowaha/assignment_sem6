@@ -1,4 +1,6 @@
+import 'package:assignment_sem6/util/timelineutil.dart';
 import 'package:assignment_sem6/widgets/view/timeline/painter/timelinelinepainter.dart';
+import 'package:assignment_sem6/widgets/view/timeline/timeline.dart';
 import 'package:flutter/material.dart';
 
 class TimelineLine extends StatelessWidget {
@@ -11,9 +13,10 @@ class TimelineLine extends StatelessWidget {
   final int centerTime;
   final Color color;
   final double offset;
-  final double offsetRounded;
 
-  const TimelineLine({
+  late final double offsetRounded;
+
+  TimelineLine({
     super.key,
     required this.startTimestamp,
     required this.endTimestamp,
@@ -24,8 +27,15 @@ class TimelineLine extends StatelessWidget {
     required this.centerTime,
     this.color = Colors.white,
     this.offset = 0.0,
-    this.offsetRounded = 0.0,
-  });
+  }) {
+    offsetRounded =
+        -TimelineUtil.calculateLayerOffset(
+          offset,
+          Timeline.timelineItemHeight,
+          2,
+        ) *
+        Timeline.timelineItemHeight;
+  }
 
   @override
   Widget build(BuildContext context) {

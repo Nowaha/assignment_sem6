@@ -151,9 +151,6 @@ class TimelineState extends State<Timeline> {
                     tickEvery: tickEvery,
                     color: Theme.of(context).colorScheme.onSurface,
                     offset: widget.controller.verticalOffset,
-                    offsetRounded:
-                        -widget.controller.items[0].layerOffset *
-                        Timeline.timelineItemHeight,
                   ),
                 ),
                 Positioned(

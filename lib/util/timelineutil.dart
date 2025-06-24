@@ -125,4 +125,15 @@ class TimelineUtil {
     }
     return result.trim();
   }
+
+  static double calculateLayerOffset(
+    double verticalOffset,
+    double itemHeight,
+    int divisor,
+  ) {
+    if (divisor == 1) {
+      return -(verticalOffset / itemHeight).roundToDouble();
+    }
+    return -((verticalOffset / itemHeight) * divisor).roundToDouble() / divisor;
+  }
 }
