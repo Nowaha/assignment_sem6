@@ -11,18 +11,45 @@ class TimelineMinimapPostPainter extends CustomPainter {
   final int endTimestamp;
   final Color timelineColor;
 
+  final bool isZoom;
+  final int? timelineStart;
+  final int? timelineEnd;
+  final double? timelineWidth;
+
   TimelineMinimapPostPainter({
     required this.items,
     required this.startTimestamp,
     required this.endTimestamp,
     required this.timelineColor,
-  });
+  }) : isZoom = false,
+       timelineStart = null,
+       timelineEnd = null,
+       timelineWidth = null;
+
+  TimelineMinimapPostPainter.zoom({
+    required this.items,
+    required this.startTimestamp,
+    required this.endTimestamp,
+    required this.timelineColor,
+    required this.timelineStart,
+    required this.timelineEnd,
+    required this.timelineWidth,
+  }) : isZoom = true;
 
   @override
   void paint(Canvas canvas, Size size) {
+    final List<TimelineItem> filtered = [];
+
     int maxLayer = 0;
     int minLayer = 0;
     for (final item in items) {
+      if (item.endTimestamp <= startTimestamp ||
+          item.startTimestamp >= endTimestamp) {
+        continue;
+      }
+
+      filtered.add(item);
+
       if (item.rawLayer > maxLayer) {
         maxLayer = item.rawLayer;
       } else if (item.rawLayer < minLayer) {
@@ -59,16 +86,14 @@ class TimelineMinimapPostPainter extends CustomPainter {
 
     final totalDuration = (endTimestamp - startTimestamp).toDouble();
 
-    for (final item in items) {
+    for (final item in filtered) {
       final startX = max(
         0.0,
-        ((item.startTimestamp + 1000 * 60 - startTimestamp) / totalDuration) *
-            size.width,
+        ((item.startTimestamp - startTimestamp) / totalDuration) * size.width,
       );
       final endX = min(
         size.width,
-        ((item.endTimestamp - 1000 * 60 - startTimestamp) / totalDuration) *
-            size.width,
+        ((item.endTimestamp - startTimestamp) / totalDuration) * size.width,
       );
 
       final isHanging = item.rawLayer < 0;

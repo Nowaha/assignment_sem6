@@ -173,6 +173,10 @@ class _TimelineMiniMapState extends State<TimelineMiniMap> {
       zoom: widget.controller.zoom,
       pan: (pan) {
         widget.controller.pan(-pan);
+        widget.setShowZoom?.call(true);
+      },
+      panEnd: () {
+        widget.setShowZoom?.call(false);
       },
       panUp: (_) {},
       child: Container(
@@ -212,7 +216,6 @@ class _TimelineMiniMapState extends State<TimelineMiniMap> {
             ),
             foregroundPainter: TimelineMinimapSeekerPainter(
               seekerInfo: _seekerInfo,
-
               hovering: _hovering,
             ),
           ),

@@ -10,6 +10,7 @@ class TimelineZoom extends StatefulWidget {
   final Function(double) zoom;
   final Function(int) pan;
   final Function(int) panUp;
+  final VoidCallback? panEnd;
   final double dragSensitivity;
   final Widget child;
   final bool invertGesturePan;
@@ -24,6 +25,7 @@ class TimelineZoom extends StatefulWidget {
     required this.zoom,
     required this.pan,
     required this.panUp,
+    this.panEnd,
     required this.dragSensitivity,
     required this.child,
     this.invertGesturePan = false,
@@ -37,6 +39,7 @@ class TimelineZoom extends StatefulWidget {
     required this.zoom,
     required this.pan,
     required this.panUp,
+    this.panEnd,
     required this.dragSensitivity,
     required this.child,
     required this.shouldDelegateScaleUpdate,
@@ -149,6 +152,8 @@ class _TimelineZoomState extends State<TimelineZoom>
             widget.onDelegateRelease?.call(details);
             return;
           }
+
+          widget.panEnd?.call();
 
           final velocity =
               details.velocity.pixelsPerSecond.dx * widget.dragSensitivity;
