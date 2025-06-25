@@ -14,6 +14,7 @@ class TimelineElement extends StatefulWidget {
   final double height;
   final String startTime;
   final String endTime;
+  final bool selected;
   final VoidCallback? onHover;
   final VoidCallback? onLeave;
   final VoidCallback? onSelect;
@@ -34,6 +35,7 @@ class TimelineElement extends StatefulWidget {
     required this.height,
     required this.startTime,
     required this.endTime,
+    this.selected = false,
     this.onHover,
     this.onLeave,
     this.onSelect,
@@ -141,45 +143,54 @@ class _TimelineElementState extends State<TimelineElement> {
       child: MouseRegion(
         onEnter: _onHover,
         onExit: _onLeave,
-        child: Tooltip(
-          message:
-              "${widget.item.name}\n(${widget.startTime} - ${widget.endTime})",
-          child: SizedBox(
-            width: widget.width,
-            height: widget._finalHeight,
-            child: Container(
-              decoration: BoxDecoration(
-                color:
-                    _isHovered
-                        ? widget.item.color.withAlpha(175)
-                        : widget.item.color.withAlpha(150),
-                border: Border(
-                  left: BorderSide(color: widget.item.color, width: 4),
-                  right: BorderSide(color: widget.item.color, width: 4),
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withAlpha(126),
-                    blurRadius: 8.0,
-                    offset: const Offset(2, 2),
+        child: Listener(
+          onPointerDown: (event) {
+            if (widget.onSelect != null) {
+              widget.onSelect!();
+            }
+          },
+          child: Tooltip(
+            message:
+                "${widget.item.name}\n(${widget.startTime} - ${widget.endTime})",
+            child: SizedBox(
+              width: widget.width,
+              height: widget._finalHeight,
+              child: Container(
+                decoration: BoxDecoration(
+                  color:
+                      widget.selected
+                          ? widget.item.color
+                          : (_isHovered
+                              ? widget.item.color.withAlpha(175)
+                              : widget.item.color.withAlpha(150)),
+                  border: Border(
+                    left: BorderSide(color: widget.item.color, width: 4),
+                    right: BorderSide(color: widget.item.color, width: 4),
                   ),
-                ],
-              ),
-              child: Column(
-                mainAxisAlignment:
-                    widget._isHanging
-                        ? MainAxisAlignment.end
-                        : MainAxisAlignment.start,
-                children: [
-                  Container(
-                    color: widget.item.color,
-                    alignment: Alignment.centerLeft,
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: textRow,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withAlpha(126),
+                      blurRadius: 8.0,
+                      offset: const Offset(2, 2),
                     ),
-                  ),
-                ],
+                  ],
+                ),
+                child: Column(
+                  mainAxisAlignment:
+                      widget._isHanging
+                          ? MainAxisAlignment.end
+                          : MainAxisAlignment.start,
+                  children: [
+                    Container(
+                      color: widget.item.color,
+                      alignment: Alignment.centerLeft,
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: textRow,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),

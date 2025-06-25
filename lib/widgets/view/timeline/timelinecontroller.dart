@@ -8,6 +8,7 @@ typedef Range = ({int start, int end});
 
 class TimelineController extends ChangeNotifier {
   List<TimelineItem> _items;
+  TimelineItem? _selectedItem;
   int _startTimestamp;
   int _endTimestamp;
 
@@ -58,6 +59,7 @@ class TimelineController extends ChangeNotifier {
        );
 
   List<TimelineItem> get items => _items;
+  TimelineItem? get selectedItem => _selectedItem;
   int get startTimestamp => _startTimestamp;
   int get endTimestamp => _endTimestamp;
   int get centerTimestamp => (_startTimestamp + _endTimestamp) ~/ 2;
@@ -99,9 +101,16 @@ class TimelineController extends ChangeNotifier {
     notifyListeners();
   }
 
+  set selectedItem(TimelineItem? item) {
+    _selectedItem = item;
+    notifyListeners();
+  }
+
   void updateItems(List<TimelineItem> newItems) {
     items = newItems;
-    items.sort((a, b) => b.effectiveLayer.abs().compareTo(a.effectiveLayer.abs()));
+    items.sort(
+      (a, b) => b.effectiveLayer.abs().compareTo(a.effectiveLayer.abs()),
+    );
     notifyListeners();
   }
 
@@ -208,17 +217,24 @@ class TimelineController extends ChangeNotifier {
     notifyListeners();
   }
 
-
   void adjustVerticalOffset(int by) {
     if (by == 0) return;
     if (items.isEmpty) return;
 
     final height = Timeline.timelineItemHeight;
 
-    final oldLayerOffset = TimelineUtil.calculateLayerOffset(_verticalOffset, height, 2);
+    final oldLayerOffset = TimelineUtil.calculateLayerOffset(
+      _verticalOffset,
+      height,
+      2,
+    );
 
     double verticalOffset = _verticalOffset + by;
-    double layerOffset = TimelineUtil.calculateLayerOffset(verticalOffset, height, 2);
+    double layerOffset = TimelineUtil.calculateLayerOffset(
+      verticalOffset,
+      height,
+      2,
+    );
     if (layerOffset == oldLayerOffset) {
       _verticalOffset = verticalOffset;
       notifyListeners();

@@ -64,8 +64,24 @@ class TimelineState extends State<Timeline> {
     final element = TimelineElement(
       index: index,
       item: item,
-      onHover: () => _setPutToFront(index),
-      onLeave: _clearPutToFront,
+      onHover: () {
+        if (widget.controller.selectedItem == null) {
+          _setPutToFront(index);
+        }
+      },
+      onLeave: () {
+        if (widget.controller.selectedItem == null) {
+          _clearPutToFront();
+        }
+      },
+      onSelect: () {
+        if (widget.controller.selectedItem != item) {
+          _setPutToFront(index);
+          widget.controller.selectedItem = item;
+        } else {
+          widget.controller.selectedItem = null;
+        }
+      },
       left: TimelineUtil.getElementLeftPosition(
         screenWidth,
         widget.controller.visibleTimeScale,
@@ -79,6 +95,7 @@ class TimelineState extends State<Timeline> {
       height: elementHeight,
       startTime: startTimeString,
       endTime: endTimeString,
+      selected: widget.controller.selectedItem == item,
     );
     return element;
   }

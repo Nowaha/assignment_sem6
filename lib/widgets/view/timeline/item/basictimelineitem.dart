@@ -37,4 +37,16 @@ class BasicTimelineItem extends TimelineItem {
       layerOffset: layerOffset ?? this.layerOffset,
     );
   }
+
+  @override
+  bool operator ==(Object other) {
+    return super == other ||
+        (other is BasicTimelineItem &&
+            other.startTimestamp == startTimestamp &&
+            other.endTimestamp == endTimestamp &&
+            other.name == name &&
+            other.color == color &&
+            other.location == location &&
+            other.rawLayer == rawLayer);
+  }
 }
