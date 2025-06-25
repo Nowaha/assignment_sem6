@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:assignment_sem6/mixin/toastmixin.dart';
+import 'package:assignment_sem6/screens/post/viewpost.dart';
 import 'package:assignment_sem6/screens/view/map.dart';
 import 'package:assignment_sem6/screens/view/timeline.dart';
 import 'package:assignment_sem6/state/authstate.dart';
@@ -399,6 +400,20 @@ class _HomePageState extends State<HomePage> with ToastMixin {
                       ),
                     ],
                   ),
+                ),
+                ListenableBuilder(
+                  listenable: _timelineController,
+                  builder: (context, _) {
+                    if (_timelineController.selectedItem != null) {
+                      return Expanded(
+                        child: ViewPost(
+                          postName: _timelineController.selectedItem!.name,
+                        ),
+                      );
+                    }
+
+                    return SizedBox.shrink();
+                  },
                 ),
                 ListenableBuilder(
                   listenable: _timelineController,
