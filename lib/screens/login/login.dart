@@ -61,6 +61,10 @@ class _LoginPageState extends State<LoginPage> with FormMixin {
       }
 
       if (authenticatedUser != null) {
+        setState(() {
+          setLoading(false, updateState: false);
+          clearAllErrors();
+        });
         authState.login(authenticatedUser);
         return;
       }
