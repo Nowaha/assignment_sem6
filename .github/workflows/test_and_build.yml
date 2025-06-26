@@ -29,5 +29,10 @@ jobs:
       - name: Run tests
         run: flutter test
 
+      - name: Install CocoaPods
+        run: |
+          cd macos
+          pod install
+
       - name: Build for MacOS
         run: flutter build macos
