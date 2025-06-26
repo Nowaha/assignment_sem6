@@ -12,6 +12,8 @@ abstract class TimelineItem {
 
   int get count;
 
+  String get key => "item-$startTimestamp-$endTimestamp-$rawLayer";
+
   late final double effectiveLayer;
 
   TimelineItem({

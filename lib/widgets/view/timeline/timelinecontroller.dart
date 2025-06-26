@@ -91,6 +91,13 @@ class TimelineController extends ChangeNotifier {
     notifyListeners();
   }
 
+  List<TimelineItem> getVisibleItems() {
+    return items.where((item) {
+      return item.endTimestamp >= visibleStartTimestamp &&
+          item.startTimestamp <= visibleEndTimestamp;
+    }).toList();
+  }
+
   set startTimestamp(int newStart) {
     _startTimestamp = newStart;
     notifyListeners();

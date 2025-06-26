@@ -1,7 +1,7 @@
 import 'package:assignment_sem6/widgets/view/timeline/item/timelineitem.dart';
 import 'package:flutter/material.dart';
 
-class TimelineElement extends StatefulWidget {
+class TimelineElement extends StatelessWidget {
   static const headerHeight = 60.0;
   static const snap = 20.0;
 
@@ -14,6 +14,7 @@ class TimelineElement extends StatefulWidget {
   final double height;
   final String startTime;
   final String endTime;
+  final bool hovered;
   final bool selected;
   final VoidCallback? onHover;
   final VoidCallback? onLeave;
@@ -35,6 +36,7 @@ class TimelineElement extends StatefulWidget {
     required this.height,
     required this.startTime,
     required this.endTime,
+    this.hovered = false,
     this.selected = false,
     this.onHover,
     this.onLeave,
@@ -54,33 +56,6 @@ class TimelineElement extends StatefulWidget {
     _textColor =
         item.color.computeLuminance() > 0.5 ? Colors.black : Colors.white;
   }
-
-  @override
-  State<StatefulWidget> createState() => _TimelineElementState();
-}
-
-class _TimelineElementState extends State<TimelineElement> {
-  bool _isHovered = false;
-
-  void _onHover(_) {
-    if (widget.onHover != null) {
-      widget.onHover!();
-    }
-
-    setState(() {
-      _isHovered = true;
-    });
-  }
-
-  void _onLeave(_) {
-    if (widget.onLeave != null) {
-      widget.onLeave!();
-    }
-    setState(() {
-      _isHovered = false;
-    });
-  }
-
   Size _getSize(TextSpan textSpan) {
     final painter = TextPainter(
       text: textSpan,
@@ -93,20 +68,20 @@ class _TimelineElementState extends State<TimelineElement> {
   @override
   Widget build(BuildContext context) {
     final startSpan = TextSpan(
-      text: widget.startTime,
-      style: TextStyle(color: widget._textColor),
+      text: startTime,
+      style: TextStyle(color: _textColor),
     );
     final startSize = _getSize(startSpan);
 
     final nameSpan = TextSpan(
-      text: widget.item.name,
-      style: TextStyle(color: widget._textColor, fontWeight: FontWeight.bold),
+      text: item.name,
+      style: TextStyle(color: _textColor, fontWeight: FontWeight.bold),
     );
     final nameSize = _getSize(nameSpan);
 
     final endSpan = TextSpan(
-      text: widget.endTime,
-      style: TextStyle(color: widget._textColor),
+      text: endTime,
+      style: TextStyle(color: _textColor),
     );
     final endSize = _getSize(endSpan);
 
@@ -114,7 +89,7 @@ class _TimelineElementState extends State<TimelineElement> {
         startSize.width + nameSize.width + endSize.width + 36 + 32;
 
     final Widget textRow;
-    if (widget.width > totalWidth) {
+    if (width > totalWidth) {
       textRow = Row(
         spacing: 12,
         children: [
@@ -123,7 +98,7 @@ class _TimelineElementState extends State<TimelineElement> {
           Text.rich(endSpan),
         ],
       );
-    } else if (widget.width > startSize.width + nameSize.width + 12 + 32) {
+    } else if (width > startSize.width + nameSize.width + 12 + 32) {
       textRow = Row(
         spacing: 12,
         children: [
@@ -131,41 +106,42 @@ class _TimelineElementState extends State<TimelineElement> {
           Expanded(child: Text.rich(nameSpan, overflow: TextOverflow.ellipsis)),
         ],
       );
-    } else if (widget.width > startSize.width + 32) {
+    } else if (width > startSize.width + 32) {
       textRow = Text.rich(startSpan, textAlign: TextAlign.start);
     } else {
       textRow = SizedBox(height: nameSize.height);
     }
+  
+    if (hovered) print(item.name);
 
     return Positioned(
-      left: widget.left,
-      top: widget._top,
+      left: left,
+      top: _top,
       child: MouseRegion(
-        onEnter: _onHover,
-        onExit: _onLeave,
+        onEnter: (_) => onHover?.call(),
+        onExit: (_) => onLeave?.call(),
         child: Listener(
           onPointerDown: (event) {
-            if (widget.onSelect != null) {
-              widget.onSelect!();
+            if (onSelect != null) {
+              onSelect!();
             }
           },
           child: Tooltip(
-            message:
-                "${widget.item.name}\n(${widget.startTime} - ${widget.endTime})",
+            message: "${item.name}\n(${startTime} - ${endTime})",
             child: SizedBox(
-              width: widget.width,
-              height: widget._finalHeight,
+              width: width,
+              height: _finalHeight,
               child: Container(
                 decoration: BoxDecoration(
                   color:
-                      widget.selected
-                          ? widget.item.color
-                          : (_isHovered
-                              ? widget.item.color.withAlpha(175)
-                              : widget.item.color.withAlpha(150)),
+                      selected
+                          ? item.color
+                          : (hovered
+                              ? item.color.withAlpha(175)
+                              : item.color.withAlpha(150)),
                   border: Border(
-                    left: BorderSide(color: widget.item.color, width: 4),
-                    right: BorderSide(color: widget.item.color, width: 4),
+                    left: BorderSide(color: item.color, width: 4),
+                    right: BorderSide(color: item.color, width: 4),
                   ),
                   boxShadow: [
                     BoxShadow(
@@ -177,12 +153,12 @@ class _TimelineElementState extends State<TimelineElement> {
                 ),
                 child: Column(
                   mainAxisAlignment:
-                      widget._isHanging
+                      _isHanging
                           ? MainAxisAlignment.end
                           : MainAxisAlignment.start,
                   children: [
                     Container(
-                      color: widget.item.color,
+                      color: item.color,
                       alignment: Alignment.centerLeft,
                       child: Padding(
                         padding: const EdgeInsets.all(8.0),
