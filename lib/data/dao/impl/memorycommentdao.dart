@@ -1,15 +1,12 @@
 import 'package:assignment_sem6/data/dao/commentdao.dart';
+import 'package:assignment_sem6/data/dao/memorydao.dart';
 import 'package:assignment_sem6/data/entity/impl/comment.dart';
 import 'package:assignment_sem6/extension/list.dart';
-import 'package:assignment_sem6/extension/map.dart';
-import 'package:assignment_sem6/mixin/mutexmixin.dart';
 import 'package:assignment_sem6/util/sort.dart';
 import 'package:assignment_sem6/util/time.dart';
 import 'package:assignment_sem6/util/uuid.dart';
 
-class MemoryCommentDao extends CommentDao with MutexMixin {
-  final Map<String, Comment> _comments = {};
-
+class MemoryCommentDao extends MemoryDao<Comment> implements CommentDao {
   @override
   Future<void> init() async {
     for (int i = 0; i < 10; i++) {
@@ -33,13 +30,6 @@ class MemoryCommentDao extends CommentDao with MutexMixin {
       );
 
   @override
-  Future<Comment?> findByUUID(String uuid) => safe(() async => _comments[uuid]);
-
-  @override
-  Future<Map<String, Comment>> findByUUIDs(Iterable<String> uuids) =>
-      safe(() async => _comments.getAll(uuids));
-
-  @override
   Future<List<Comment>> findOfCreator(
     String creatorUUID, {
     Sort sort = Sort.descending,
@@ -47,7 +37,7 @@ class MemoryCommentDao extends CommentDao with MutexMixin {
     int page = 0,
   }) => safe(() async {
     List<Comment> comments =
-        _comments.values
+        memory.values
             .where((comment) => comment.creatorUUID == creatorUUID)
             .toList();
     if (comments.isEmpty) return List.empty();
@@ -65,40 +55,11 @@ class MemoryCommentDao extends CommentDao with MutexMixin {
     int page = 0,
   }) => safe(() async {
     List<Comment> comments =
-        _comments.values
-            .where((comment) => comment.postUUID == postUUID)
-            .toList();
+        memory.values.where((comment) => comment.postUUID == postUUID).toList();
     if (comments.isEmpty) return List.empty();
 
     await _sortComments(sort, comments);
 
     return comments.takePage(page, limit);
   });
-
-  @override
-  Future<List<Comment>> findAll() =>
-      safe(() async => _comments.values.toList());
-
-  @override
-  Future<void> insert(Comment comment) => safe(() async {
-    // To mimic unique constraints in a database
-    if (_comments.containsKey(comment.uuid)) {
-      throw ArgumentError('A comment with the same UUID already exists.');
-    }
-
-    _comments[comment.uuid] = comment;
-  });
-
-  @override
-  Future<void> update(Comment comment) => safe(() async {
-    if (!_comments.containsKey(comment.uuid)) {
-      throw ArgumentError('No comment with that UUID exists.');
-    }
-
-    _comments[comment.uuid] = comment;
-  });
-
-  @override
-  Future<bool> delete(String uuid) =>
-      safe(() async => _comments.remove(uuid) != null);
 }
