@@ -1,7 +1,7 @@
 import 'package:assignment_sem6/widgets/view/timeline/item/timelineitem.dart';
 import 'package:flutter/material.dart';
 
-class TimelineElement extends StatelessWidget {
+class TimelineElement extends StatefulWidget {
   static const headerHeight = 60.0;
   static const snap = 20.0;
 
@@ -20,10 +20,10 @@ class TimelineElement extends StatelessWidget {
   final VoidCallback? onLeave;
   final VoidCallback? onSelect;
 
-  late final double _finalHeight;
-  late final double _top;
-  late final bool _isHanging;
-  late final Color _textColor;
+  late final double finalHeight;
+  late final double top;
+  late final bool isHanging;
+  late final Color textColor;
 
   TimelineElement({
     super.key,
@@ -43,19 +43,27 @@ class TimelineElement extends StatelessWidget {
     this.onSelect,
   }) {
     final layer = item.effectiveLayer;
-    _isHanging = layer < 0;
+    isHanging = layer < 0;
 
     if (layer > 0) {
-      _finalHeight = height + ((layer - 1) * height * 0.75);
-      _top = center - _finalHeight;
+      finalHeight = height + ((layer - 1) * height * 0.75);
+      top = center - finalHeight;
     } else {
-      _finalHeight = height + ((layer.abs() - 1) * height * 0.75);
-      _top = center;
+      finalHeight = height + ((layer.abs() - 1) * height * 0.75);
+      top = center;
     }
 
-    _textColor =
+    textColor =
         item.color.computeLuminance() > 0.5 ? Colors.black : Colors.white;
   }
+
+  @override
+  State<StatefulWidget> createState() => _TimelineElementState();
+}
+
+class _TimelineElementState extends State<TimelineElement> {
+  Offset? _dragStart;
+
   Size _getSize(TextSpan textSpan) {
     final painter = TextPainter(
       text: textSpan,
@@ -68,20 +76,20 @@ class TimelineElement extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final startSpan = TextSpan(
-      text: startTime,
-      style: TextStyle(color: _textColor),
+      text: widget.startTime,
+      style: TextStyle(color: widget.textColor),
     );
     final startSize = _getSize(startSpan);
 
     final nameSpan = TextSpan(
-      text: item.name,
-      style: TextStyle(color: _textColor, fontWeight: FontWeight.bold),
+      text: widget.item.name,
+      style: TextStyle(color: widget.textColor, fontWeight: FontWeight.bold),
     );
     final nameSize = _getSize(nameSpan);
 
     final endSpan = TextSpan(
-      text: endTime,
-      style: TextStyle(color: _textColor),
+      text: widget.endTime,
+      style: TextStyle(color: widget.textColor),
     );
     final endSize = _getSize(endSpan);
 
@@ -89,7 +97,7 @@ class TimelineElement extends StatelessWidget {
         startSize.width + nameSize.width + endSize.width + 36 + 32;
 
     final Widget textRow;
-    if (width > totalWidth) {
+    if (widget.width > totalWidth) {
       textRow = Row(
         spacing: 12,
         children: [
@@ -98,7 +106,7 @@ class TimelineElement extends StatelessWidget {
           Text.rich(endSpan),
         ],
       );
-    } else if (width > startSize.width + nameSize.width + 12 + 32) {
+    } else if (widget.width > startSize.width + nameSize.width + 12 + 32) {
       textRow = Row(
         spacing: 12,
         children: [
@@ -106,42 +114,45 @@ class TimelineElement extends StatelessWidget {
           Expanded(child: Text.rich(nameSpan, overflow: TextOverflow.ellipsis)),
         ],
       );
-    } else if (width > startSize.width + 32) {
+    } else if (widget.width > startSize.width + 32) {
       textRow = Text.rich(startSpan, textAlign: TextAlign.start);
     } else {
       textRow = SizedBox(height: nameSize.height);
     }
-  
-    if (hovered) print(item.name);
 
     return Positioned(
-      left: left,
-      top: _top,
+      left: widget.left,
+      top: widget.top,
       child: MouseRegion(
-        onEnter: (_) => onHover?.call(),
-        onExit: (_) => onLeave?.call(),
+        onEnter: (_) => widget.onHover?.call(),
+        onExit: (_) => widget.onLeave?.call(),
         child: Listener(
           onPointerDown: (event) {
-            if (onSelect != null) {
-              onSelect!();
+            _dragStart = event.localPosition;
+          },
+          onPointerUp: (event) {
+            if (_dragStart == null ||
+                (event.localPosition - _dragStart!).distance < 5) {
+              widget.onSelect?.call();
             }
           },
           child: Tooltip(
-            message: "${item.name}\n(${startTime} - ${endTime})",
+            message:
+                "${widget.item.name}\n(${widget.startTime} - ${widget.endTime})",
             child: SizedBox(
-              width: width,
-              height: _finalHeight,
+              width: widget.width,
+              height: widget.finalHeight,
               child: Container(
                 decoration: BoxDecoration(
                   color:
-                      selected
-                          ? item.color
-                          : (hovered
-                              ? item.color.withAlpha(175)
-                              : item.color.withAlpha(150)),
+                      widget.selected
+                          ? widget.item.color
+                          : (widget.hovered
+                              ? widget.item.color.withAlpha(175)
+                              : widget.item.color.withAlpha(150)),
                   border: Border(
-                    left: BorderSide(color: item.color, width: 4),
-                    right: BorderSide(color: item.color, width: 4),
+                    left: BorderSide(color: widget.item.color, width: 4),
+                    right: BorderSide(color: widget.item.color, width: 4),
                   ),
                   boxShadow: [
                     BoxShadow(
@@ -153,12 +164,12 @@ class TimelineElement extends StatelessWidget {
                 ),
                 child: Column(
                   mainAxisAlignment:
-                      _isHanging
+                      widget.isHanging
                           ? MainAxisAlignment.end
                           : MainAxisAlignment.start,
                   children: [
                     Container(
-                      color: item.color,
+                      color: widget.item.color,
                       alignment: Alignment.centerLeft,
                       child: Padding(
                         padding: const EdgeInsets.all(8.0),
