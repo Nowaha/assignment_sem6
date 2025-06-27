@@ -327,6 +327,24 @@ class _HomePageState extends State<HomePage> with ToastMixin {
         builder:
             (context, _) => Column(
               children: [
+                ListenableBuilder(
+                  listenable: _timelineController,
+                  builder: (context, _) {
+                    if (_timelineController.selectedItem != null) {
+                      return Expanded(
+                        child: ViewPost(
+                          key: ValueKey(
+                            _timelineController.selectedItem!.startTimestamp,
+                          ),
+                          postName: _timelineController.selectedItem!.name,
+                          backgroundColor: _timelineController.selectedItem!.color,
+                        ),
+                      );
+                    }
+
+                    return SizedBox.shrink();
+                  },
+                ),
                 Expanded(
                   child: Stack(
                     children: [
@@ -400,20 +418,6 @@ class _HomePageState extends State<HomePage> with ToastMixin {
                       ),
                     ],
                   ),
-                ),
-                ListenableBuilder(
-                  listenable: _timelineController,
-                  builder: (context, _) {
-                    if (_timelineController.selectedItem != null) {
-                      return Expanded(
-                        child: ViewPost(
-                          postName: _timelineController.selectedItem!.name,
-                        ),
-                      );
-                    }
-
-                    return SizedBox.shrink();
-                  },
                 ),
                 ListenableBuilder(
                   listenable: _timelineController,

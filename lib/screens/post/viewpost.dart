@@ -12,8 +12,14 @@ import 'package:provider/provider.dart';
 class ViewPost extends StatefulWidget {
   final String? postName;
   final String? postUUID;
+  final Color? backgroundColor;
 
-  const ViewPost({super.key, this.postUUID, this.postName});
+  const ViewPost({
+    super.key,
+    this.postUUID,
+    this.postName,
+    this.backgroundColor,
+  });
 
   @override
   State<StatefulWidget> createState() => _ViewPostState();
@@ -62,6 +68,7 @@ class _ViewPostState extends DataHolderState<ViewPost, PostView> {
         loadingState == LoadingState.success
             ? Alignment.topLeft
             : Alignment.center,
+    backgroundColor: widget.backgroundColor,
     child: getChild(context),
   );
 }

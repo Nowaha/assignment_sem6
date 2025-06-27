@@ -1,3 +1,4 @@
+import 'package:assignment_sem6/extension/color.dart';
 import 'package:flutter/material.dart';
 
 class Screen extends StatelessWidget {
@@ -7,6 +8,7 @@ class Screen extends StatelessWidget {
   final Widget child;
   final List<Widget>? appBarActions;
   final Widget? floatingActionButton;
+  final Color? backgroundColor;
 
   const Screen._({
     super.key,
@@ -14,6 +16,7 @@ class Screen extends StatelessWidget {
     required this.child,
     this.appBarActions,
     this.floatingActionButton,
+    this.backgroundColor,
   });
 
   @override
@@ -22,8 +25,10 @@ class Screen extends StatelessWidget {
       title: title,
       actions: appBarActions,
       actionsPadding: EdgeInsets.only(right: 8),
-      backgroundColor: Theme.of(context).colorScheme.primary,
-      foregroundColor: Theme.of(context).colorScheme.onPrimary,
+      backgroundColor: backgroundColor ?? Theme.of(context).colorScheme.primary,
+      foregroundColor:
+          backgroundColor?.getForegroundColor() ??
+          Theme.of(context).colorScheme.onPrimary,
     ),
     body: child,
     floatingActionButton: floatingActionButton,
@@ -36,11 +41,14 @@ class Screen extends StatelessWidget {
     List<Widget>? appBarActions,
     Widget? floatingActionButton,
     EdgeInsets padding = defaultPadding,
+    Color? backgroundColor,
+    Color? foregroundColor,
   }) => Screen._(
     key: key,
     title: title,
     appBarActions: appBarActions,
     floatingActionButton: floatingActionButton,
+    backgroundColor: backgroundColor,
     child: Padding(padding: padding, child: child),
   );
 
@@ -51,11 +59,14 @@ class Screen extends StatelessWidget {
     List<Widget>? appBarActions,
     Widget? floatingActionButton,
     EdgeInsets padding = defaultPadding,
+    Color? backgroundColor,
+    Color? foregroundColor,
   }) => Screen._(
     key: key,
     title: title,
     appBarActions: appBarActions,
     floatingActionButton: floatingActionButton,
+    backgroundColor: backgroundColor,
     child: Padding(padding: padding, child: Center(child: child)),
   );
 
@@ -67,11 +78,14 @@ class Screen extends StatelessWidget {
     Widget? floatingActionButton,
     Alignment alignment = Alignment.topCenter,
     EdgeInsets padding = defaultPadding,
+    Color? backgroundColor,
+    Color? foregroundColor,
   }) => Screen._(
     key: key,
     title: title,
     appBarActions: appBarActions,
     floatingActionButton: floatingActionButton,
+    backgroundColor: backgroundColor,
     child: Align(
       alignment: alignment,
       child: SingleChildScrollView(padding: padding, child: child),
