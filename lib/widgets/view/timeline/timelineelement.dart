@@ -1,3 +1,4 @@
+import 'package:assignment_sem6/extension/color.dart';
 import 'package:assignment_sem6/widgets/view/timeline/item/timelineitem.dart';
 import 'package:flutter/material.dart';
 
@@ -53,8 +54,7 @@ class TimelineElement extends StatefulWidget {
       top = center;
     }
 
-    textColor =
-        item.color.computeLuminance() > 0.5 ? Colors.black : Colors.white;
+    textColor = item.color.getForegroundColor();
   }
 
   @override

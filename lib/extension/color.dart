@@ -16,4 +16,8 @@ extension ColorExtensions on Color {
     );
     return lightened.toColor();
   }
+
+  Color getForegroundColor() {
+    return computeLuminance() > 0.5 ? Colors.black : Colors.white;
+  }
 }
