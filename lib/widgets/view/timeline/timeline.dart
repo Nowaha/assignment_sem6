@@ -68,21 +68,21 @@ class TimelineState extends State<Timeline> {
       item: item,
       hovered: hovered,
       onHover: () {
-        if (widget.controller.selectedItem == null) {
+        if (widget.controller.selectedItem.value == null) {
           _setPutToFront(index);
         }
       },
       onLeave: () {
-        if (widget.controller.selectedItem == null) {
+        if (widget.controller.selectedItem.value == null) {
           _clearPutToFront();
         }
       },
       onSelect: () {
-        if (widget.controller.selectedItem != item) {
+        if (widget.controller.selectedItem.value != item) {
           _setPutToFront(index);
-          widget.controller.selectedItem = item;
+          widget.controller.selectedItem.value = item;
         } else {
-          widget.controller.selectedItem = null;
+          widget.controller.selectedItem.value = null;
         }
       },
       left: TimelineUtil.getElementLeftPosition(
@@ -98,7 +98,7 @@ class TimelineState extends State<Timeline> {
       height: elementHeight,
       startTime: startTimeString,
       endTime: endTimeString,
-      selected: widget.controller.selectedItem == item,
+      selected: widget.controller.selectedItem.value == item,
     );
     return element;
   }

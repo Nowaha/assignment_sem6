@@ -8,7 +8,9 @@ typedef Range = ({int start, int end});
 
 class TimelineController extends ChangeNotifier {
   List<TimelineItem> _items;
-  TimelineItem? _selectedItem;
+  ValueNotifier<TimelineItem?> selectedItem = ValueNotifier<TimelineItem?>(
+    null,
+  );
   int _startTimestamp;
   int _endTimestamp;
 
@@ -59,7 +61,6 @@ class TimelineController extends ChangeNotifier {
        );
 
   List<TimelineItem> get items => _items;
-  TimelineItem? get selectedItem => _selectedItem;
   int get startTimestamp => _startTimestamp;
   int get endTimestamp => _endTimestamp;
   int get centerTimestamp => (_startTimestamp + _endTimestamp) ~/ 2;
@@ -105,11 +106,6 @@ class TimelineController extends ChangeNotifier {
 
   set endTimestamp(int newEnd) {
     _endTimestamp = newEnd;
-    notifyListeners();
-  }
-
-  set selectedItem(TimelineItem? item) {
-    _selectedItem = item;
     notifyListeners();
   }
 

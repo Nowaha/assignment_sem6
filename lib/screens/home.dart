@@ -328,16 +328,21 @@ class _HomePageState extends State<HomePage> with ToastMixin {
             (context, _) => Column(
               children: [
                 ListenableBuilder(
-                  listenable: _timelineController,
+                  listenable: _timelineController.selectedItem,
                   builder: (context, _) {
-                    if (_timelineController.selectedItem != null) {
+                    if (_timelineController.selectedItem.value != null) {
                       return Expanded(
                         child: ViewPost(
                           key: ValueKey(
-                            _timelineController.selectedItem!.startTimestamp,
+                            _timelineController
+                                .selectedItem
+                                .value!
+                                .startTimestamp,
                           ),
-                          postName: _timelineController.selectedItem!.name,
-                          backgroundColor: _timelineController.selectedItem!.color,
+                          postName:
+                              _timelineController.selectedItem.value!.name,
+                          backgroundColor:
+                              _timelineController.selectedItem.value!.color,
                         ),
                       );
                     }
