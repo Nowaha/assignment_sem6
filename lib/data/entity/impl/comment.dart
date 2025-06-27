@@ -2,15 +2,14 @@ import 'package:assignment_sem6/data/entity/entity.dart';
 import 'package:assignment_sem6/util/time.dart';
 import 'package:assignment_sem6/util/uuid.dart';
 
-class Comment implements Entity {
-  final String uuid; // Unique
+class Comment extends Entity {
   final int creationTimestamp;
   final String postUUID;
   final String creatorUUID;
   final String contents;
 
   Comment({
-    required this.uuid,
+    required super.uuid,
     required this.creationTimestamp,
     required this.postUUID,
     required this.creatorUUID,

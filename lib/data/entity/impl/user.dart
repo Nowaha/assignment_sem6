@@ -3,8 +3,7 @@ import 'package:assignment_sem6/util/password.dart';
 import 'package:assignment_sem6/util/role.dart';
 import 'package:assignment_sem6/util/uuid.dart';
 
-class User implements Entity {
-  final String uuid; // Unique
+class User extends Entity {
   final int creationTimestamp;
   final String username; // Unique
   final String firstName;
@@ -14,7 +13,7 @@ class User implements Entity {
   final Role role;
 
   User({
-    required this.uuid,
+    required super.uuid,
     required this.creationTimestamp,
     required this.username,
     required this.firstName,
