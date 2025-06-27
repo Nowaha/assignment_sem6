@@ -106,13 +106,10 @@ class _TimelineElementState extends State<TimelineElement> {
           Text.rich(endSpan),
         ],
       );
-    } else if (widget.width > startSize.width + nameSize.width + 12 + 32) {
+    } else if (widget.width > startSize.width + nameSize.width + 32) {
       textRow = Row(
-        spacing: 12,
-        children: [
-          Text.rich(startSpan),
-          Expanded(child: Text.rich(nameSpan, overflow: TextOverflow.ellipsis)),
-        ],
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [Text.rich(startSpan), Text.rich(endSpan)],
       );
     } else if (widget.width > startSize.width + 32) {
       textRow = Text.rich(startSpan, textAlign: TextAlign.start);
