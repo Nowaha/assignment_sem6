@@ -16,6 +16,9 @@ abstract class Service<E extends Entity, R extends Repository<E, Dao<E>>> {
   Future<Iterable<E>> getAll() => repository.getAll();
 
   Future<Map<String, E>> getAllMapped() async => (await getAll()).toUuidMap();
+
+  Future<bool> existsByUUID(String uuid) async =>
+      (await getByUUID(uuid)) != null;
 }
 
 abstract class LinkedService<

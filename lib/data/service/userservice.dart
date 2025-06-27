@@ -11,7 +11,6 @@ abstract class UserService extends Service<User, UserRepository>
   Future<User?> getByUsername(String username);
   Future<User?> getByEmail(String email);
 
-  Future<bool> existsByUUID(String uuid);
   Future<bool> existsByEmail(String email);
   Future<bool> existsByUsername(String username);
 
