@@ -7,11 +7,9 @@ import 'package:assignment_sem6/util/sort.dart';
 
 abstract class CommentService
     extends LinkedService<Comment, CommentView, CommentRepository> {
-  @override
-  final CommentRepository repository;
   final UserService userService;
 
-  CommentService({required this.repository, required this.userService});
+  CommentService({required super.repository, required this.userService});
 
   Future<Iterable<Comment>> getCommentsOfCreator(
     String creatorUUID, {

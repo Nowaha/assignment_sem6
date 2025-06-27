@@ -9,13 +9,11 @@ import 'package:assignment_sem6/util/sort.dart';
 
 abstract class PostService extends LinkedService<Post, PostView, PostRepository>
     implements SingleStreamService<Post, PostRepository> {
-  @override
-  final PostRepository repository;
   final UserService userService;
   final CommentService commentService;
 
   PostService({
-    required this.repository,
+    required super.repository,
     required this.userService,
     required this.commentService,
   });

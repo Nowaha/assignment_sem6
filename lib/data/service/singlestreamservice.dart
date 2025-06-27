@@ -8,6 +8,8 @@ abstract class SingleStreamService<
   R extends SingleStreamRepository<E, SingleStreamDao<E>>
 >
     extends Service<E, R> {
+  const SingleStreamService({required super.repository});
+
   Stream<List<E>> get stream;
   void dispose();
 }

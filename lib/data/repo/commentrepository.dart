@@ -4,10 +4,7 @@ import 'package:assignment_sem6/data/repo/repository.dart';
 import 'package:assignment_sem6/util/sort.dart';
 
 abstract class CommentRepository extends Repository<Comment, CommentDao> {
-  @override
-  final CommentDao dao;
-
-  CommentRepository({required this.dao});
+  CommentRepository({required super.dao});
 
   Future<List<Comment>> getCommentsOfCreator(
     String creatorUUID, {

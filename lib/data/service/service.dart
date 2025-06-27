@@ -3,7 +3,9 @@ import 'package:assignment_sem6/data/entity/entity.dart';
 import 'package:assignment_sem6/data/repo/repository.dart';
 
 abstract class Service<E extends Entity, R extends Repository<E, Dao<E>>> {
-  R get repository;
+  final R repository;
+
+  const Service({required this.repository});
 
   Future<E?> getByUUID(String uuid) => repository.getByUUID(uuid);
 
@@ -19,8 +21,7 @@ abstract class LinkedService<
   R extends Repository<E, Dao<E>>
 >
     extends Service<E, R> {
-  @override
-  R get repository;
+  const LinkedService({required super.repository});
 
   Future<V?> link(E? entity);
 

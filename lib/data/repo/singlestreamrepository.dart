@@ -7,6 +7,8 @@ abstract class SingleStreamRepository<
   D extends SingleStreamDao<E>
 >
     extends Repository<E, D> {
+  SingleStreamRepository({required super.dao});
+
   Stream<List<E>> get stream => dao.stream;
   void dispose() => dao.dispose();
 }

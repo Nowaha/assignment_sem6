@@ -6,10 +6,7 @@ import 'package:assignment_sem6/util/role.dart';
 
 abstract class UserService extends Service<User, UserRepository>
     implements SingleStreamService<User, UserRepository> {
-  @override
-  final UserRepository repository;
-
-  UserService({required this.repository});
+  const UserService({required super.repository});
 
   Future<User?> getByUsername(String username);
   Future<User?> getByEmail(String email);
