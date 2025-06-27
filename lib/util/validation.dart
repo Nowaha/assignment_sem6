@@ -1,3 +1,5 @@
+// ignore_for_file: curly_braces_in_flow_control_structures
+
 class Validation {
   static const int minNameLength = 2;
   static const int maxNameLength = 24;
@@ -5,6 +7,8 @@ class Validation {
   static const int maxUsernameLength = 24;
   static const int minPasswordLength = 8;
   static const int maxPasswordLength = 32;
+  static const int minGroupNameLength = 2;
+  static const int maxGroupNameLength = 12;
 
   static final characterWhitelistRegex = RegExp(r'^[a-zA-Z0-9_]+$');
   static final emailRegex = RegExp(
@@ -22,6 +26,18 @@ class Validation {
       return NameValidationResult.invalidCharacters;
     }
     return NameValidationResult.valid;
+  }
+
+  static GroupNameValidationResult isValidGroupName(String name) {
+    if (name.isEmpty) return GroupNameValidationResult.empty;
+    if (name.length < minGroupNameLength)
+      return GroupNameValidationResult.tooShort;
+    if (name.length > maxGroupNameLength)
+      return GroupNameValidationResult.tooLong;
+    if (!characterWhitelistRegex.hasMatch(name)) {
+      return GroupNameValidationResult.invalidCharacters;
+    }
+    return GroupNameValidationResult.valid;
   }
 
   static EmailValidationResult isValidEmail(String email) {
@@ -69,6 +85,22 @@ enum NameValidationResult {
   final String? message;
 
   const NameValidationResult({this.message});
+}
+
+enum GroupNameValidationResult {
+  valid,
+  empty(message: "Group name cannot be empty."),
+  tooShort(
+    message: "Group name is too short (${Validation.minGroupNameLength}).",
+  ),
+  tooLong(
+    message: "Group name is too long (${Validation.maxGroupNameLength}).",
+  ),
+  invalidCharacters(message: "Group name contains invalid characters.");
+
+  final String? message;
+
+  const GroupNameValidationResult({this.message});
 }
 
 enum EmailValidationResult {
