@@ -1,11 +1,20 @@
 import 'package:assignment_sem6/data/dao/dao.dart';
 import 'package:assignment_sem6/data/entity/entity.dart';
 import 'package:assignment_sem6/data/repo/repository.dart';
+import 'package:flutter/material.dart';
 
 abstract class Service<E extends Entity, R extends Repository<E, Dao<E>>> {
   final R repository;
 
   const Service({required this.repository});
+
+  @protected
+  Map<String, E> toUuidMap(Iterable<E> entities) {
+    return entities.fold<Map<String, E>>(<String, E>{}, (map, entity) {
+      map[entity.uuid] = entity;
+      return map;
+    });
+  }
 
   Future<E?> getByUUID(String uuid) => repository.getByUUID(uuid);
 
@@ -13,6 +22,8 @@ abstract class Service<E extends Entity, R extends Repository<E, Dao<E>>> {
       repository.getByUUIDs(uuids);
 
   Future<Iterable<E>> getAll() => repository.getAll();
+
+  Future<Map<String, E>> getAllMapped() async => toUuidMap(await getAll());
 }
 
 abstract class LinkedService<
