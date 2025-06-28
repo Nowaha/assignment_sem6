@@ -1,6 +1,7 @@
 import 'package:assignment_sem6/data/entity/impl/user.dart';
 import 'package:assignment_sem6/data/service/userservice.dart';
 import 'package:assignment_sem6/screens/post/postlist.dart';
+import 'package:assignment_sem6/screens/profile/grouplist.dart';
 import 'package:assignment_sem6/widgets/dataholderstate.dart';
 import 'package:assignment_sem6/widgets/screen.dart';
 import 'package:flutter/material.dart';
@@ -25,6 +26,8 @@ class _ProfileState extends DataHolderState<Profile, User> {
       Text(
         "Profile of ${data?.firstName ?? "Unknown"} ${data?.lastName ?? ""}",
       ),
+      Text("Groups", style: Theme.of(context).textTheme.headlineSmall),
+      GroupList.ofUser(userUUID: widget.userUUID),
       Text("Posts", style: Theme.of(context).textTheme.headlineSmall),
       PostList.ofCreator(creatorUUID: widget.userUUID),
     ],
