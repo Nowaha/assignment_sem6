@@ -19,6 +19,11 @@ class DateUtil {
     return "${time.day.toString().padLeft(2, "0")} ${months[time.month - 1]} ${time.year}";
   }
 
+  static String formatDateShort(int timestamp) {
+    final time = DateTime.fromMillisecondsSinceEpoch(timestamp);
+    return "${time.day.toString().padLeft(2, "0")}/${time.month.toString().padLeft(2, "0")}/${time.year}";
+  }
+
   static String formatTime(int timestamp, bool includeSeconds) {
     final time = DateTime.fromMillisecondsSinceEpoch(timestamp);
     final hours = time.hour.toString().padLeft(2, "0");
@@ -30,5 +35,17 @@ class DateUtil {
     }
 
     return "$hours:$minutes";
+  }
+
+  static String formatDateTime(int timestamp, bool includeSeconds) {
+    final date = formatDate(timestamp);
+    final time = formatTime(timestamp, includeSeconds);
+    return "$date $time";
+  }
+
+  static String formatDateTimeShort(int timestamp, bool includeSeconds) {
+    final date = formatDateShort(timestamp);
+    final time = formatTime(timestamp, includeSeconds);
+    return "$date $time";
   }
 }
