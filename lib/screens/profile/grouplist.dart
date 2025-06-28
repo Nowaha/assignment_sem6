@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:assignment_sem6/data/service/groupservice.dart';
 import 'package:assignment_sem6/extension/entityiterable.dart';
 import 'package:assignment_sem6/widgets/dataholderstate.dart';
@@ -27,24 +29,34 @@ class GroupList extends StatefulWidget {
 }
 
 class _GroupListState extends DataHolderState<GroupList, Map<String, Group>?> {
+  final ScrollController _controller = ScrollController();
+
   @override
   Widget build(BuildContext context) => getChild(context);
 
   @override
-  Widget content(BuildContext context) => Row(
-    spacing: 8,
-    children: [
-      for (final group in data?.values ?? <Group>[])
-        Container(
-          decoration: BoxDecoration(
-            color: group.color.withAlpha(100),
-            borderRadius: BorderRadius.circular(8),
-            border: Border.all(color: group.color, width: 2),
-          ),
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-          child: Text(group.name),
-        ),
-    ],
+  Widget content(BuildContext context) => ScrollConfiguration(
+    behavior: _CustomScrollBehavior(),
+    child: SingleChildScrollView(
+      controller: _controller,
+      physics: const BouncingScrollPhysics(),
+      scrollDirection: Axis.horizontal,
+      child: Row(
+        spacing: 8,
+        children: [
+          for (final group in data?.values ?? <Group>[])
+            Container(
+              decoration: BoxDecoration(
+                color: group.color.withAlpha(100),
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: group.color, width: 2),
+              ),
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              child: Text(group.name),
+            ),
+        ],
+      ),
+    ),
   );
 
   @override
@@ -60,4 +72,13 @@ class _GroupListState extends DataHolderState<GroupList, Map<String, Group>?> {
 
     throw ArgumentError("Either groups or userUUID must be provided");
   }
+}
+
+class _CustomScrollBehavior extends MaterialScrollBehavior {
+  @override
+  Set<PointerDeviceKind> get dragDevices => {
+    PointerDeviceKind.touch,
+    PointerDeviceKind.mouse,
+    PointerDeviceKind.trackpad,
+  };
 }
