@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 
-mixin ToastMixin<T extends StatefulWidget> on State<T> {
-  void showToast(
+class Toast {
+  static void showToast(
+    BuildContext context,
     String message, {
     Duration duration = const Duration(seconds: 2),
   }) {
@@ -10,7 +11,7 @@ mixin ToastMixin<T extends StatefulWidget> on State<T> {
     );
   }
 
-  void clearToasts() {
+  void clearToasts(BuildContext context) {
     ScaffoldMessenger.of(context).clearSnackBars();
   }
 }

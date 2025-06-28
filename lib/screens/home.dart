@@ -1,12 +1,12 @@
 import 'dart:math';
 
-import 'package:assignment_sem6/mixin/toastmixin.dart';
 import 'package:assignment_sem6/screens/post/viewpost.dart';
 import 'package:assignment_sem6/screens/view/map.dart';
 import 'package:assignment_sem6/screens/view/timeline.dart';
 import 'package:assignment_sem6/state/authstate.dart';
 import 'package:assignment_sem6/util/time.dart';
 import 'package:assignment_sem6/util/timelineutil.dart';
+import 'package:assignment_sem6/util/toast.dart';
 import 'package:assignment_sem6/widgets/screen.dart';
 import 'package:assignment_sem6/widgets/view/filter/filtercontainer.dart';
 import 'package:assignment_sem6/widgets/view/timeline/item/basictimelineitem.dart';
@@ -253,7 +253,7 @@ class _HomePageState extends State<HomePage> with ToastMixin {
   }
 
   void _logout() {
-    showToast("You have been logged out.");
+    Toast.showToast(context, "You have been logged out.");
     context.read<AuthState>().logout();
   }
 

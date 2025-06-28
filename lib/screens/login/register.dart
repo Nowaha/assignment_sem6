@@ -1,7 +1,7 @@
 import 'package:assignment_sem6/data/service/userservice.dart';
 import 'package:assignment_sem6/mixin/formmixin.dart';
-import 'package:assignment_sem6/mixin/toastmixin.dart';
 import 'package:assignment_sem6/screens/login/login.dart';
+import 'package:assignment_sem6/util/toast.dart';
 import 'package:assignment_sem6/util/validation.dart';
 import 'package:assignment_sem6/widgets/form/element/group.dart';
 import 'package:assignment_sem6/widgets/form/element/labeled.dart';
@@ -20,8 +20,7 @@ class RegisterPage extends StatefulWidget {
   State<StatefulWidget> createState() => _RegisterPageState();
 }
 
-class _RegisterPageState extends State<RegisterPage>
-    with ToastMixin, FormMixin {
+class _RegisterPageState extends State<RegisterPage> with FormMixin {
   final firstNameController = TextEditingController();
   final lastNameController = TextEditingController();
   final usernameController = TextEditingController();
@@ -78,14 +77,15 @@ class _RegisterPageState extends State<RegisterPage>
         plainTextPassword: passwordController.text,
       );
 
-      showToast(
+      if (!context.mounted) return;
+
+      Toast.showToast(
+        context,
         "Registration successful! You can now log in.",
         duration: ToastLength.long,
       );
 
-      if (context.mounted) {
-        context.goNamed(LoginPage.routeName);
-      }
+      context.goNamed(LoginPage.routeName);
     } on ArgumentError catch (error) {
       final TextEditingController controller = switch (error.name) {
         "firstName" => firstNameController,

@@ -1,8 +1,7 @@
-import 'package:assignment_sem6/mixin/toastmixin.dart';
+import 'package:assignment_sem6/util/toast.dart';
 import 'package:flutter/material.dart';
 
-abstract class DataHolderState<T extends StatefulWidget, D> extends State<T>
-    with ToastMixin {
+abstract class DataHolderState<T extends StatefulWidget, D> extends State<T> {
   bool _isLoading = true;
   D? data;
 
@@ -35,7 +34,9 @@ abstract class DataHolderState<T extends StatefulWidget, D> extends State<T>
     setState(() {});
 
     data = await getDataFromSource().onError((error, stackTrace) {
-      showToast("There was an error loading your data.");
+      if (mounted) {
+        Toast.showToast(context, "There was an error loading your data.");
+      }
       print(error);
 
       setState(() {
@@ -45,15 +46,14 @@ abstract class DataHolderState<T extends StatefulWidget, D> extends State<T>
       return null;
     });
 
+    if (!mounted) return;
     if (data == null) {
-      showToast("Data could not be found.");
+      Toast.showToast(context, "Data could not be found.");
     }
 
-    if (mounted) {
-      setState(() {
-        _isLoading = false;
-      });
-    }
+    setState(() {
+      _isLoading = false;
+    });
   }
 
   @override
