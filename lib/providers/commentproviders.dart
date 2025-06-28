@@ -10,7 +10,7 @@ import 'package:assignment_sem6/data/service/userservice.dart';
 import 'package:provider/provider.dart';
 
 final commentProviders = [
-  Provider<CommentDao>(create: (_) => MemoryCommentDao()..init()),
+  Provider<CommentDao>(lazy: false, create: (_) => MemoryCommentDao()..init()),
   ProxyProvider<CommentDao, CommentRepository>(
     update: (_, dao, __) => CommentRepositoryImpl(dao: dao),
   ),

@@ -10,7 +10,7 @@ import 'package:assignment_sem6/data/service/userservice.dart';
 import 'package:provider/provider.dart';
 
 final postProviders = [
-  Provider<PostDao>(create: (_) => MemoryPostDao()..init()),
+  Provider<PostDao>(lazy: false, create: (_) => MemoryPostDao()..init()),
   ProxyProvider<PostDao, PostRepository>(
     update: (_, dao, __) => PostRepositoryImpl(dao: dao),
   ),

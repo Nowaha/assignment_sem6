@@ -8,7 +8,7 @@ import 'package:assignment_sem6/data/entity/impl/user.dart';
 import 'package:provider/provider.dart';
 
 final userProviders = [
-  Provider<UserDao>(create: (_) => MemoryUserDao()..init()),
+  Provider<UserDao>(lazy: false, create: (_) => MemoryUserDao()..init()),
   ProxyProvider<UserDao, UserRepository>(
     update: (_, dao, __) => UserRepositoryImpl(dao: dao),
   ),

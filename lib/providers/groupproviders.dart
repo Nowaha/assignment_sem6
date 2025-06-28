@@ -8,7 +8,7 @@ import 'package:assignment_sem6/data/service/impl/groupserviceimpl.dart';
 import 'package:provider/provider.dart';
 
 final groupProviders = [
-  Provider<GroupDao>(create: (_) => MemoryGroupDao()..init()),
+  Provider<GroupDao>(lazy: false, create: (_) => MemoryGroupDao()..init()),
   ProxyProvider<GroupDao, GroupRepository>(
     update: (_, dao, __) => GroupRepositoryImpl(dao: dao),
   ),
