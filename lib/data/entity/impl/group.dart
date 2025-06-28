@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:assignment_sem6/data/entity/entity.dart';
+import 'package:assignment_sem6/util/uuid.dart';
 
 class Group extends Entity {
   static final String everyoneUUID = "0000000-0000-0000-0000-000000000000";
@@ -24,7 +25,7 @@ class Group extends Entity {
     List<String> members = const [],
   }) {
     return Group(
-      uuid: DateTime.now().millisecondsSinceEpoch.toString(),
+      uuid: UUIDv4.generate(),
       creationTimestamp: DateTime.now().millisecondsSinceEpoch,
       name: name,
       color: color,
