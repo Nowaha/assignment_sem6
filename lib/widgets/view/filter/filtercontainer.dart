@@ -36,7 +36,11 @@ class FilterContainer extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         spacing: 16,
         children: [
-          SearchWidget(),
+          SearchWidget(
+            onSearch:
+                (value) =>
+                    onFilterApplied(filters.copyWith(searchQuery: value)),
+          ),
           CollapsibleContainer(
             title: "Date Range",
             child: Padding(
