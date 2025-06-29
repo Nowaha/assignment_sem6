@@ -1,3 +1,8 @@
+import 'package:assignment_sem6/data/dao/commentdao.dart';
+import 'package:assignment_sem6/data/dao/postdao.dart';
+import 'package:assignment_sem6/data/dao/userdao.dart';
+import 'package:assignment_sem6/data/populator.dart';
+import 'package:assignment_sem6/data/service/groupservice.dart';
 import 'package:assignment_sem6/providers/themeprovider.dart';
 import 'package:assignment_sem6/router.dart';
 import 'package:assignment_sem6/state/authstate.dart';
@@ -27,7 +32,25 @@ class _MainAppState extends State<MainApp> {
   @override
   void initState() {
     super.initState();
+
     _router = createRouter(context.read<AuthState>());
+
+    _populateIfDebugAndEmpty();
+  }
+
+  void _populateIfDebugAndEmpty() async {
+    if (const bool.fromEnvironment("dart.vm.product")) return;
+
+    final postDao = context.read<PostDao>();
+    if ((await postDao.findAll()).isNotEmpty) return;
+    if (!mounted) return;
+
+    Populator(
+      userDao: context.read<UserDao>(),
+      groupService: context.read<GroupService>(),
+      postDao: postDao,
+      commentDao: context.read<CommentDao>(),
+    ).populate();
   }
 
   @override

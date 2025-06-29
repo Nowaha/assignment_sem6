@@ -9,15 +9,6 @@ class MemoryGroupDao extends MemoryDao<Group> implements GroupDao {
   @override
   Future<void> init() async {
     await ensureEveryoneGroupExists();
-
-    for (int i = 0; i < 100; i++) {
-      await insert(
-        Group.create(
-          name: "Group $i",
-          color: Colors.primaries[i % Colors.primaries.length],
-        ),
-      );
-    }
   }
 
   @override
@@ -58,13 +49,12 @@ class MemoryGroupDao extends MemoryDao<Group> implements GroupDao {
   }
 
   @override
-  Future<Map<String, Group>> getUserGroups(String userUuid) async {
-    return (await findAll())
-        .where(
-          (group) =>
-              group.members.contains(userUuid) ||
-              group.uuid == Group.everyoneUUID,
-        )
-        .toUuidMap();
-  }
+  Future<Map<String, Group>> getUserGroups(String userUuid) async =>
+      memory.values
+          .where(
+            (group) =>
+                group.members.contains(userUuid) ||
+                group.uuid == Group.everyoneUUID,
+          )
+          .toUuidMap();
 }

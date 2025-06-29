@@ -1,8 +1,5 @@
-import 'package:assignment_sem6/data/entity/impl/post.dart';
-import 'package:assignment_sem6/data/service/commentservice.dart';
 import 'package:assignment_sem6/data/service/data/postview.dart';
 import 'package:assignment_sem6/data/service/postservice.dart';
-import 'package:assignment_sem6/state/authstate.dart';
 import 'package:assignment_sem6/widgets/comment/commentsection.dart';
 import 'package:assignment_sem6/widgets/dataholderstate.dart';
 import 'package:assignment_sem6/widgets/screen.dart';
@@ -10,16 +7,10 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class ViewPost extends StatefulWidget {
-  final String? postName;
   final String? postUUID;
   final Color? backgroundColor;
 
-  const ViewPost({
-    super.key,
-    this.postUUID,
-    this.postName,
-    this.backgroundColor,
-  });
+  const ViewPost({super.key, this.postUUID, this.backgroundColor});
 
   @override
   State<StatefulWidget> createState() => _ViewPostState();
@@ -42,23 +33,8 @@ class _ViewPostState extends DataHolderState<ViewPost, PostView> {
 
   @override
   Future<PostView?> getDataFromSource() async {
-    if (widget.postName != null) {
-      final authState = context.read<AuthState>();
-      final commentService = context.read<CommentService>();
-      return PostView(
-        post: Post.create(
-          creatorUUID: authState.getCurrentUser!.uuid,
-          title: widget.postName!,
-        ),
-        creator: authState.getCurrentUser,
-        comments: await commentService.getCommentsOfPostLinked(
-          "4fa88a92-dac7-4cc9-96ee-6d8a698f9743",
-        ),
-      );
-    } else {
-      final postService = context.read<PostService>();
-      return await postService.getByUUIDLinked(widget.postUUID!);
-    }
+    final postService = context.read<PostService>();
+    return await postService.getByUUIDLinked(widget.postUUID!);
   }
 
   @override

@@ -1,25 +1,19 @@
 import 'package:assignment_sem6/widgets/collapsible/collapsiblecontainer.dart';
 import 'package:assignment_sem6/widgets/view/filter/filter.dart';
+import 'package:assignment_sem6/widgets/view/filter/filters.dart';
 import 'package:assignment_sem6/widgets/view/filter/search.dart';
 import 'package:assignment_sem6/widgets/view/filter/startend.dart';
 import 'package:flutter/material.dart';
 
-class FilterContainer extends StatefulWidget {
-  const FilterContainer({super.key});
+class FilterContainer extends StatelessWidget {
+  final Filters filters;
+  final void Function(Filters newFilters) onFilterApplied;
 
-  @override
-  State<StatefulWidget> createState() => _FilterContainerState();
-}
-
-class _FilterContainerState extends State<FilterContainer> {
-  final DateTime _initialStartDate = DateTime.now().subtract(
-    const Duration(days: 1),
-  );
-  final DateTime _initialEndDate = DateTime.now().add(const Duration(days: 1));
-  DateTime _selectedStartDate = DateTime.now().subtract(
-    const Duration(days: 1),
-  );
-  DateTime _selectedEndDate = DateTime.now().add(const Duration(days: 1));
+  const FilterContainer({
+    super.key,
+    required this.filters,
+    required this.onFilterApplied,
+  });
 
   @override
   Widget build(BuildContext context) => IntrinsicWidth(
@@ -48,16 +42,22 @@ class _FilterContainerState extends State<FilterContainer> {
             child: Padding(
               padding: const EdgeInsets.only(top: 8.0),
               child: StartEndSelector(
-                start: _selectedStartDate,
-                end: _selectedEndDate,
-                onStartSelected:
-                    (newStart) => setState(() {
-                      _selectedStartDate = newStart;
-                    }),
-                onEndSelected:
-                    (newEnd) => setState(() {
-                      _selectedEndDate = newEnd;
-                    }),
+                start: filters.startDate,
+                end: filters.endDate,
+                onStartSelected: (newStart) {
+                  onFilterApplied(filters.copyWith(startDate: newStart));
+                },
+                onEndSelected: (newEnd) {
+                  onFilterApplied(filters.copyWith(endDate: newEnd));
+                },
+                onRangeSelected: (newRange) {
+                  onFilterApplied(
+                    filters.copyWith(
+                      startDate: newRange.start,
+                      endDate: newRange.end,
+                    ),
+                  );
+                },
               ),
             ),
           ),

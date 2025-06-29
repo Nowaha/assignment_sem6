@@ -1,16 +1,16 @@
-import 'dart:math';
-
+import 'package:assignment_sem6/data/entity/impl/post.dart';
+import 'package:assignment_sem6/data/service/postservice.dart';
 import 'package:assignment_sem6/screens/post/viewpost.dart';
 import 'package:assignment_sem6/screens/view/map.dart';
 import 'package:assignment_sem6/screens/view/timeline.dart';
 import 'package:assignment_sem6/state/authstate.dart';
 import 'package:assignment_sem6/util/role.dart';
-import 'package:assignment_sem6/util/time.dart';
 import 'package:assignment_sem6/util/timelineutil.dart';
 import 'package:assignment_sem6/util/toast.dart';
 import 'package:assignment_sem6/widgets/screen.dart';
+import 'package:assignment_sem6/widgets/sizedcircularprogressindicator.dart';
 import 'package:assignment_sem6/widgets/view/filter/filtercontainer.dart';
-import 'package:assignment_sem6/widgets/view/timeline/item/basictimelineitem.dart';
+import 'package:assignment_sem6/widgets/view/filter/filters.dart';
 import 'package:assignment_sem6/widgets/view/timeline/minimap/timelineminimap.dart';
 import 'package:assignment_sem6/widgets/view/timeline/minimap/timelineminimapzoom.dart';
 import 'package:assignment_sem6/widgets/view/timeline/timelinecontroller.dart';
@@ -31,11 +31,12 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  late final List<TempPost> _posts;
   late final TimelineController _timelineController;
   final ValueNotifier<ActiveView> _activeView = ValueNotifier(
     ActiveView.timeline,
   );
+  late Filters _filters;
+  bool _fetchingPosts = false;
   bool _showZoom = false;
 
   double visibleStart = -1;
@@ -55,140 +56,71 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-  LatLng generateLocation(Random random) => LatLng(
-    41.8719 + random.nextDouble() * 0.5 - 0.05,
-    12.5674 + random.nextDouble() * 0.5 - 0.05,
-  );
-
   @override
   void initState() {
-    final startTimestamp =
-        (Time.nowAsTimestamp() ~/ 1000 * 1000) -
-        (1000 * 60 * 60 * 24 * 2); // 2 days ago
-    final secondDay = startTimestamp + (1000 * 60 * 60 * 24); // 24 hours later
-    final endTimestamp =
-        startTimestamp + (1000 * 60 * 60 * 24 * 2).toInt(); // 2 days later
+    final startTimestamp = DateTime.now().subtract(const Duration(days: 1));
+    final endTimestamp = DateTime.now();
     _timelineController = TimelineController.withTimeScale(
       items: [],
-      startTimestamp: startTimestamp,
-      endTimestamp: endTimestamp,
+      startTimestamp: startTimestamp.millisecondsSinceEpoch,
+      endTimestamp: endTimestamp.millisecondsSinceEpoch,
       timeScale: 1000 * 60 * 30, // half an hour
     );
 
-    final random = Random();
-    _posts = [
-      TempPost(
-        startTimestamp: secondDay,
-        endTimestamp: secondDay + (1000 * 60 * 10),
-        name: "Post 1",
-        color: Colors.red,
-        location: generateLocation(random),
-      ),
-      TempPost(
-        startTimestamp: secondDay + (1000 * 60 * 10),
-        endTimestamp: secondDay + (1000 * 60 * 15),
-        name: "Post 2",
-        color: Colors.blue,
-        location: generateLocation(random),
-      ),
-      TempPost(
-        startTimestamp: secondDay + (1000 * 60 * 10),
-        endTimestamp: secondDay + (1000 * 60 * 20),
-        name: "Post 3",
-        color: Colors.green,
-        location: generateLocation(random),
-      ),
-      TempPost(
-        startTimestamp: secondDay + (1000 * 60 * 23),
-        endTimestamp: secondDay + (1000 * 60 * 50),
-        name: "Post 4",
-        color: Colors.orange,
-        location: generateLocation(random),
-      ),
-      TempPost(
-        startTimestamp: secondDay + (1000 * 60 * 25),
-        endTimestamp: secondDay + (1000 * 60 * 40),
-        name: "Post 5",
-        color: Colors.purple,
-        location: generateLocation(random),
-      ),
-      TempPost(
-        startTimestamp: secondDay + (1000 * 60 * 27),
-        endTimestamp: secondDay + (1000 * 60 * 43),
-        name: "Post 7",
-        color: Colors.deepOrange,
-        location: generateLocation(random),
-      ),
-      TempPost(
-        startTimestamp: secondDay + (1000 * 60 * 50),
-        endTimestamp: secondDay + (1000 * 60 * 60),
-        name: "Post 6",
-        color: Colors.yellow,
-        location: generateLocation(random),
-      ),
-      // for (int i = 0; i < 10; i++)
-      //   TempPost(
-      //     startTimestamp: secondDay + (1000 * 60 * 50) + (1000 * i),
-      //     endTimestamp: secondDay + (1000 * 60 * 50) + 1000 * (i + 1),
-      //     name: "Post small",
-      //     color: Colors.primaries[i],
-      //     location: generateLocation(random),
-      //   ),
-      for (int i = startTimestamp; i < endTimestamp; i += 1000 * 60 * 30)
-        TempPost(
-          startTimestamp: i.toInt(),
-          endTimestamp:
-              i.toInt() + (1000 * 60 * (15 + (5 * random.nextInt(10)))),
-          name: "Post ${(i - startTimestamp) ~/ (1000 * 60 * 30)}",
-          color:
-              Colors.primaries[(i ~/ (1000 * 60 * 30)) %
-                  Colors.primaries.length],
-          location: generateLocation(random),
-        ),
-    ];
-    arrangeElements(_posts);
-
-    // _timelineController.addListener(() {
-    //   if (visibleStart != _timelineController.visibleStartTimestamp ||
-    //       visibleEnd != _timelineController.visibleEndTimestamp) {
-    //     visibleStart = _timelineController.visibleStartTimestamp.toDouble();
-    //     visibleEnd = _timelineController.visibleEndTimestamp.toDouble();
-    //     arrangeElements(_posts);
-    //   }
-    // });
+    _filters = Filters(
+      searchQuery: "",
+      startDate: startTimestamp,
+      endDate: endTimestamp,
+    );
+    _filterUpdate(_filters);
 
     super.initState();
   }
 
-  void arrangeElements(List<TempPost> posts) {
-    final sorted = posts;
+  void _filterUpdate(Filters newFilters) async {
+    setState(() {
+      _filters = newFilters;
+      _fetchingPosts = true;
+    });
+
+    final postService = context.read<PostService>();
+    final posts = await postService.getAll();
+    _arrangeElements(posts.where((post) => _filters.matches(post)));
+
+    if (_timelineController.startTimestamp !=
+            _filters.startDate.millisecondsSinceEpoch ||
+        _timelineController.endTimestamp !=
+            _filters.endDate.millisecondsSinceEpoch) {
+      _timelineController.updateTimestamps(
+        _filters.startDate.millisecondsSinceEpoch,
+        _filters.endDate.millisecondsSinceEpoch,
+      );
+      _timelineController.reset();
+    }
+
+    await Future.delayed(const Duration(milliseconds: 100));
+
+    setState(() {
+      _fetchingPosts = false;
+    });
+  }
+
+  void _arrangeElements(Iterable<Post> posts) {
+    final sorted = posts.toList();
     sorted.sort((a, b) => a.startTimestamp.compareTo(b.startTimestamp));
 
     final List<TimelineItem> arranged = [];
 
     for (int i = 0; i < sorted.length; i++) {
       final post = sorted[i];
-
-      int layer = TimelineUtil.resolveLayer(post.startTimestamp, arranged);
-
       arranged.add(
-        BasicTimelineItem(
-          startTimestamp: post.startTimestamp,
-          endTimestamp: post.endTimestamp,
-          name: post.name,
-          rawLayer: layer,
-          layerOffset: 0.0,
-          color: post.color,
-          location: post.location,
+        TimelineItem.fromPost(
+          post,
+          layer: TimelineUtil.resolveLayer(post.startTimestamp, arranged),
+          color: Colors.primaries[i % Colors.primaries.length],
         ),
       );
     }
-
-    // final int minVisualWidth = _timelineController.visibleTimeScale ~/ 50;
-    // final grouped = groupSmallItems(
-    //   arranged,
-    //   minWidth: minVisualWidth.toDouble(),
-    // );
 
     _timelineController.updateItems(arranged);
   }
@@ -326,121 +258,170 @@ class _HomePageState extends State<HomePage> {
           child: Icon(Icons.add),
         ),
       ),
-      child: ListenableBuilder(
-        listenable: _activeView,
-        builder:
-            (context, _) => Column(
-              children: [
-                ListenableBuilder(
-                  listenable: _timelineController.selectedItem,
-                  builder: (context, _) {
-                    if (_timelineController.selectedItem.value != null) {
-                      return Expanded(
-                        child: ViewPost(
-                          key: ValueKey(
-                            _timelineController
-                                .selectedItem
-                                .value!
-                                .startTimestamp,
-                          ),
-                          postName:
-                              _timelineController.selectedItem.value!.name,
-                          backgroundColor:
-                              _timelineController.selectedItem.value!.color,
-                        ),
-                      );
-                    }
-
-                    return SizedBox.shrink();
-                  },
-                ),
-                Expanded(
-                  child: Stack(
-                    children: [
-                      Positioned.fill(
-                        child: Visibility(
-                          visible: _activeView.value == ActiveView.timeline,
-                          maintainState: true,
-                          child: RepaintBoundary(
-                            child: TimelineView(
-                              controller: _timelineController,
-                              onMapButtonPressed:
-                                  () => _setActiveView(ActiveView.map),
-                            ),
-                          ),
-                        ),
-                      ),
-                      Positioned.fill(
-                        child: Visibility(
-                          visible: _activeView.value == ActiveView.map,
-                          maintainState: true,
-                          child: RepaintBoundary(
-                            child: MapView(
-                              controller: _timelineController,
-                              onTimelineButtonPressed:
-                                  () => _setActiveView(ActiveView.timeline),
-                              activeView: _activeView,
-                            ),
-                          ),
-                        ),
-                      ),
-                      ListenableBuilder(
-                        listenable: _timelineController,
-                        builder: (context, _) {
-                          const double width = 400.0;
-                          final screenWidth = MediaQuery.sizeOf(context).width;
-                          final int fullLength =
-                              _timelineController.effectiveEndTimestamp -
-                              _timelineController.effectiveStartTimestamp;
-                          final int visibleCenter =
-                              _timelineController.visibleCenterTimestamp;
-                          final double fraction =
-                              (visibleCenter -
-                                  _timelineController.effectiveStartTimestamp) /
-                              fullLength;
-                          final double left =
-                              fraction * screenWidth - 0.5 * width;
-                          final bool tooSmall = screenWidth - width <= 0.0;
-                          final double clamped =
-                              tooSmall
-                                  ? 0.0
-                                  : left.clamp(0.0, screenWidth - width);
-
-                          return Positioned(
-                            bottom: 0,
-                            left: tooSmall ? 16.0 : clamped,
-                            right: tooSmall ? 16.0 : null,
-                            child: TimelineMinimapZoom(
-                              width: width,
-                              fullWidth: screenWidth,
-                              height: 90,
-                              controller: _timelineController,
-                              visible: _showZoom,
+      child: Stack(
+        children: [
+          ListenableBuilder(
+            listenable: _activeView,
+            builder:
+                (context, _) => Column(
+                  children: [
+                    ListenableBuilder(
+                      listenable: _timelineController.selectedItem,
+                      builder: (context, _) {
+                        if (_timelineController.selectedItem.value != null) {
+                          return Expanded(
+                            child: ViewPost(
+                              key: ValueKey(
+                                _timelineController
+                                    .selectedItem
+                                    .value!
+                                    .startTimestamp,
+                              ),
+                              postUUID:
+                                  _timelineController
+                                      .selectedItem
+                                      .value!
+                                      .postUUID,
+                              backgroundColor:
+                                  _timelineController.selectedItem.value!.color,
                             ),
                           );
-                        },
+                        }
+
+                        return SizedBox.shrink();
+                      },
+                    ),
+                    Expanded(
+                      child: Stack(
+                        children: [
+                          Positioned.fill(
+                            child: Visibility(
+                              visible: _activeView.value == ActiveView.timeline,
+                              maintainState: true,
+                              child: RepaintBoundary(
+                                child: TimelineView(
+                                  controller: _timelineController,
+                                  onMapButtonPressed:
+                                      () => _setActiveView(ActiveView.map),
+                                ),
+                              ),
+                            ),
+                          ),
+                          Positioned.fill(
+                            child: Visibility(
+                              visible: _activeView.value == ActiveView.map,
+                              maintainState: true,
+                              child: RepaintBoundary(
+                                child: MapView(
+                                  controller: _timelineController,
+                                  onTimelineButtonPressed:
+                                      () => _setActiveView(ActiveView.timeline),
+                                  activeView: _activeView,
+                                ),
+                              ),
+                            ),
+                          ),
+                          ListenableBuilder(
+                            listenable: _timelineController,
+                            builder: (context, _) {
+                              const double width = 400.0;
+                              final screenWidth =
+                                  MediaQuery.sizeOf(context).width;
+                              final int fullLength =
+                                  _timelineController.effectiveEndTimestamp -
+                                  _timelineController.effectiveStartTimestamp;
+                              final int visibleCenter =
+                                  _timelineController.visibleCenterTimestamp;
+                              final double fraction =
+                                  (visibleCenter -
+                                      _timelineController
+                                          .effectiveStartTimestamp) /
+                                  fullLength;
+                              final double left =
+                                  fraction * screenWidth - 0.5 * width;
+                              final bool tooSmall = screenWidth - width <= 0.0;
+                              final double clamped =
+                                  tooSmall
+                                      ? 0.0
+                                      : left.clamp(0.0, screenWidth - width);
+
+                              return Positioned(
+                                bottom: 0,
+                                left: tooSmall ? 16.0 : clamped,
+                                right: tooSmall ? 16.0 : null,
+                                child: TimelineMinimapZoom(
+                                  width: width,
+                                  fullWidth: screenWidth,
+                                  height: 90,
+                                  controller: _timelineController,
+                                  visible: _showZoom,
+                                ),
+                              );
+                            },
+                          ),
+                          Positioned(
+                            left: 16,
+                            top: 16,
+                            child: FilterContainer(
+                              filters: _filters,
+                              onFilterApplied: (newFilters) {
+                                _filterUpdate(newFilters);
+                              },
+                            ),
+                          ),
+                        ],
                       ),
-                      Positioned(
-                        left: 16,
-                        top: 16,
-                        child: RepaintBoundary(child: FilterContainer()),
+                    ),
+                    ListenableBuilder(
+                      listenable: _timelineController,
+                      builder:
+                          (context, _) => SizedBox(
+                            width: double.infinity,
+                            child: TimelineMiniMap(
+                              controller: _timelineController,
+                              setShowZoom: _setShowZoom,
+                            ),
+                          ),
+                    ),
+                  ],
+                ),
+          ),
+          if (_fetchingPosts)
+            Positioned.fill(
+              child: Container(
+                color: Colors.black.withAlpha(50),
+                child: Center(
+                  child: Container(
+                    padding: const EdgeInsets.all(16.0),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.surface,
+                      borderRadius: BorderRadius.circular(8.0),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withAlpha(50),
+                          blurRadius: 4,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: IntrinsicHeight(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        spacing: 24.0,
+                        children: [
+                          Text(
+                            "Refreshing posts...",
+                            style: TextStyle(fontSize: 16.0),
+                          ),
+                          SizedCircularProgressIndicator.square(size: 32),
+                        ],
                       ),
-                    ],
+                    ),
                   ),
                 ),
-                ListenableBuilder(
-                  listenable: _timelineController,
-                  builder:
-                      (context, _) => SizedBox(
-                        width: double.infinity,
-                        child: TimelineMiniMap(
-                          controller: _timelineController,
-                          setShowZoom: _setShowZoom,
-                        ),
-                      ),
-                ),
-              ],
+              ),
             ),
+        ],
       ),
     );
   }

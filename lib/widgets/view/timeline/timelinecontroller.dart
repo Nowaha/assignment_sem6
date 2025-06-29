@@ -297,9 +297,9 @@ class TimelineController extends ChangeNotifier {
   }
 
   void reset() {
-    _visibleStartTimestamp = _startTimestamp;
-    _visibleEndTimestamp = _endTimestamp;
-    notifyListeners();
+    recenter();
+    resetZoom();
+    _verticalOffset = 0;
   }
 
   void recenter() {

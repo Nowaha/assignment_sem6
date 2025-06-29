@@ -35,8 +35,10 @@ class _LoginPageState extends State<LoginPage> with FormMixin {
     final authState = context.read<AuthState>();
     final userService = context.read<UserService>();
 
+    await Future.delayed(Duration(milliseconds: 100));
+
     authState.login(
-      (await userService.authenticateByUsername("Nowaha", "123"))!,
+      (await userService.authenticateByUsername("Admin", "123456"))!,
     );
   }
 
