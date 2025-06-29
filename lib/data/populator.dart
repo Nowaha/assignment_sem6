@@ -104,7 +104,7 @@ class Populator {
       Post.create(
         creatorUUID: testAdminUser.uuid,
         startTimestamp: startTime.millisecondsSinceEpoch,
-        endTimestamp: endTime.millisecondsSinceEpoch,
+        endTimestamp: startTime.millisecondsSinceEpoch + (1000 * 60 * 5),
         title: "Example post to start",
         postContents: Generate.paragraph(20),
         tags: ["welcome", "introduction"],
@@ -122,8 +122,7 @@ class Populator {
           creatorUUID: users.elementAt(rand.nextInt(users.length)).uuid,
           startTimestamp: i.toInt(),
           endTimestamp: i.toInt() + (1000 * 60 * (15 + (5 * rand.nextInt(10)))),
-          title:
-              "Post ${(i - startTime.millisecondsSinceEpoch) ~/ (1000 * 60 * 30)}",
+          title: Generate.sentence(rand.nextInt(5) + 5),
           postContents: Generate.paragraph(rand.nextInt(10) + 10),
           tags: ["example", Generate.word()],
           groups: [Group.everyoneUUID],
