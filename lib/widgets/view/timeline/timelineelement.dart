@@ -93,11 +93,10 @@ class _TimelineElementState extends State<TimelineElement> {
     );
     final endSize = _getSize(endSpan);
 
-    final totalWidth =
-        startSize.width + nameSize.width + endSize.width + 36 + 32;
+    final timeWidth = startSize.width + endSize.width + 24;
 
     final Widget textRow;
-    if (widget.width > totalWidth) {
+    if (widget.width > timeWidth + 32) {
       textRow = Row(
         spacing: 12,
         children: [
@@ -106,7 +105,7 @@ class _TimelineElementState extends State<TimelineElement> {
           Text.rich(endSpan),
         ],
       );
-    } else if (widget.width > startSize.width + nameSize.width + 32) {
+    } else if (widget.width > startSize.width + 64) {
       textRow = Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [Text.rich(startSpan), Text.rich(endSpan)],
