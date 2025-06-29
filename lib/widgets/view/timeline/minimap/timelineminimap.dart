@@ -84,12 +84,13 @@ class _TimelineMiniMapState extends State<TimelineMiniMap> {
       newHovering = Hovering.sides;
     }
 
+    if (newHovering != Hovering.none) {
+      widget.setShowZoom?.call(true);
+    } else {
+      widget.setShowZoom?.call(false);
+    }
+
     if (_hovering != newHovering) {
-      if (newHovering == Hovering.seeker || newHovering == Hovering.sides) {
-        widget.setShowZoom?.call(true);
-      } else {
-        widget.setShowZoom?.call(false);
-      }
       setState(() {
         _hovering = newHovering;
       });
