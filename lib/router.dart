@@ -1,3 +1,6 @@
+import 'package:assignment_sem6/screens/admin/adminhome.dart';
+import 'package:assignment_sem6/screens/admin/group/grouplist.dart';
+import 'package:assignment_sem6/screens/admin/user/userlist.dart';
 import 'package:assignment_sem6/screens/home.dart';
 import 'package:assignment_sem6/screens/login/login.dart';
 import 'package:assignment_sem6/screens/login/register.dart';
@@ -39,6 +42,21 @@ GoRouter createRouter(AuthState authState) {
             builder: (context, state) => const SettingsPage(),
           ),
           GoRoute(
+            name: AdminHomePage.routeName,
+            path: AdminHomePage.routeName,
+            builder: (context, state) => const AdminHomePage(),
+            routes: [
+              GoRoute(
+                path: "users",
+                builder: (context, state) => const UserListPage(),
+              ),
+              GoRoute(
+                path: "groups",
+                builder: (context, state) => const GroupListPage(),
+              ),
+            ],
+          ),
+          GoRoute(
             name: "createPost",
             path: "post/create",
             builder: (context, state) {
@@ -65,7 +83,7 @@ GoRouter createRouter(AuthState authState) {
               if (userUUID == null) {
                 return const Center(child: Text("User UUID is missing"));
               }
-              
+
               return Profile(userUUID: userUUID);
             },
           ),

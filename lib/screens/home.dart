@@ -4,6 +4,7 @@ import 'package:assignment_sem6/screens/post/viewpost.dart';
 import 'package:assignment_sem6/screens/view/map.dart';
 import 'package:assignment_sem6/screens/view/timeline.dart';
 import 'package:assignment_sem6/state/authstate.dart';
+import 'package:assignment_sem6/util/role.dart';
 import 'package:assignment_sem6/util/time.dart';
 import 'package:assignment_sem6/util/timelineutil.dart';
 import 'package:assignment_sem6/util/toast.dart';
@@ -29,7 +30,7 @@ class HomePage extends StatefulWidget {
   State<StatefulWidget> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> with ToastMixin {
+class _HomePageState extends State<HomePage> {
   late final List<TempPost> _posts;
   late final TimelineController _timelineController;
   final ValueNotifier<ActiveView> _activeView = ValueNotifier(
@@ -274,6 +275,7 @@ class _HomePageState extends State<HomePage> with ToastMixin {
               (value) => {
                 switch (value) {
                   "profile" => context.go("/profile/${user!.uuid}"),
+                  "admin" => context.goNamed("admin"),
                   "settings" => context.goNamed("settings"),
                   "logout" => _logout(),
                   _ => FlutterError("Unknown action selected: $value"),
@@ -300,6 +302,8 @@ class _HomePageState extends State<HomePage> with ToastMixin {
                 PopupMenuDivider(),
                 if (user != null)
                   PopupMenuItem(value: "profile", child: Text("Profile")),
+                if (user?.role == Role.administrator)
+                  PopupMenuItem(value: "admin", child: Text("Admin Panel")),
                 PopupMenuItem(value: "settings", child: Text("Settings")),
                 PopupMenuItem(value: "logout", child: Text("Log out")),
               ],

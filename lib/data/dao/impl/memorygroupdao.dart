@@ -9,6 +9,15 @@ class MemoryGroupDao extends MemoryDao<Group> implements GroupDao {
   @override
   Future<void> init() async {
     await ensureEveryoneGroupExists();
+
+    for (int i = 0; i < 100; i++) {
+      await insert(
+        Group.create(
+          name: "Group $i",
+          color: Colors.primaries[i % Colors.primaries.length],
+        ),
+      );
+    }
   }
 
   @override
