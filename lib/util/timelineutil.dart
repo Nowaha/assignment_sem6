@@ -81,20 +81,23 @@ class TimelineUtil {
   }
 
   static const niceValues = [
-    1000,
-    2000,
-    5000,
-    10000,
-    15000,
-    30000,
-    60000,
-    120000,
-    300000,
-    600000,
-    1800000,
-    3600000,
-    7200000,
-    14400000,
+    1000, // 1 second
+    2000, // 2 seconds
+    5000, // 5 seconds
+    10000, // 10 seconds
+    15000, // 15 seconds
+    30000, // 30 seconds
+    60000, // 1 minute
+    120000, // 2 minutes
+    300000, // 5 minutes
+    600000, // 10 minutes
+    1800000, // 30 minutes
+    3600000, // 1 hour
+    7200000, // 2 hours
+    14400000, // 4 hours
+    21600000, // 6 hours
+    43200000, // 12 hours
+    86400000, // 1 day
   ];
 
   static int _roundToNiceInterval(int intervalMs) {
