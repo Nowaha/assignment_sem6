@@ -17,7 +17,8 @@ class Collapsible extends StatelessWidget {
         AnimatedSize(
           duration: const Duration(milliseconds: 100),
           curve: Curves.easeInOut,
-          child: isCollapsed ? SizedBox(height: 0, child: child) : child,
+          alignment: Alignment.topCenter,
+          child: isCollapsed ? SizedBox.shrink() : child,
         ),
       ],
     );

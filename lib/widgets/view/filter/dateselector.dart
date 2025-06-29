@@ -1,27 +1,33 @@
+import 'package:assignment_sem6/util/date.dart';
 import 'package:flutter/material.dart';
 
 class DateSelector extends StatelessWidget {
+  final String label;
   final DateTime initialDateTime;
   final DateTime selectedDate;
+  final DateTime? minDate;
+  final DateTime? maxDate;
   final ValueChanged<DateTime> onDateSelected;
 
   const DateSelector({
     super.key,
+    required this.label,
     required this.initialDateTime,
     required this.selectedDate,
     required this.onDateSelected,
+    this.minDate,
+    this.maxDate,
   });
 
   Future<void> _selectDate(BuildContext context) async {
-    // Pick date
     final date = await showDatePicker(
       context: context,
       initialDate: selectedDate,
-      firstDate: DateTime(2000),
-      lastDate: DateTime(2100),
+      firstDate: minDate ?? DateTime(2000),
+      lastDate: maxDate ?? DateTime(2100),
     );
 
-    if (date == null) return; // User canceled date picking
+    if (date == null) return;
 
     // Pick time
     final time = await showTimePicker(
@@ -29,9 +35,8 @@ class DateSelector extends StatelessWidget {
       initialTime: TimeOfDay.fromDateTime(selectedDate),
     );
 
-    if (time == null) return; // User canceled time picking
+    if (time == null) return;
 
-    // Combine date and time into a DateTime object
     final combined = DateTime(
       date.year,
       date.month,
@@ -40,24 +45,27 @@ class DateSelector extends StatelessWidget {
       time.minute,
     );
 
-    // Call the callback with the new DateTime
     onDateSelected(combined);
   }
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(
-          'Selected Date: ${selectedDate.toLocal()}'.split(' ')[0],
-          style: TextStyle(fontSize: 16),
+    return Expanded(
+      child: TextField(
+        controller: TextEditingController(
+          text: DateUtil.formatDateTime(
+            selectedDate.millisecondsSinceEpoch,
+            false,
+          ),
         ),
-        ElevatedButton(
-          onPressed: () => _selectDate(context),
-          child: Text('Select Date'),
+        readOnly: true,
+        decoration: InputDecoration(
+          border: OutlineInputBorder(),
+          labelText: label,
+          suffixIcon: Icon(Icons.calendar_today),
         ),
-      ],
+        onTap: () => _selectDate(context),
+      ),
     );
   }
 }

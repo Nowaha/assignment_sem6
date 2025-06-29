@@ -5,12 +5,22 @@ class CollapsibleContainer extends StatefulWidget {
   final String title;
   final Widget child;
   final bool initiallyCollapsed;
+  final Color? backgroundColor;
+  final BoxBorder? border;
+  final BorderRadius? borderRadius;
+  final BoxDecoration? decoration;
+  final List<BoxShadow>? boxShadow;
 
   const CollapsibleContainer({
     super.key,
     required this.title,
     required this.child,
     this.initiallyCollapsed = false,
+    this.backgroundColor,
+    this.border,
+    this.borderRadius,
+    this.decoration,
+    this.boxShadow,
   });
 
   @override
@@ -31,10 +41,12 @@ class _CollapsibleContainerState extends State<CollapsibleContainer> {
     child: Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Theme.of(
-          context,
-        ).colorScheme.secondaryContainer.withAlpha(_isCollapsed ? 126 : 255),
-        borderRadius: BorderRadius.circular(8),
+        color: (widget.backgroundColor ??
+                Theme.of(context).colorScheme.secondaryContainer)
+            .withAlpha(_isCollapsed ? 126 : 255),
+        borderRadius: widget.borderRadius ?? BorderRadius.circular(8),
+        border: widget.border,
+        boxShadow: !_isCollapsed ? widget.boxShadow : null,
       ),
       child: CollapsibleWithHeader(
         title: widget.title,

@@ -18,16 +18,20 @@ class StartEndSelector extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      spacing: 8.0,
       children: [
         DateSelector(
+          label: "Start Date",
           initialDateTime: start,
           selectedDate: start,
+          maxDate: end,
           onDateSelected: onStartSelected,
         ),
         DateSelector(
+          label: "End Date",
           initialDateTime: end,
           selectedDate: end,
+          minDate: start,
           onDateSelected: onEndSelected,
         ),
       ],
