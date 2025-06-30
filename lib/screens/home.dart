@@ -352,7 +352,9 @@ class _HomePageState extends State<HomePage> {
                             final item =
                                 _timelineController.itemsMap[_timelineController
                                     .selectedItem
-                                    .value!]!;
+                                    .value!];
+                            if (item == null) return SizedBox.shrink();
+
                             return Expanded(
                               child: Container(
                                 decoration: BoxDecoration(
@@ -486,7 +488,10 @@ class _HomePageState extends State<HomePage> {
                       ),
                     ),
                     ListenableBuilder(
-                      listenable: _timelineController,
+                      listenable: Listenable.merge([
+                        _timelineController,
+                        _timelineController.selectedItem,
+                      ]),
                       builder:
                           (context, _) => SizedBox(
                             width: double.infinity,

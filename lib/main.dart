@@ -18,6 +18,7 @@ void main() {
         ...commentProviders,
         ...postProviders,
         ...groupProviders,
+        ...postProviders,
       ],
       child: const MainApp(),
     ),
