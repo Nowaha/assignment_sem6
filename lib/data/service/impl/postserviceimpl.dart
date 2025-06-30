@@ -4,6 +4,7 @@ import 'package:assignment_sem6/data/service/data/commentview.dart';
 import 'package:assignment_sem6/data/service/data/postview.dart';
 import 'package:assignment_sem6/data/service/postservice.dart';
 import 'package:assignment_sem6/util/sort.dart';
+import 'package:assignment_sem6/util/validation.dart';
 
 class PostServiceImpl extends PostService {
   PostServiceImpl({
@@ -63,8 +64,37 @@ class PostServiceImpl extends PostService {
   }) => repository.getPosts(sort: sort, limit: limit, page: page);
 
   @override
+  Future<Post> createNewPost(Post post) async {
+    if (post.endTimestamp != null && post.endTimestamp! < post.startTimestamp) {
+      throw ArgumentError("End timestamp cannot be before start timestamp.");
+    }
+
+    if (Validation.isValidPostName(post.title) !=
+        PostTitleValidationResult.valid) {
+      throw ArgumentError("Post title is invalid.", "post.title");
+    }
+
+    if (post.title.isEmpty) {
+      throw ArgumentError("Post contents cannot be empty.", "post.contents");
+    }
+
+    if (!await userService.existsByUUID(post.creatorUUID)) {
+      throw ArgumentError(
+        "Creator with UUID ${post.creatorUUID} does not exist.",
+        "post.creatorUUID",
+      );
+    }
+
+    await repository.add(post);
+    return post;
+  }
+
+  @override
   void dispose() => repository.dispose();
 
   @override
   Stream<List<Post>> get stream => repository.stream;
+
+  @override
+  Future<bool> deletePost(String uuid) => repository.remove(uuid);
 }

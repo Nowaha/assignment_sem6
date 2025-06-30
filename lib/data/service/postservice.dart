@@ -41,4 +41,8 @@ abstract class PostService extends LinkedService<Post, PostView, PostRepository>
   }) async => linkAll(
     await getPostsOfCreator(creatorUUID, sort: sort, limit: limit, page: page),
   );
+
+  Future<Post> createNewPost(Post post);
+
+  Future<bool> deletePost(String uuid);
 }
