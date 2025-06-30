@@ -210,7 +210,7 @@ class TimelineState extends State<Timeline> {
                               () => widget.controller.adjustVerticalOffset(-50),
                           onScrollDown:
                               () => widget.controller.adjustVerticalOffset(50),
-                          onCenter: () => widget.controller.recenter(),
+                          onRecenter: () => widget.controller.recenter(),
                         ),
                     ],
                   ),

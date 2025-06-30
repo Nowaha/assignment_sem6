@@ -17,8 +17,6 @@ class TimelineController extends ChangeNotifier {
   int _visibleStartTimestamp;
   int _visibleEndTimestamp;
 
-  int _initialTimeScale;
-
   double _verticalOffset = 0;
 
   TimelineController({
@@ -34,7 +32,6 @@ class TimelineController extends ChangeNotifier {
   }) : _items = items,
        _startTimestamp = startTimestamp,
        _endTimestamp = endTimestamp,
-       _initialTimeScale = initialTimeScale,
        _visibleStartTimestamp = visibleStartTimestamp,
        _visibleEndTimestamp = visibleEndTimestamp;
 
@@ -64,9 +61,10 @@ class TimelineController extends ChangeNotifier {
   int get startTimestamp => _startTimestamp;
   int get endTimestamp => _endTimestamp;
   int get centerTimestamp => (_startTimestamp + _endTimestamp) ~/ 2;
-  int get initialTimeScale => _initialTimeScale;
   double get verticalOffset => _verticalOffset;
   Range get range => (start: _startTimestamp, end: _endTimestamp);
+  int get initialTimeScale =>
+      TimelineUtil.calculateInitialTimeScale(_startTimestamp, _endTimestamp);
 
   int get visibleStartTimestamp => _visibleStartTimestamp;
   int get visibleEndTimestamp => _visibleEndTimestamp;
@@ -305,7 +303,7 @@ class TimelineController extends ChangeNotifier {
 
   void resetZoom() {
     final center = visibleCenterTimestamp;
-    final newRange = _applyTimeScale(center, _initialTimeScale);
+    final newRange = _applyTimeScale(center, initialTimeScale);
     updateVisibleRange(newRange.start, newRange.end);
   }
 }

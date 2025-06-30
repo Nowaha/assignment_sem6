@@ -9,7 +9,7 @@ class TimelineControls extends StatelessWidget {
   final VoidCallback onScrollRight;
   final VoidCallback onScrollUp;
   final VoidCallback onScrollDown;
-  final VoidCallback onCenter;
+  final VoidCallback onRecenter;
 
   const TimelineControls({
     super.key,
@@ -20,7 +20,7 @@ class TimelineControls extends StatelessWidget {
     required this.onScrollRight,
     required this.onScrollUp,
     required this.onScrollDown,
-    required this.onCenter,
+    required this.onRecenter,
   });
 
   @override
@@ -66,8 +66,8 @@ class TimelineControls extends StatelessWidget {
               ),
               SizedBox.shrink(),
               IconButton.filled(
-                tooltip: "Center",
-                onPressed: onCenter,
+                tooltip: "Recenter",
+                onPressed: onRecenter,
                 icon: const Icon(Icons.center_focus_strong),
               ),
             ],

@@ -48,7 +48,7 @@ class DateUtil {
     final time = formatTime(timestamp, includeSeconds);
     return "$date $time";
   }
-
+  
   static String formatInterval(int intervalMs) {
     final seconds = (intervalMs / 1000).floor();
     final minutes = (seconds / 60).floor();

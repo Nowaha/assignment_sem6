@@ -121,4 +121,9 @@ class TimelineUtil {
 
   static int preferredExpansion(int visibleTimeFrame) =>
       (visibleTimeFrame.toDouble() / (1000 * 60)).ceil() * (1000 * 60);
+
+  static int calculateInitialTimeScale(int startTimestamp, int endTimestamp) {
+    final duration = endTimestamp - startTimestamp;
+    return (duration ~/ 4).clamp(1000 * 60, 1000 * 60 * 60 * 24);
+  }
 }
