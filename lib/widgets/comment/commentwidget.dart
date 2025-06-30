@@ -104,6 +104,7 @@ class _CommentWidgetState extends State<CommentWidget> {
               Text(" commented:", style: TextStyle(fontSize: 14.0)),
             ],
           ),
+          Divider(height: 0),
           wrappedContent,
           if (_hasOverflow || _isExpanded)
             ActualTextButton(

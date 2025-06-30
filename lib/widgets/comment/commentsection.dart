@@ -41,7 +41,7 @@ class _CommentSectionState extends State<CommentSection> {
             : ListView.separated(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
-              separatorBuilder: (context, index) => SizedBox(height: 16),
+              separatorBuilder: (context, index) => SizedBox(height: 32),
               itemBuilder: (context, index) {
                 final comment = widget.comments[index];
                 return CommentWidget(comment: comment);
