@@ -209,8 +209,8 @@ class TimelineState extends State<Timeline> {
                         IconButton.filled(
                           onPressed: widget.onMapButtonPressed,
                           icon: const Icon(Icons.map),
-                          iconSize: 32,
-                          padding: EdgeInsets.all(16),
+                          iconSize: 24,
+                          padding: EdgeInsets.all(12),
                         ),
                       if (screenUtil.isBigScreen)
                         TimelineControls(

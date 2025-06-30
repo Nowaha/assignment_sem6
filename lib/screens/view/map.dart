@@ -35,8 +35,8 @@ class MapView extends StatelessWidget {
                 IconButton.filled(
                   onPressed: onTimelineButtonPressed,
                   icon: const Icon(Icons.timeline),
-                  iconSize: 32,
-                  padding: EdgeInsets.all(16),
+                  iconSize: 24,
+                  padding: EdgeInsets.all(12),
                 ),
               ],
             ),
@@ -68,7 +68,7 @@ class MapView extends StatelessWidget {
                   (context, _) => IgnorePointer(
                     child: CustomPaint(
                       painter: ScalePainter(
-                        position: Offset(size.width - 100, 50),
+                        position: Offset(size.width - 80, 40),
                         timelineWidth: 200,
                         timelineThickness: 2,
                         scaleDownFactor: 1,

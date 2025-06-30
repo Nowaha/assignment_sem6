@@ -44,14 +44,15 @@ class _SearchWidgetState extends State<SearchWidget> {
       ),
       Row(
         children: [
+          Text("Search in:"),
           Checkbox(value: true, onChanged: (value) {}),
-          const Text("Include Title"),
+          const Text("Title"),
           const SizedBox(width: 8.0),
           Checkbox(value: true, onChanged: (value) {}),
-          const Text("Include Contents"),
+          const Text("Contents"),
           const SizedBox(width: 8.0),
           Checkbox(value: true, onChanged: (value) {}),
-          const Text("Include Tags"),
+          const Text("Tags"),
         ],
       ),
     ],

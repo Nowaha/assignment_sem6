@@ -140,7 +140,7 @@ class TimelinePainter extends CustomPainter {
 
     // Scale on the top right side
     ScalePainter(
-      position: Offset(size.width - 100, 50),
+      position: Offset(size.width - 80, 40),
       timelineWidth: size.width,
       timelineThickness: timelineThickness,
       scaleDownFactor: .8,

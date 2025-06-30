@@ -1,15 +1,17 @@
 import 'package:assignment_sem6/data/entity/impl/post.dart';
 import 'package:assignment_sem6/data/service/postservice.dart';
+import 'package:assignment_sem6/widgets/view/filter/fullscreenfilters.dart';
 import 'package:assignment_sem6/screens/post/viewpost.dart';
 import 'package:assignment_sem6/screens/view/map.dart';
 import 'package:assignment_sem6/screens/view/timeline.dart';
 import 'package:assignment_sem6/state/authstate.dart';
 import 'package:assignment_sem6/util/role.dart';
+import 'package:assignment_sem6/util/screen.dart';
 import 'package:assignment_sem6/util/timelineutil.dart';
 import 'package:assignment_sem6/util/toast.dart';
 import 'package:assignment_sem6/widgets/screen.dart';
 import 'package:assignment_sem6/widgets/sizedcircularprogressindicator.dart';
-import 'package:assignment_sem6/widgets/view/filter/filtercontainer.dart';
+import 'package:assignment_sem6/widgets/view/filter/collapsiblefiltercontainer.dart';
 import 'package:assignment_sem6/widgets/view/filter/filters.dart';
 import 'package:assignment_sem6/widgets/view/timeline/minimap/timelineminimap.dart';
 import 'package:assignment_sem6/widgets/view/timeline/minimap/timelineminimapzoom.dart';
@@ -36,6 +38,7 @@ class _HomePageState extends State<HomePage> {
     ActiveView.timeline,
   );
   late Filters _filters;
+  bool _fullscreenFiltersOpen = false;
   bool _fetchingPosts = false;
   bool _showZoom = false;
 
@@ -239,6 +242,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     final authState = context.watch<AuthState>();
     final user = authState.getCurrentUser;
+    final screenUtil = ScreenUtil(context);
 
     return Screen(
       title: Text(_activeView.value.title),
@@ -402,12 +406,22 @@ class _HomePageState extends State<HomePage> {
                           Positioned(
                             left: 16,
                             top: 16,
-                            child: FilterContainer(
-                              filters: _filters,
-                              onFilterApplied: (newFilters) {
-                                _filterUpdate(newFilters);
-                              },
-                            ),
+                            child:
+                                screenUtil.isBigScreen
+                                    ? CollapsibleFilterContainer(
+                                      filters: _filters,
+                                      onFilterApplied: (newFilters) {
+                                        _filterUpdate(newFilters);
+                                      },
+                                    )
+                                    : IconButton.filled(
+                                      onPressed: () {
+                                        setState(() {
+                                          _fullscreenFiltersOpen = true;
+                                        });
+                                      },
+                                      icon: Icon(Icons.search),
+                                    ),
                           ),
                         ],
                       ),
@@ -426,6 +440,20 @@ class _HomePageState extends State<HomePage> {
                   ],
                 ),
           ),
+          if (_fullscreenFiltersOpen)
+            Positioned.fill(
+              child: FullscreenFilters(
+                filters: _filters,
+                onFilterApplied: (newFilters) {
+                  _filterUpdate(newFilters);
+                },
+                close: () {
+                  setState(() {
+                    _fullscreenFiltersOpen = false;
+                  });
+                },
+              ),
+            ),
           if (_fetchingPosts)
             Positioned.fill(
               child: Container(

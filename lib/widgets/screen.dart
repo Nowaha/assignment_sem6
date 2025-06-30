@@ -9,11 +9,13 @@ class Screen extends StatelessWidget {
   final List<Widget>? appBarActions;
   final Widget? floatingActionButton;
   final Color? backgroundColor;
+  final Widget? leading;
 
   const Screen._({
     super.key,
     required this.title,
     required this.child,
+    this.leading,
     this.appBarActions,
     this.floatingActionButton,
     this.backgroundColor,
@@ -24,6 +26,7 @@ class Screen extends StatelessWidget {
     appBar: AppBar(
       title: title,
       actions: appBarActions,
+      leading: leading,
       actionsPadding: EdgeInsets.only(right: 8),
       backgroundColor: backgroundColor ?? Theme.of(context).colorScheme.primary,
       foregroundColor:
@@ -38,6 +41,7 @@ class Screen extends StatelessWidget {
     Key? key,
     required Widget title,
     required Widget child,
+    Widget? leading,
     List<Widget>? appBarActions,
     Widget? floatingActionButton,
     EdgeInsets padding = defaultPadding,
@@ -46,6 +50,7 @@ class Screen extends StatelessWidget {
   }) => Screen._(
     key: key,
     title: title,
+    leading: leading,
     appBarActions: appBarActions,
     floatingActionButton: floatingActionButton,
     backgroundColor: backgroundColor,
@@ -56,6 +61,7 @@ class Screen extends StatelessWidget {
     Key? key,
     required Widget title,
     required Widget child,
+    Widget? leading,
     List<Widget>? appBarActions,
     Widget? floatingActionButton,
     EdgeInsets padding = defaultPadding,
@@ -64,6 +70,7 @@ class Screen extends StatelessWidget {
   }) => Screen._(
     key: key,
     title: title,
+    leading: leading,
     appBarActions: appBarActions,
     floatingActionButton: floatingActionButton,
     backgroundColor: backgroundColor,
@@ -74,6 +81,7 @@ class Screen extends StatelessWidget {
     Key? key,
     required Widget title,
     required Widget child,
+    Widget? leading,
     List<Widget>? appBarActions,
     Widget? floatingActionButton,
     Alignment alignment = Alignment.topCenter,
@@ -83,6 +91,7 @@ class Screen extends StatelessWidget {
   }) => Screen._(
     key: key,
     title: title,
+    leading: leading,
     appBarActions: appBarActions,
     floatingActionButton: floatingActionButton,
     backgroundColor: backgroundColor,
