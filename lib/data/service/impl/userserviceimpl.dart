@@ -55,6 +55,10 @@ class UserServiceImpl extends UserService {
       throw ArgumentError("Email is already taken.", "email");
     }
 
+    if (await existsByUUID(username)) {
+      throw ArgumentError("UUID is already taken.", "uuid");
+    }
+
     User newUser = User.newUser(
       username: username,
       firstName: firstName,
