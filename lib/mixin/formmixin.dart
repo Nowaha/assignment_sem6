@@ -45,6 +45,10 @@ mixin FormMixin<T extends StatefulWidget> on State<T> {
     return _errors.isEmpty;
   }
 
+  String? getError(TextEditingController controller) {
+    return _errors[controller];
+  }
+
   /// Register validators for the form fields to be used in [validate].
   /// [TextEditingController]s registered here will automatically
   /// have [TextEditingController.dispose] called when the widget is disposed.

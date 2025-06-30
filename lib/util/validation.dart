@@ -21,7 +21,7 @@ class Validation {
   static final allowedPasswordRegex = RegExp(
     r'^[A-Za-z0-9!@#$%^&*()_+\-=\[\]{};:"\\|,.<>\/?]+$',
   );
-  static final postNameCharacterWhitelistRegex = RegExp(r'^[a-zA-Z0-9_.]+$');
+  static final postTitleCharacterWhitelistRegex = RegExp(r'^[a-zA-Z0-9_.?!-\\ ]+$');
 
   static NameValidationResult isValidName(String name) {
     if (name.isEmpty) return NameValidationResult.empty;
@@ -51,7 +51,7 @@ class Validation {
       return PostTitleValidationResult.tooShort;
     if (name.length > maxPostTitleLength)
       return PostTitleValidationResult.tooLong;
-    if (!characterWhitelistRegex.hasMatch(name)) {
+    if (!postTitleCharacterWhitelistRegex.hasMatch(name)) {
       return PostTitleValidationResult.invalidCharacters;
     }
     return PostTitleValidationResult.valid;

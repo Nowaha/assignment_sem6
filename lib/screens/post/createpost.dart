@@ -1,5 +1,6 @@
 import 'package:assignment_sem6/mixin/formmixin.dart';
 import 'package:assignment_sem6/screens/post/markdowneditor.dart';
+import 'package:assignment_sem6/util/validation.dart';
 import 'package:assignment_sem6/widgets/loadingiconbutton.dart';
 import 'package:assignment_sem6/widgets/screen.dart';
 import 'package:flutter/material.dart';
@@ -23,8 +24,9 @@ class _CreatePostState extends State<CreatePost> with FormMixin {
     super.initState();
 
     registerValidators({
-      titleController:
-          (input) => input.isEmpty ? "Title cannot be empty." : null,
+      titleController: (input) => Validation.isValidPostName(input).message,
+      contentsController:
+          (input) => Validation.isValidPostContents(input).message,
     });
   }
 
@@ -43,12 +45,14 @@ class _CreatePostState extends State<CreatePost> with FormMixin {
 
             buildFormTextInput("Title", titleController, autoFocus: true),
 
-            // buildFormTextInput("Contents", contentsController, multiline: true),
             ConstrainedBox(
               constraints: BoxConstraints(maxHeight: 300),
               child: MarkdownEditor(
                 controller: contentsController,
                 label: "Contents",
+                enabled: !loading,
+                errorText: getError(contentsController),
+                onChanged: (_) => clearError(contentsController),
               ),
             ),
 
@@ -60,7 +64,7 @@ class _CreatePostState extends State<CreatePost> with FormMixin {
                 LoadingIconButton(
                   icon: Icon(Icons.add),
                   label: "Create Post",
-                  loading: true,
+                  loading: loading,
                   onPressed: validate,
                 ),
               ],
