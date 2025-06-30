@@ -110,6 +110,30 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
+  void _expandLeft() {
+    _timelineController.startTimestamp =
+        _timelineController.startTimestamp -
+        TimelineUtil.preferredExpansion(_timelineController.visibleTimeScale);
+    _filters = _filters.copyWith(
+      startDate: DateTime.fromMillisecondsSinceEpoch(
+        _timelineController.startTimestamp,
+      ),
+    );
+    _filterUpdate(_filters);
+  }
+
+  void _expandRight() {
+    _timelineController.endTimestamp =
+        _timelineController.endTimestamp +
+        TimelineUtil.preferredExpansion(_timelineController.visibleTimeScale);
+    _filters = _filters.copyWith(
+      endDate: DateTime.fromMillisecondsSinceEpoch(
+        _timelineController.endTimestamp,
+      ),
+    );
+    _filterUpdate(_filters);
+  }
+
   void _arrangeElements(Iterable<Post> posts) {
     final sorted = posts.toList();
     sorted.sort((a, b) => a.startTimestamp.compareTo(b.startTimestamp));
@@ -308,6 +332,8 @@ class _HomePageState extends State<HomePage> {
                                   controller: _timelineController,
                                   onMapButtonPressed:
                                       () => _setActiveView(ActiveView.map),
+                                  expandLeft: _expandLeft,
+                                  expandRight: _expandRight,
                                 ),
                               ),
                             ),

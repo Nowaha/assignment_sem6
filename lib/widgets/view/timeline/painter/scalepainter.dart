@@ -1,4 +1,4 @@
-import 'package:assignment_sem6/util/timelineutil.dart';
+import 'package:assignment_sem6/util/date.dart';
 import 'package:assignment_sem6/widgets/view/timeline/painter/tickpainter.dart';
 import 'package:flutter/material.dart';
 
@@ -75,7 +75,7 @@ class ScalePainter extends CustomPainter {
 
     final textPainter = TextPainter(
       text: TextSpan(
-        text: TimelineUtil.formatInterval(tickEvery),
+        text: DateUtil.formatInterval(tickEvery),
         style: TextStyle(color: timelineColor, fontSize: 12),
       ),
       textDirection: TextDirection.ltr,

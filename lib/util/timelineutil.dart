@@ -108,27 +108,6 @@ class TimelineUtil {
     return intervalMs; // fallback
   }
 
-  static String formatInterval(int intervalMs) {
-    final seconds = (intervalMs / 1000).floor();
-    final minutes = (seconds / 60).floor();
-    final hours = (minutes / 60).floor();
-
-    String result = "";
-    if (hours > 0) {
-      result += '${hours}h ';
-    }
-    if (minutes % 60 > 0) {
-      result += '${minutes % 60}m ';
-    }
-    if (seconds % 60 > 0) {
-      result += '${seconds % 60}s';
-    }
-    if (result.isEmpty) {
-      result = '0s';
-    }
-    return result.trim();
-  }
-
   static double calculateLayerOffset(
     double verticalOffset,
     double itemHeight,
@@ -139,4 +118,7 @@ class TimelineUtil {
     }
     return -((verticalOffset / itemHeight) * divisor).roundToDouble() / divisor;
   }
+
+  static int preferredExpansion(int visibleTimeFrame) =>
+      (visibleTimeFrame.toDouble() / (1000 * 60)).ceil() * (1000 * 60);
 }

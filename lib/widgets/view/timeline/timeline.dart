@@ -4,6 +4,7 @@ import 'package:assignment_sem6/widgets/view/timeline/timelinecontroller.dart';
 import 'package:assignment_sem6/widgets/view/timeline/timelinecontrols.dart';
 import 'package:assignment_sem6/widgets/view/timeline/timelineelement.dart';
 import 'package:assignment_sem6/widgets/view/timeline/item/timelineitem.dart';
+import 'package:assignment_sem6/widgets/view/timeline/timelineindicator.dart';
 import 'package:assignment_sem6/widgets/view/timeline/timelineline.dart';
 import 'package:assignment_sem6/widgets/view/timeline/timelinezoom.dart';
 import 'package:flutter/material.dart';
@@ -12,10 +13,14 @@ class Timeline extends StatefulWidget {
   static const timelineItemHeight = 80.0;
   final TimelineController controller;
   final VoidCallback? onMapButtonPressed;
+  final VoidCallback? expandLeft;
+  final VoidCallback? expandRight;
 
   const Timeline({
     super.key,
     required this.controller,
+    this.expandLeft,
+    this.expandRight,
     this.onMapButtonPressed,
   });
 
@@ -209,6 +214,18 @@ class TimelineState extends State<Timeline> {
                         ),
                     ],
                   ),
+                ),
+                TimelineIndicator(
+                  controller: widget.controller,
+                  timelineHeight: size.height,
+                  isLeft: true,
+                  expand: widget.expandLeft,
+                ),
+                TimelineIndicator(
+                  controller: widget.controller,
+                  timelineHeight: size.height,
+                  isLeft: false,
+                  expand: widget.expandRight,
                 ),
               ],
             );
