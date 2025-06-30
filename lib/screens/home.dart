@@ -64,7 +64,10 @@ class _HomePageState extends State<HomePage> {
       items: [],
       startTimestamp: startTimestamp.millisecondsSinceEpoch,
       endTimestamp: endTimestamp.millisecondsSinceEpoch,
-      timeScale: 1000 * 60 * 30, // half an hour
+      timeScale: TimelineUtil.calculateInitialTimeScale(
+        startTimestamp.millisecondsSinceEpoch,
+        endTimestamp.millisecondsSinceEpoch,
+      ),
     );
 
     _filters = Filters(
