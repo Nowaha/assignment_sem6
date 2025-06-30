@@ -354,28 +354,39 @@ class _HomePageState extends State<HomePage> {
                                     .selectedItem
                                     .value!]!;
                             return Expanded(
-                              child: ViewPost(
-                                leading: IconButton(
-                                  icon: Icon(Icons.close),
-                                  onPressed: () {
-                                    _timelineController.selectedItem.value =
-                                        null;
-                                  },
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black.withAlpha(100),
+                                      blurRadius: 4,
+                                      offset: const Offset(0, 2),
+                                    ),
+                                  ],
                                 ),
-                                actions: [
-                                  IconButton(
-                                    icon: Icon(Icons.fullscreen),
+                                child: ViewPost(
+                                  leading: IconButton(
+                                    icon: Icon(Icons.close),
                                     onPressed: () {
-                                      context.go(
-                                        "/post/${item.postUUID}",
-                                        extra: item.color,
-                                      );
+                                      _timelineController.selectedItem.value =
+                                          null;
                                     },
                                   ),
-                                ],
-                                key: ValueKey(item.key),
-                                postUUID: item.postUUID,
-                                backgroundColor: item.color,
+                                  actions: [
+                                    IconButton(
+                                      icon: Icon(Icons.fullscreen),
+                                      onPressed: () {
+                                        context.go(
+                                          "/post/${item.postUUID}",
+                                          extra: item.color,
+                                        );
+                                      },
+                                    ),
+                                  ],
+                                  key: ValueKey(item.key),
+                                  postUUID: item.postUUID,
+                                  backgroundColor: item.color,
+                                ),
                               ),
                             );
                           }
