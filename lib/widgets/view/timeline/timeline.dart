@@ -133,35 +133,51 @@ class TimelineState extends State<Timeline> {
                     zoom: (zoom) => widget.controller.zoom(zoom),
                     pan: (pan) => widget.controller.pan(pan),
                     panUp: (pan) => widget.controller.adjustVerticalOffset(pan),
-                    child: Stack(
-                      children: [
-                        for (int i = 0; i < visibleItems.length; i++)
-                          _buildChild(
-                            visibleItems[i],
-                            size.width,
-                            size.height,
-                            i,
-                            tickEvery,
-                          ),
-
-                        ValueListenableBuilder<int?>(
-                          valueListenable: _hoveredIndex,
-                          builder: (_, hoveredIndex, __) {
-                            if (hoveredIndex == null) {
-                              return const SizedBox.shrink();
-                            }
-
-                            return _buildChild(
-                              visibleItems[hoveredIndex],
+                    child: ShaderMask(
+                      shaderCallback: (bounds) {
+                        return LinearGradient(
+                          begin: Alignment.centerLeft,
+                          end: Alignment.centerRight,
+                          colors: [
+                            Colors.black.withAlpha(50),
+                            Colors.black,
+                            Colors.black,
+                            Colors.black.withAlpha(50),
+                          ],
+                          stops: [0.0, 0.02, 0.98, 1.0],
+                        ).createShader(bounds);
+                      },
+                      blendMode: BlendMode.dstIn,
+                      child: Stack(
+                        children: [
+                          for (int i = 0; i < visibleItems.length; i++)
+                            _buildChild(
+                              visibleItems[i],
                               size.width,
                               size.height,
-                              hoveredIndex,
+                              i,
                               tickEvery,
-                              hovered: true,
-                            );
-                          },
-                        ),
-                      ],
+                            ),
+
+                          ValueListenableBuilder<int?>(
+                            valueListenable: _hoveredIndex,
+                            builder: (_, hoveredIndex, __) {
+                              if (hoveredIndex == null) {
+                                return const SizedBox.shrink();
+                              }
+
+                              return _buildChild(
+                                visibleItems[hoveredIndex],
+                                size.width,
+                                size.height,
+                                hoveredIndex,
+                                tickEvery,
+                                hovered: true,
+                              );
+                            },
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
