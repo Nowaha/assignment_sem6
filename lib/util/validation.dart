@@ -9,6 +9,10 @@ class Validation {
   static const int maxPasswordLength = 32;
   static const int minGroupNameLength = 2;
   static const int maxGroupNameLength = 12;
+  static const int minPostTitleLength = 4;
+  static const int maxPostTitleLength = 64;
+  static const int minPostContentsLength = 10;
+  static const int maxPostContentsLength = 5000;
 
   static final characterWhitelistRegex = RegExp(r'^[a-zA-Z0-9_]+$');
   static final emailRegex = RegExp(
@@ -17,6 +21,7 @@ class Validation {
   static final allowedPasswordRegex = RegExp(
     r'^[A-Za-z0-9!@#$%^&*()_+\-=\[\]{};:"\\|,.<>\/?]+$',
   );
+  static final postNameCharacterWhitelistRegex = RegExp(r'^[a-zA-Z0-9_.]+$');
 
   static NameValidationResult isValidName(String name) {
     if (name.isEmpty) return NameValidationResult.empty;
@@ -38,6 +43,27 @@ class Validation {
       return GroupNameValidationResult.invalidCharacters;
     }
     return GroupNameValidationResult.valid;
+  }
+
+  static PostTitleValidationResult isValidPostName(String name) {
+    if (name.isEmpty) return PostTitleValidationResult.empty;
+    if (name.length < minPostTitleLength)
+      return PostTitleValidationResult.tooShort;
+    if (name.length > maxPostTitleLength)
+      return PostTitleValidationResult.tooLong;
+    if (!characterWhitelistRegex.hasMatch(name)) {
+      return PostTitleValidationResult.invalidCharacters;
+    }
+    return PostTitleValidationResult.valid;
+  }
+
+  static PostContentsValidationResult isValidPostContents(String contents) {
+    if (contents.isEmpty) return PostContentsValidationResult.empty;
+    if (contents.length < minPostContentsLength)
+      return PostContentsValidationResult.tooShort;
+    if (contents.length > maxPostContentsLength)
+      return PostContentsValidationResult.tooLong;
+    return PostContentsValidationResult.valid;
   }
 
   static EmailValidationResult isValidEmail(String email) {
@@ -101,6 +127,39 @@ enum GroupNameValidationResult {
   final String? message;
 
   const GroupNameValidationResult({this.message});
+}
+
+enum PostTitleValidationResult {
+  valid,
+  empty(message: "Post title cannot be empty."),
+  tooShort(
+    message: "Post title is too short (${Validation.minPostTitleLength}).",
+  ),
+  tooLong(
+    message: "Post title is too long (${Validation.maxPostTitleLength}).",
+  ),
+  invalidCharacters(message: "Post title contains invalid characters.");
+
+  final String? message;
+
+  const PostTitleValidationResult({this.message});
+}
+
+enum PostContentsValidationResult {
+  valid,
+  empty(message: "Post contents cannot be empty."),
+  tooShort(
+    message:
+        "Post contents are too short (${Validation.minPostContentsLength}).",
+  ),
+  tooLong(
+    message:
+        "Post contents are too long (${Validation.maxPostContentsLength}).",
+  );
+
+  final String? message;
+
+  const PostContentsValidationResult({this.message});
 }
 
 enum EmailValidationResult {
