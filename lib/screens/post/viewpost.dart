@@ -1,9 +1,12 @@
 import 'package:assignment_sem6/data/service/data/postview.dart';
 import 'package:assignment_sem6/data/service/postservice.dart';
+import 'package:assignment_sem6/util/date.dart';
+import 'package:assignment_sem6/widgets/actualtextbutton.dart';
 import 'package:assignment_sem6/widgets/comment/commentsection.dart';
 import 'package:assignment_sem6/widgets/dataholderstate.dart';
 import 'package:assignment_sem6/widgets/screen.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:markdown_widget/widget/markdown_block.dart';
 import 'package:provider/provider.dart';
 
@@ -31,10 +34,33 @@ class _ViewPostState extends DataHolderState<ViewPost, PostView> {
             data?.post.title ?? "Loading...",
             style: Theme.of(context).textTheme.headlineMedium,
           ),
-          MarkdownBlock(data: data?.post.postContents ?? "Loading..."),
-          Text(
-            "Author: ${data?.creator?.firstName ?? "Unknown"} ${data?.creator?.lastName ?? ""}",
+          Row(
+            children: [
+              Text(
+                "Written by ",
+                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                  color: Theme.of(context).colorScheme.onSurface.withAlpha(200),
+                ),
+              ),
+              ActualTextButton(
+                text:
+                    "${data?.creator?.firstName ?? "Unknown"} ${data?.creator?.lastName ?? ""}",
+                onTap: () {
+                  if (data?.creator?.uuid != null) {
+                    context.push("/profile/${data!.creator!.uuid}");
+                  }
+                },
+                style: Theme.of(context).textTheme.bodyLarge,
+              ),
+              Text(
+                " on ${data?.post.creationTimestamp != null ? DateUtil.formatDateTime(data!.post.creationTimestamp, false) : "Unknown"}",
+                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                  color: Theme.of(context).colorScheme.onSurface.withAlpha(200),
+                ),
+              ),
+            ],
           ),
+          MarkdownBlock(data: data?.post.postContents ?? "Loading..."),
           CommentSection(
             postUUID: widget.postUUID ?? "",
             comments: data?.comments?.values.toList() ?? [],
