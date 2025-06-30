@@ -124,6 +124,11 @@ class _MarkdownEditorState extends State<MarkdownEditor> {
               onPressed: () {
                 showModalBottomSheet(
                   context: context,
+                  isScrollControlled: true,
+                  constraints: BoxConstraints(
+                    maxWidth: 500,
+                    maxHeight: MediaQuery.of(context).size.height * 0.8,
+                  ),
                   builder: (context) => MarkdownHelp(),
                 );
               },
