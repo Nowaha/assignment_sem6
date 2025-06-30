@@ -1,3 +1,4 @@
+import 'package:assignment_sem6/extension/iterable.dart';
 import 'package:assignment_sem6/widgets/shakeable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -7,7 +8,10 @@ class ChipListInput extends StatefulWidget {
   final List<String> chips;
   final ValueChanged<String> onChipAdded;
   final ValueChanged<String> onChipRemoved;
+  final int maxLength;
   final List<String> suggestions;
+  final bool suggestOnFocus;
+  final bool strict;
 
   const ChipListInput({
     super.key,
@@ -15,7 +19,10 @@ class ChipListInput extends StatefulWidget {
     required this.chips,
     required this.onChipAdded,
     required this.onChipRemoved,
+    this.maxLength = 50,
     this.suggestions = const [],
+    this.suggestOnFocus = false,
+    this.strict = false,
   });
 
   @override
@@ -25,7 +32,7 @@ class ChipListInput extends StatefulWidget {
 class _ChipListInputState extends State<ChipListInput> {
   final shakeKey = GlobalKey<ShakeableState>();
   final TextEditingController _controller = TextEditingController();
-  final FocusNode _focusNode = FocusNode();
+  final FocusNode _inputFocusNode = FocusNode();
   List<String> filteredSuggestions = [];
 
   @override
@@ -37,15 +44,32 @@ class _ChipListInputState extends State<ChipListInput> {
   @override
   void dispose() {
     _controller.dispose();
-    _focusNode.dispose();
+    _inputFocusNode.dispose();
     super.dispose();
   }
 
   void _addChip() {
-    final chip = _controller.text.trim();
+    String chip = _controller.text.trim();
+
+    if (widget.chips.length >= widget.maxLength) {
+      shakeKey.currentState?.shake();
+      return;
+    }
     if (chip.isEmpty || widget.chips.contains(chip)) {
       shakeKey.currentState?.shake();
       return;
+    }
+
+    if (widget.strict) {
+      final lower = chip.toLowerCase();
+      final found = widget.suggestions.firstWhereOrNull(
+        (s) => s.toLowerCase() == lower,
+      );
+      if (found == null) {
+        shakeKey.currentState?.shake();
+        return;
+      }
+      chip = found;
     }
 
     widget.onChipAdded(chip);
@@ -62,13 +86,14 @@ class _ChipListInputState extends State<ChipListInput> {
         _controller.selection = TextSelection.fromPosition(
           TextPosition(offset: _controller.text.length),
         );
+        _onTextChanged();
       }
     }
   }
 
   void _onTextChanged() {
     final input = _controller.text.toLowerCase();
-    if (input.isEmpty) {
+    if (input.isEmpty && !widget.suggestOnFocus) {
       setState(() {
         filteredSuggestions = [];
       });
@@ -97,47 +122,59 @@ class _ChipListInputState extends State<ChipListInput> {
             deleteIcon: Icon(Icons.close),
             onDeleted: () {
               widget.onChipRemoved(chip);
+              _onTextChanged();
             },
           ),
         ),
       ),
-      Shakeable(
-        key: shakeKey,
-        child: InputChip(
-          backgroundColor: Theme.of(context).colorScheme.surfaceContainer,
-          onPressed: _focusNode.requestFocus,
-          label: IntrinsicWidth(
-            child: KeyboardListener(
-              focusNode: FocusNode(),
-              onKeyEvent: _onKeyEvent,
-              child: TextField(
-                focusNode: _focusNode,
-                style: TextStyle(fontSize: 14),
-                decoration: InputDecoration.collapsed(
-                  hintText: widget.hintText,
-                ).copyWith(counterText: ""),
-                controller: _controller,
-                onEditingComplete: _addChip,
-                maxLength: 16,
+      if (widget.chips.length < widget.maxLength)
+        Shakeable(
+          key: shakeKey,
+          child: InputChip(
+            backgroundColor: Theme.of(context).colorScheme.surfaceContainer,
+            onPressed: _inputFocusNode.requestFocus,
+            label: IntrinsicWidth(
+              child: KeyboardListener(
+                focusNode: FocusNode(),
+                onKeyEvent: _onKeyEvent,
+                child: TextField(
+                  focusNode: _inputFocusNode,
+                  style: TextStyle(fontSize: 14),
+                  decoration: InputDecoration.collapsed(
+                    hintText: widget.hintText,
+                  ).copyWith(counterText: ""),
+                  controller: _controller,
+                  onEditingComplete: _addChip,
+                  maxLength: 16,
+                ),
               ),
             ),
           ),
         ),
-      ),
-      ...filteredSuggestions.map(
-        (suggestion) => ActionChip(
-          backgroundColor: Theme.of(context).colorScheme.surfaceContainer,
-          label: Row(
-            mainAxisSize: MainAxisSize.min,
-            spacing: 4,
-            children: [Text(suggestion), Icon(Icons.add, size: 12)],
+      if (widget.chips.length < widget.maxLength)
+        ...filteredSuggestions.map(
+          (suggestion) => ActionChip(
+            backgroundColor: Colors.transparent,
+            labelStyle: TextStyle(
+              color: Theme.of(context).colorScheme.onSurface.withAlpha(150),
+            ),
+            label: Row(
+              mainAxisSize: MainAxisSize.min,
+              spacing: 4,
+              children: [Text(suggestion), Icon(Icons.add, size: 12)],
+            ),
+            onPressed: () {
+              _controller.text = suggestion;
+              _addChip();
+            },
+            shape: StadiumBorder(
+              side: BorderSide(
+                color: Theme.of(context).colorScheme.outline.withAlpha(150),
+                width: 0.5, // Border width
+              ),
+            ),
           ),
-          onPressed: () {
-            _controller.text = suggestion;
-            _addChip();
-          },
         ),
-      ),
     ],
   );
 }

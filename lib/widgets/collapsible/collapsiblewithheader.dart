@@ -7,6 +7,7 @@ class CollapsibleWithHeader extends StatefulWidget {
   final Widget child;
   final bool initiallyCollapsed;
   final Function(bool)? onCollapseChanged;
+  final bool noIntrinsicWidth;
 
   const CollapsibleWithHeader({
     super.key,
@@ -14,6 +15,7 @@ class CollapsibleWithHeader extends StatefulWidget {
     required this.child,
     this.initiallyCollapsed = false,
     this.onCollapseChanged,
+    this.noIntrinsicWidth = false,
   });
 
   @override
@@ -41,49 +43,49 @@ class _CollapsibleWithHeaderState extends State<CollapsibleWithHeader> {
 
   @override
   Widget build(BuildContext context) {
-    return IntrinsicWidth(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Tooltip(
-            message:
-                _isCollapsed
-                    ? "Expand ${widget.title}"
-                    : "Collapse ${widget.title}",
-            child: NoEffectInkWell(
-              onTap: _toggleCollapse,
-              child: Row(
-                spacing: 8,
-                children: [
-                  SizedBox.square(
-                    dimension: 24,
-                    child: IconButton(
-                      onPressed: _toggleCollapse,
-                      padding: EdgeInsets.zero,
-                      icon: Icon(
-                        _isCollapsed ? Icons.expand_more : Icons.expand_less,
-                      ),
+    final built = Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Tooltip(
+          message:
+              _isCollapsed
+                  ? "Expand ${widget.title}"
+                  : "Collapse ${widget.title}",
+          child: NoEffectInkWell(
+            onTap: _toggleCollapse,
+            child: Row(
+              spacing: 8,
+              children: [
+                SizedBox.square(
+                  dimension: 24,
+                  child: IconButton(
+                    onPressed: _toggleCollapse,
+                    padding: EdgeInsets.zero,
+                    icon: Icon(
+                      _isCollapsed ? Icons.expand_more : Icons.expand_less,
                     ),
                   ),
-                  Expanded(
-                    child: Text(
-                      widget.title,
-                      style: Theme.of(context).textTheme.titleMedium,
-                    ),
+                ),
+                Expanded(
+                  child: Text(
+                    widget.title,
+                    style: Theme.of(context).textTheme.titleMedium,
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
-          Collapsible(
-            isCollapsed: _isCollapsed,
-            child: Padding(
-              padding: const EdgeInsets.only(top: 12.0),
-              child: widget.child,
-            ),
+        ),
+        Collapsible(
+          isCollapsed: _isCollapsed,
+          child: Padding(
+            padding: const EdgeInsets.only(top: 12.0),
+            child: widget.child,
           ),
-        ],
-      ),
+        ),
+      ],
     );
+
+    return widget.noIntrinsicWidth ? built : IntrinsicWidth(child: built);
   }
 }

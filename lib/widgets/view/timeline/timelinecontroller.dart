@@ -68,9 +68,6 @@ class TimelineController extends ChangeNotifier {
   double get verticalOffset => _verticalOffset;
   Range get range => (start: _startTimestamp, end: _endTimestamp);
 
-  int get effectiveStartTimestamp => _startTimestamp - leeway;
-  int get effectiveEndTimestamp => _endTimestamp + leeway;
-
   int get visibleStartTimestamp => _visibleStartTimestamp;
   int get visibleEndTimestamp => _visibleEndTimestamp;
   int get visibleCenterTimestamp =>
@@ -81,8 +78,6 @@ class TimelineController extends ChangeNotifier {
   );
 
   int get visibleTimeScale => _visibleEndTimestamp - _visibleStartTimestamp;
-
-  int get leeway => (_endTimestamp - _startTimestamp) ~/ 100;
 
   int getTickEvery(int totalWidth) =>
       TimelineUtil.calculateTickEvery(visibleTimeScale, totalWidth);
@@ -124,21 +119,21 @@ class TimelineController extends ChangeNotifier {
   }
 
   void updateVisibleRange(int newVisibleStart, int newVisibleEnd) {
-    if (newVisibleStart < _startTimestamp - leeway) {
-      final unable = _startTimestamp - leeway - newVisibleStart;
-      newVisibleStart = _startTimestamp - leeway;
+    if (newVisibleStart < _startTimestamp) {
+      final unable = _startTimestamp - newVisibleStart;
+      newVisibleStart = _startTimestamp;
       newVisibleEnd += unable;
 
-      if (newVisibleEnd > _endTimestamp + leeway) {
-        newVisibleEnd = _endTimestamp + leeway;
+      if (newVisibleEnd > _endTimestamp) {
+        newVisibleEnd = _endTimestamp;
       }
-    } else if (newVisibleEnd > _endTimestamp + leeway) {
-      final unable = newVisibleEnd - (_endTimestamp + leeway);
-      newVisibleEnd = _endTimestamp + leeway;
+    } else if (newVisibleEnd > _endTimestamp) {
+      final unable = newVisibleEnd - (_endTimestamp);
+      newVisibleEnd = _endTimestamp;
       newVisibleStart -= unable;
 
-      if (newVisibleStart < _startTimestamp - leeway) {
-        newVisibleStart = _startTimestamp - leeway;
+      if (newVisibleStart < _startTimestamp) {
+        newVisibleStart = _startTimestamp;
       }
     }
 
@@ -185,14 +180,14 @@ class TimelineController extends ChangeNotifier {
   void adjustVisibleStart(int by) {
     final newStart = (_visibleStartTimestamp + by).toInt();
 
-    if (newStart < effectiveStartTimestamp) {
-      _visibleStartTimestamp = effectiveStartTimestamp;
+    if (newStart < startTimestamp) {
+      _visibleStartTimestamp = startTimestamp;
       notifyListeners();
       return;
     }
 
-    if (newStart > _visibleEndTimestamp - leeway) {
-      _visibleStartTimestamp = _visibleEndTimestamp - leeway;
+    if (newStart > _visibleEndTimestamp) {
+      _visibleStartTimestamp = _visibleEndTimestamp;
       notifyListeners();
       return;
     }
@@ -204,14 +199,14 @@ class TimelineController extends ChangeNotifier {
   void adjustVisibleEnd(int by) {
     final newEnd = (_visibleEndTimestamp + by).toInt();
 
-    if (newEnd > effectiveEndTimestamp) {
-      _visibleEndTimestamp = effectiveStartTimestamp;
+    if (newEnd > endTimestamp) {
+      _visibleEndTimestamp = startTimestamp;
       notifyListeners();
       return;
     }
 
-    if (newEnd < _visibleStartTimestamp + leeway) {
-      _visibleEndTimestamp = _visibleStartTimestamp + leeway;
+    if (newEnd < _visibleStartTimestamp) {
+      _visibleEndTimestamp = _visibleStartTimestamp;
       notifyListeners();
       return;
     }

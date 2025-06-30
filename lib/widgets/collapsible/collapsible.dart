@@ -12,15 +12,11 @@ class Collapsible extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        AnimatedSize(
-          duration: const Duration(milliseconds: 100),
-          curve: Curves.easeInOut,
-          alignment: Alignment.topCenter,
-          child: isCollapsed ? SizedBox.shrink() : child,
-        ),
-      ],
+    return AnimatedSize(
+      duration: const Duration(milliseconds: 100),
+      curve: Curves.easeInOut,
+      alignment: Alignment.topCenter,
+      child: isCollapsed ? SizedBox.shrink() : child,
     );
   }
 }

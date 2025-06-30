@@ -2,7 +2,7 @@ import 'package:assignment_sem6/widgets/collapsible/collapsiblecontainer.dart';
 import 'package:assignment_sem6/widgets/view/filter/filter.dart';
 import 'package:assignment_sem6/widgets/view/filter/filters.dart';
 import 'package:assignment_sem6/widgets/view/filter/search.dart';
-import 'package:assignment_sem6/widgets/view/filter/startend.dart';
+import 'package:assignment_sem6/widgets/input/startend.dart';
 import 'package:flutter/material.dart';
 
 class FilterContainer extends StatelessWidget {

@@ -1,4 +1,4 @@
-import 'package:assignment_sem6/widgets/textinput.dart';
+import 'package:assignment_sem6/widgets/input/text/textinput.dart';
 import 'package:flutter/material.dart';
 
 mixin FormMixin<T extends StatefulWidget> on State<T> {
@@ -110,6 +110,7 @@ mixin FormMixin<T extends StatefulWidget> on State<T> {
     bool multiline = false,
     double multilineMaxHeight = 360,
     bool autoFocus = false,
+    int? maxLength,
   }) {
     final built = TextInput(
       label: label,
@@ -124,6 +125,7 @@ mixin FormMixin<T extends StatefulWidget> on State<T> {
       onSubmitted: onSubmitted ?? (_) => _nextOnSubmitted(controller, obscure),
       minLines: multiline ? 3 : null,
       maxLines: multiline ? null : 1,
+      maxLength: maxLength,
       autoFocus: autoFocus,
     );
 

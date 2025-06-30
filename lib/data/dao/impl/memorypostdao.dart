@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:assignment_sem6/data/dao/memorydao.dart';
 import 'package:assignment_sem6/data/dao/postdao.dart';
 import 'package:assignment_sem6/data/entity/impl/post.dart';
@@ -47,6 +45,25 @@ class MemoryPostDao extends MemoryDao<Post>
 
     return posts.takePage(page, limit);
   });
+
+  @override
+  void internalInsert(Post entity) {
+    super.internalInsert(entity);
+    notifyListeners(internalFindAll());
+  }
+
+  @override
+  void internalUpdate(Post entity) {
+    super.internalUpdate(entity);
+    notifyListeners(internalFindAll());
+  }
+
+  @override
+  bool internalDelete(String uuid) {
+    bool result = super.internalDelete(uuid);
+    notifyListeners(internalFindAll());
+    return result;
+  }
 
   @override
   void dispose() => controller.close();

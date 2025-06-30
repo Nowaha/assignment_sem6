@@ -1,5 +1,6 @@
-import 'package:assignment_sem6/widgets/obscuretoggle.dart';
+import 'package:assignment_sem6/widgets/input/text/obscuretoggle.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class TextInput extends StatefulWidget {
   final String label;
@@ -13,6 +14,8 @@ class TextInput extends StatefulWidget {
   final TextInputType? keyboardType;
   final int? minLines;
   final int? maxLines;
+  final int? maxLength;
+  final bool? showCounter;
   final ValueChanged<String>? onSubmitted;
   final bool autoFocus;
 
@@ -29,6 +32,8 @@ class TextInput extends StatefulWidget {
     this.keyboardType,
     this.minLines,
     this.maxLines,
+    this.maxLength,
+    this.showCounter = false,
     this.onSubmitted,
     this.autoFocus = false,
   });
@@ -78,6 +83,9 @@ class _TextInputState extends State<TextInput> {
       textAlignVertical: TextAlignVertical.top,
       minLines: widget.minLines,
       maxLines: widget.maxLines,
+      maxLength: widget.maxLength,
+      maxLengthEnforcement:
+          widget.maxLength != null ? MaxLengthEnforcement.enforced : null,
       textInputAction: textInputAction,
       onSubmitted: widget.onSubmitted,
       keyboardType: textInputType,
@@ -88,6 +96,7 @@ class _TextInputState extends State<TextInput> {
         label: Text(widget.label),
         floatingLabelAlignment: FloatingLabelAlignment.start,
         alignLabelWithHint: true,
+        counterText: widget.showCounter == true ? null : "",
         suffixIcon:
             widget.obscure != null
                 ? ObscureToggle(

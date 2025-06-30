@@ -1,4 +1,4 @@
-import 'package:assignment_sem6/widgets/textinput.dart';
+import 'package:assignment_sem6/widgets/input/text/textinput.dart';
 import 'package:flutter/material.dart';
 
 class WriteComment extends StatefulWidget {

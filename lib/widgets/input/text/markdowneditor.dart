@@ -1,5 +1,5 @@
 import 'package:assignment_sem6/screens/post/markdownhelp.dart';
-import 'package:assignment_sem6/widgets/textinput.dart';
+import 'package:assignment_sem6/widgets/input/text/textinput.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' hide TextInput;
 
@@ -9,6 +9,8 @@ class MarkdownEditor extends StatefulWidget {
   final bool enabled;
   final String? errorText;
   final ValueChanged<String>? onChanged;
+  final int? maxLength;
+  final bool? showCounter;
 
   const MarkdownEditor({
     super.key,
@@ -17,6 +19,8 @@ class MarkdownEditor extends StatefulWidget {
     this.enabled = true,
     this.errorText,
     this.onChanged,
+    this.maxLength,
+    this.showCounter = true,
   });
 
   @override
@@ -106,21 +110,25 @@ class _MarkdownEditorState extends State<MarkdownEditor> {
               onChanged: widget.onChanged,
               minLines: 3,
               maxLines: null,
+              maxLength: widget.maxLength,
+              showCounter: widget.showCounter,
             ),
           ),
         ),
         Positioned(
           top: 8.0,
           right: 8.0,
-          child: Tooltip(message: "Formatting Help", child: IconButton(
-            onPressed: () {
-              showModalBottomSheet(
-                context: context,
-                builder: (context) => MarkdownHelp(),
-              );
-            },
-            icon: Icon(Icons.help),
-          ),
+          child: Tooltip(
+            message: "Formatting Help",
+            child: IconButton(
+              onPressed: () {
+                showModalBottomSheet(
+                  context: context,
+                  builder: (context) => MarkdownHelp(),
+                );
+              },
+              icon: Icon(Icons.help),
+            ),
           ),
         ),
       ],

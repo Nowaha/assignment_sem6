@@ -4,6 +4,7 @@ import 'package:assignment_sem6/widgets/comment/commentsection.dart';
 import 'package:assignment_sem6/widgets/dataholderstate.dart';
 import 'package:assignment_sem6/widgets/screen.dart';
 import 'package:flutter/material.dart';
+import 'package:markdown_widget/widget/markdown_block.dart';
 import 'package:provider/provider.dart';
 
 class ViewPost extends StatefulWidget {
@@ -18,17 +19,26 @@ class ViewPost extends StatefulWidget {
 
 class _ViewPostState extends DataHolderState<ViewPost, PostView> {
   @override
-  Widget content(BuildContext context) => Column(
-    mainAxisAlignment: MainAxisAlignment.start,
-    crossAxisAlignment: CrossAxisAlignment.start,
-    spacing: 16,
-    children: [
-      Text("Post Contents"),
-      Text(
-        "Author: ${data?.creator?.firstName ?? "Unknown"} ${data?.creator?.lastName ?? ""}",
+  Widget content(BuildContext context) => Center(
+    child: ConstrainedBox(
+      constraints: BoxConstraints(maxWidth: 960),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        spacing: 16,
+        children: [
+          Text(
+            data?.post.title ?? "Loading...",
+            style: Theme.of(context).textTheme.headlineMedium,
+          ),
+          MarkdownBlock(data: data?.post.postContents ?? "Loading..."),
+          Text(
+            "Author: ${data?.creator?.firstName ?? "Unknown"} ${data?.creator?.lastName ?? ""}",
+          ),
+          CommentSection(comments: data?.comments?.values.toList() ?? []),
+        ],
       ),
-      CommentSection(comments: data?.comments?.values.toList() ?? []),
-    ],
+    ),
   );
 
   @override

@@ -3,26 +3,26 @@ import 'package:flutter/material.dart';
 
 class DateSelector extends StatelessWidget {
   final String label;
-  final DateTime initialDateTime;
-  final DateTime selectedDate;
+  final DateTime? selectedDate;
   final DateTime? minDate;
   final DateTime? maxDate;
-  final ValueChanged<DateTime> onDateSelected;
+  final ValueChanged<DateTime?> onDateSelected;
+  final bool clearable;
 
   const DateSelector({
     super.key,
     required this.label,
-    required this.initialDateTime,
     required this.selectedDate,
     required this.onDateSelected,
     this.minDate,
     this.maxDate,
+    this.clearable = false,
   });
 
   Future<void> _selectDate(BuildContext context) async {
     final date = await showDatePicker(
       context: context,
-      initialDate: selectedDate,
+      initialDate: selectedDate ?? DateTime.now(),
       firstDate: minDate ?? DateTime(2000),
       lastDate: maxDate ?? DateTime(2100),
     );
@@ -32,7 +32,7 @@ class DateSelector extends StatelessWidget {
     // Pick time
     final time = await showTimePicker(
       context: context,
-      initialTime: TimeOfDay.fromDateTime(selectedDate),
+      initialTime: TimeOfDay.fromDateTime(selectedDate ?? DateTime.now()),
     );
 
     if (time == null) return;
@@ -53,16 +53,30 @@ class DateSelector extends StatelessWidget {
     return Expanded(
       child: TextField(
         controller: TextEditingController(
-          text: DateUtil.formatDateTime(
-            selectedDate.millisecondsSinceEpoch,
-            false,
-          ),
+          text:
+              selectedDate != null
+                  ? DateUtil.formatDateTime(
+                    selectedDate!.millisecondsSinceEpoch,
+                    false,
+                  )
+                  : "",
         ),
         readOnly: true,
         decoration: InputDecoration(
           border: OutlineInputBorder(),
           labelText: label,
-          suffixIcon: Icon(Icons.calendar_today),
+          suffixIcon: Padding(
+            padding: EdgeInsets.only(right: 8.0),
+            child:
+                !clearable
+                    ? Icon(Icons.calendar_today)
+                    : IconButton(
+                      icon: Icon(Icons.clear),
+                      onPressed: () {
+                        onDateSelected(null);
+                      },
+                    ),
+          ),
         ),
         onTap: () => _selectDate(context),
       ),

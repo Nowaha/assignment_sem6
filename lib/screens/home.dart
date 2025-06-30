@@ -74,6 +74,11 @@ class _HomePageState extends State<HomePage> {
     );
     _filterUpdate(_filters);
 
+    final postService = context.read<PostService>();
+    postService.stream.listen((event) {
+      _filterUpdate(_filters);
+    });
+
     super.initState();
   }
 
@@ -328,14 +333,13 @@ class _HomePageState extends State<HomePage> {
                               final screenWidth =
                                   MediaQuery.sizeOf(context).width;
                               final int fullLength =
-                                  _timelineController.effectiveEndTimestamp -
-                                  _timelineController.effectiveStartTimestamp;
+                                  _timelineController.endTimestamp -
+                                  _timelineController.startTimestamp;
                               final int visibleCenter =
                                   _timelineController.visibleCenterTimestamp;
                               final double fraction =
                                   (visibleCenter -
-                                      _timelineController
-                                          .effectiveStartTimestamp) /
+                                      _timelineController.startTimestamp) /
                                   fullLength;
                               final double left =
                                   fraction * screenWidth - 0.5 * width;

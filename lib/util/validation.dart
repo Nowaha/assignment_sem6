@@ -13,6 +13,8 @@ class Validation {
   static const int maxPostTitleLength = 64;
   static const int minPostContentsLength = 10;
   static const int maxPostContentsLength = 5000;
+  static const int maxPostTags = 5;
+  static const int maxPostGroups = 6;
 
   static final characterWhitelistRegex = RegExp(r'^[a-zA-Z0-9_]+$');
   static final emailRegex = RegExp(
@@ -21,7 +23,9 @@ class Validation {
   static final allowedPasswordRegex = RegExp(
     r'^[A-Za-z0-9!@#$%^&*()_+\-=\[\]{};:"\\|,.<>\/?]+$',
   );
-  static final postTitleCharacterWhitelistRegex = RegExp(r'^[a-zA-Z0-9_.?!-\\ ]+$');
+  static final postTitleCharacterWhitelistRegex = RegExp(
+    r'^[a-zA-Z0-9_.?!-\\ ]+$',
+  );
 
   static NameValidationResult isValidName(String name) {
     if (name.isEmpty) return NameValidationResult.empty;
@@ -98,6 +102,26 @@ class Validation {
     }
 
     return UsernameValidationResult.valid;
+  }
+
+  static LongitudeValidationResult isValidLongitude(String longitude) {
+    if (longitude.isEmpty) return LongitudeValidationResult.empty;
+    final double? value = double.tryParse(longitude);
+    if (value == null) return LongitudeValidationResult.notANumber;
+    if (value < -180 || value > 180) {
+      return LongitudeValidationResult.invalid;
+    }
+    return LongitudeValidationResult.valid;
+  }
+
+  static LatitudeValidationResult isValidLatitude(String latitude) {
+    if (latitude.isEmpty) return LatitudeValidationResult.empty;
+    final double? value = double.tryParse(latitude);
+    if (value == null) return LatitudeValidationResult.notANumber;
+    if (value < -90 || value > 90) {
+      return LatitudeValidationResult.invalid;
+    }
+    return LatitudeValidationResult.valid;
   }
 }
 
@@ -193,4 +217,26 @@ enum UsernameValidationResult {
   final String? message;
 
   const UsernameValidationResult({this.message});
+}
+
+enum LongitudeValidationResult {
+  valid,
+  notANumber(message: "Longitude must be a number."),
+  invalid(message: "Longitude must be between -180 and 180 degrees."),
+  empty(message: "Longitude cannot be empty.");
+
+  final String? message;
+
+  const LongitudeValidationResult({this.message});
+}
+
+enum LatitudeValidationResult {
+  valid,
+  notANumber(message: "Latitude must be a number."),
+  invalid(message: "Latitude must be between -90 and 90 degrees."),
+  empty(message: "Latitude cannot be empty.");
+
+  final String? message;
+
+  const LatitudeValidationResult({this.message});
 }

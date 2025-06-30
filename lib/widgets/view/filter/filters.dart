@@ -46,11 +46,9 @@ class Filters {
   }
 
   bool matches(Post post) {
-    if (post.startTimestamp < startDate.millisecondsSinceEpoch) {
-      return false;
-    }
-    if (post.endTimestamp != null &&
-        post.endTimestamp! > endDate.millisecondsSinceEpoch) {
+    if (post.startTimestamp > endDate.millisecondsSinceEpoch ||
+        (post.endTimestamp != null &&
+            post.endTimestamp! < startDate.millisecondsSinceEpoch)) {
       return false;
     }
 
