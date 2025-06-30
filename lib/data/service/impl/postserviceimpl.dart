@@ -61,7 +61,12 @@ class PostServiceImpl extends PostService {
     Sort sort = Sort.descending,
     int limit = 10,
     int page = 0,
-  }) => repository.getPosts(sort: sort, limit: limit, page: page);
+  }) => repository.getPostsOfCreator(
+    creatorUUID,
+    sort: sort,
+    limit: limit,
+    page: page,
+  );
 
   @override
   Future<Post> createNewPost(Post post) async {

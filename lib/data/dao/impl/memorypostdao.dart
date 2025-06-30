@@ -38,7 +38,11 @@ class MemoryPostDao extends MemoryDao<Post>
     int limit = 10,
     int page = 0,
   }) => safe(() async {
-    List<Post> posts = memory.values.toList();
+    List<Post> posts =
+        memory.values
+            .toList()
+            .where((post) => post.creatorUUID == creatorUUID)
+            .toList();
     if (posts.isEmpty) return List.empty();
 
     await _sortPosts(sort, posts);
