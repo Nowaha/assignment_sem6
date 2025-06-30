@@ -60,13 +60,8 @@ class _PostListState extends DataHolderState<PostList, Map<String, PostView>?> {
 
       return ListTile(
         title: Text(post.post.title),
-        subtitle: Text(
-          post.creator?.username ?? "Loading...",
-        ),
-        onTap:
-            () => context.push(
-              "/post/${post.post.uuid}",
-            ),
+        subtitle: Text(post.creator?.username ?? "Loading..."),
+        onTap: () => context.push("/post/${post.post.uuid}"),
       );
     },
     itemCount: data?.length ?? 0,
