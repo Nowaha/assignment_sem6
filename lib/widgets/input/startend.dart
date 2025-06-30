@@ -73,7 +73,7 @@ class StartEndSelector extends StatelessWidget {
                   final now = DateTime.now().copyWith(millisecond: 0);
                   onRangeSelected(
                     DateTimeRange(
-                      start: DateTime(now.year, now.month, now.day - 1),
+                      start: now.subtract(const Duration(days: 1)),
                       end: now,
                     ),
                   );
