@@ -1,4 +1,4 @@
-import 'package:assignment_sem6/widgets/view/map/marketwidget.dart';
+import 'package:assignment_sem6/widgets/view/map/markerwidget.dart';
 import 'package:assignment_sem6/widgets/view/timeline/item/timelineitem.dart';
 import 'package:flutter_map/flutter_map.dart';
 
@@ -10,7 +10,7 @@ class MapMarker extends Marker {
 
   MapMarker({
     required this.item,
-    this.size = 24,
+    this.size = 32,
     required this.visibleTimelineStart,
     required this.visibleTimelineEnd,
   }) : super(

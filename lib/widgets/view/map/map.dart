@@ -96,7 +96,7 @@ class _MapState extends State<MapWidget> {
       ),
       MarkerClusterLayerWidget(
         options: MarkerClusterLayerOptions(
-          maxClusterRadius: 45,
+          maxClusterRadius: 100,
           size: const Size(40, 40),
           alignment: Alignment.center,
           padding: const EdgeInsets.all(50),

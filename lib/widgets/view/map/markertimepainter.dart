@@ -38,8 +38,8 @@ class MarkerTimePainter extends CustomPainter {
           ..strokeWidth = thickness;
 
     canvas.drawLine(
-      Offset(0.0, size.height / 2 + thickness / 2 + offset.dy),
-      Offset(size.width, size.height / 2 + thickness / 2 + offset.dy),
+      Offset(offset.dx, size.height / 2 + thickness / 2 + offset.dy),
+      Offset(offset.dx + size.width, size.height / 2 + thickness / 2 + offset.dy),
       timelinePaint,
     );
 
