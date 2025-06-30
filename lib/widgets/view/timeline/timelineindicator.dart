@@ -41,15 +41,15 @@ class TimelineIndicator extends StatelessWidget {
     return Positioned(
       left: isLeft ? 8 : null,
       right: isLeft ? null : 8,
-      top: timelineHeight / 2 - 24,
+      top: timelineHeight / 2 - 22,
       child: Material(
         elevation: 4,
         color: backgroundColor,
-        borderRadius: isOnEdge ? BorderRadius.circular(32) : null,
+        borderRadius: isOnEdge ? BorderRadius.circular(28) : null,
         shape:
             !isOnEdge
                 ? RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(32),
+                  borderRadius: BorderRadius.circular(28),
                   side: BorderSide(
                     color: Theme.of(context).colorScheme.outline.withAlpha(100),
                     width: 2,
@@ -57,7 +57,7 @@ class TimelineIndicator extends StatelessWidget {
                 )
                 : null,
         child: InkWell(
-          borderRadius: BorderRadius.circular(32),
+          borderRadius: BorderRadius.circular(28),
           onTap: isOnEdge ? expand : null,
           child: Padding(
             padding: const EdgeInsets.all(8),
@@ -66,7 +66,7 @@ class TimelineIndicator extends StatelessWidget {
                   isOnEdge
                       ? "Expand to ${isLeft ? "left" : "right"} by ${DateUtil.formatInterval(TimelineUtil.preferredExpansion(controller.visibleTimeScale))}"
                       : "",
-              child: Icon(iconData, size: 32, color: iconColor),
+              child: Icon(iconData, size: 28, color: iconColor),
             ),
           ),
         ),
