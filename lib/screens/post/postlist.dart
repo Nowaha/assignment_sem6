@@ -11,8 +11,14 @@ import 'package:provider/provider.dart';
 class PostList extends StatefulWidget {
   final Map<String, PostView>? posts;
   final String? creatorUUID;
+  final int perPage;
 
-  const PostList._({super.key, this.posts, this.creatorUUID});
+  const PostList._({
+    super.key,
+    this.posts,
+    this.creatorUUID,
+    this.perPage = 10,
+  });
 
   PostList.list({
     Key? key,
@@ -39,32 +45,77 @@ class PostList extends StatefulWidget {
 }
 
 class _PostListState extends DataHolderState<PostList, Map<String, PostView>?> {
+  int _page = 0;
+
+  void _nextPage() {
+    if ((data?.length ?? 0) < widget.perPage) {
+      return;
+    }
+
+    setState(() {
+      _page++;
+    });
+    refreshData();
+  }
+
+  void _previousPage() {
+    if (_page > 0) {
+      setState(() {
+        _page--;
+      });
+      refreshData();
+    }
+  }
+
   @override
   Widget build(BuildContext context) => getChild(context);
 
   @override
-  Widget content(BuildContext context) => ListView.builder(
-    shrinkWrap: true,
-    itemBuilder: (context, index) {
-      if (data == null || data!.isEmpty) {
-        return const Center(child: CircularProgressIndicator());
-      }
+  Widget content(BuildContext context) => Column(
+    children: [
+      ListView.builder(
+        shrinkWrap: true,
+        itemBuilder: (context, index) {
+          if (data == null || data!.isEmpty) {
+            return const Center(child: CircularProgressIndicator());
+          }
 
-      final post = data?.values.elementAt(index);
-      if (post == null) {
-        return const ListTile(
-          title: Text("Loading..."),
-          subtitle: Text("Please wait"),
-        );
-      }
+          final post = data?.values.elementAt(index);
+          if (post == null) {
+            return const ListTile(
+              title: Text("Loading..."),
+              subtitle: Text("Please wait"),
+            );
+          }
 
-      return ListTile(
-        title: Text(post.post.title),
-        subtitle: Text(post.creator?.username ?? "Loading..."),
-        onTap: () => context.push("/post/${post.post.uuid}"),
-      );
-    },
-    itemCount: data?.length ?? 0,
+          return ListTile(
+            title: Text(post.post.title),
+            subtitle: Text(post.creator?.username ?? "Loading..."),
+            onTap: () => context.push("/post/${post.post.uuid}"),
+          );
+        },
+        itemCount: data?.length ?? 0,
+      ),
+      Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: _page > 0 ? _previousPage : null,
+            tooltip: "Previous Page",
+          ),
+          Text(
+            "Page ${_page + 1}, ${widget.perPage} posts per page",
+            style: Theme.of(context).textTheme.bodyLarge,
+          ),
+          IconButton(
+            icon: const Icon(Icons.arrow_forward),
+            onPressed: (data?.length ?? 0) >= widget.perPage ? _nextPage : null,
+            tooltip: "Next Page",
+          ),
+        ],
+      ),
+    ],
   );
 
   @override
@@ -75,7 +126,12 @@ class _PostListState extends DataHolderState<PostList, Map<String, PostView>?> {
 
     if (widget.creatorUUID != null) {
       final PostService postService = context.read<PostService>();
-      return await postService.getPostsOfCreatorLinked(widget.creatorUUID!);
+      final newPosts = await postService.getPostsOfCreatorLinked(
+        widget.creatorUUID!,
+        limit: widget.perPage,
+        page: _page,
+      );
+      return newPosts;
     }
 
     throw Exception("No posts or creator UUID provided");
