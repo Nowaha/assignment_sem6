@@ -14,8 +14,16 @@ import 'package:provider/provider.dart';
 class ViewPost extends StatefulWidget {
   final String? postUUID;
   final Color? backgroundColor;
+  final Widget? leading;
+  final List<Widget>? actions;
 
-  const ViewPost({super.key, this.postUUID, this.backgroundColor});
+  const ViewPost({
+    super.key,
+    this.postUUID,
+    this.backgroundColor,
+    this.leading,
+    this.actions,
+  });
 
   @override
   State<StatefulWidget> createState() => _ViewPostState();
@@ -90,7 +98,7 @@ class _ViewPostState extends DataHolderState<ViewPost, PostView> {
                     Text(
                       "End: ${data?.post.endTimestamp != null ? DateUtil.formatDateTime(data!.post.endTimestamp!, true) : "Unknown"}",
                     ),
-                    SizedBox(height: 4,),
+                    SizedBox(height: 4),
                     Text(
                       "Total duration: ${data?.post.startTimestamp != null ? (data!.post.endTimestamp == null ? "Endless" : DateUtil.formatInterval(data!.post.endTimestamp! - data!.post.startTimestamp)) : "Unknown"}",
                     ),
@@ -161,6 +169,8 @@ class _ViewPostState extends DataHolderState<ViewPost, PostView> {
   @override
   Widget build(BuildContext context) => Screen.scroll(
     title: Text(data?.post.title ?? "Loading..."),
+    leading: widget.leading,
+    appBarActions: widget.actions,
     alignment:
         loadingState == LoadingState.success
             ? Alignment.topLeft

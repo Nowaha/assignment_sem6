@@ -67,12 +67,13 @@ GoRouter createRouter(AuthState authState) {
             path: "post/:postUUID",
             builder: (context, state) {
               final postUUID = state.pathParameters['postUUID'];
+              final postColor = state.extra as Color?;
 
               if (postUUID == null) {
                 return const Center(child: Text("Post UUID is missing"));
               }
 
-              return ViewPost(postUUID: postUUID);
+              return ViewPost(postUUID: postUUID, backgroundColor: postColor);
             },
           ),
           GoRoute(

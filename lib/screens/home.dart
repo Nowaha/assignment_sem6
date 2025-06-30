@@ -41,6 +41,7 @@ class _HomePageState extends State<HomePage> {
   bool _fullscreenFiltersOpen = false;
   bool _fetchingPosts = false;
   bool _showZoom = false;
+  bool _isBigScreen = true;
 
   double visibleStart = -1;
   double visibleEnd = -1;
@@ -61,6 +62,8 @@ class _HomePageState extends State<HomePage> {
 
   @override
   void initState() {
+    super.initState();
+
     final startTimestamp = DateTime.now().subtract(const Duration(days: 1));
     final endTimestamp = DateTime.now();
     _timelineController = TimelineController.withTimeScale(
@@ -85,7 +88,30 @@ class _HomePageState extends State<HomePage> {
       _filterUpdate(_filters);
     });
 
-    super.initState();
+    _timelineController.selectedItem.addListener(_onItemSelectedOnSmallScreen);
+  }
+
+  @override
+  void dispose() {
+    _timelineController.selectedItem.removeListener(
+      _onItemSelectedOnSmallScreen,
+    );
+    _activeView.dispose();
+    _timelineController.dispose();
+    super.dispose();
+  }
+
+  void _onItemSelectedOnSmallScreen() {
+    if (_isBigScreen) return;
+
+    final selectedItem = _timelineController.selectedItem.value;
+    if (selectedItem == null) return;
+
+    final item = _timelineController.itemsMap[selectedItem];
+    if (item == null) return;
+
+    context.go("/post/${item.postUUID}", extra: item.color);
+    _timelineController.selectedItem.value = null;
   }
 
   void _filterUpdate(Filters newFilters, {bool noResetPosition = false}) async {
@@ -244,6 +270,11 @@ class _HomePageState extends State<HomePage> {
     final user = authState.getCurrentUser;
     final screenUtil = ScreenUtil(context);
 
+    if (_isBigScreen != screenUtil.isBigScreen) {
+      _isBigScreen = screenUtil.isBigScreen;
+      setState(() {});
+    }
+
     return Screen(
       title: Text(_activeView.value.title),
       padding: EdgeInsets.zero,
@@ -313,26 +344,44 @@ class _HomePageState extends State<HomePage> {
             builder:
                 (context, _) => Column(
                   children: [
-                    ListenableBuilder(
-                      listenable: _timelineController.selectedItem,
-                      builder: (context, _) {
-                        if (_timelineController.selectedItem.value != null) {
-                          final item =
-                              _timelineController.itemsMap[_timelineController
-                                  .selectedItem
-                                  .value!]!;
-                          return Expanded(
-                            child: ViewPost(
-                              key: ValueKey(item.key),
-                              postUUID: item.postUUID,
-                              backgroundColor: item.color,
-                            ),
-                          );
-                        }
-
-                        return SizedBox.shrink();
-                      },
-                    ),
+                    if (_isBigScreen)
+                      ListenableBuilder(
+                        listenable: _timelineController.selectedItem,
+                        builder: (context, _) {
+                          if (_timelineController.selectedItem.value != null) {
+                            final item =
+                                _timelineController.itemsMap[_timelineController
+                                    .selectedItem
+                                    .value!]!;
+                            return Expanded(
+                              child: ViewPost(
+                                leading: IconButton(
+                                  icon: Icon(Icons.close),
+                                  onPressed: () {
+                                    _timelineController.selectedItem.value =
+                                        null;
+                                  },
+                                ),
+                                actions: [
+                                  IconButton(
+                                    icon: Icon(Icons.fullscreen),
+                                    onPressed: () {
+                                      context.go(
+                                        "/post/${item.postUUID}",
+                                        extra: item.color,
+                                      );
+                                    },
+                                  ),
+                                ],
+                                key: ValueKey(item.key),
+                                postUUID: item.postUUID,
+                                backgroundColor: item.color,
+                              ),
+                            );
+                          }
+                          return SizedBox.shrink();
+                        },
+                      ),
                     Expanded(
                       child: Stack(
                         children: [
@@ -406,7 +455,7 @@ class _HomePageState extends State<HomePage> {
                             left: 16,
                             top: 16,
                             child:
-                                screenUtil.isBigScreen
+                                _isBigScreen
                                     ? CollapsibleFilterContainer(
                                       filters: _filters,
                                       onFilterApplied: (newFilters) {
