@@ -3,6 +3,7 @@ import 'package:assignment_sem6/data/entity/impl/user.dart';
 import 'package:assignment_sem6/data/service/data/commentview.dart';
 import 'package:assignment_sem6/data/service/data/postview.dart';
 import 'package:assignment_sem6/data/service/postservice.dart';
+import 'package:assignment_sem6/util/date.dart';
 import 'package:assignment_sem6/widgets/dataholderstate.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -71,51 +72,62 @@ class _PostListState extends DataHolderState<PostList, Map<String, PostView>?> {
   Widget build(BuildContext context) => getChild(context);
 
   @override
-  Widget content(BuildContext context) => Column(
-    children: [
-      ListView.builder(
-        shrinkWrap: true,
-        itemBuilder: (context, index) {
-          if (data == null || data!.isEmpty) {
-            return const Center(child: CircularProgressIndicator());
-          }
+  Widget content(BuildContext context) => Container(
+    decoration: BoxDecoration(
+      borderRadius: BorderRadius.circular(8),
+      border: Border.all(
+        color: Theme.of(context).colorScheme.primaryContainer,
+        width: 2,
+      ),
+    ),
+    child: Column(
+      children: [
+        Container(
+          padding: const EdgeInsets.only(top: 2, bottom: 4),
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.primaryContainer,
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              IconButton(
+                icon: const Icon(Icons.arrow_back),
+                onPressed: _page > 0 ? _previousPage : null,
+                tooltip: "Previous Page",
+              ),
+              Text(
+                "Page ${_page + 1}, ${widget.perPage} posts per page",
+                style: Theme.of(context).textTheme.bodyLarge,
+              ),
+              IconButton(
+                icon: const Icon(Icons.arrow_forward),
+                onPressed:
+                    (data?.length ?? 0) >= widget.perPage ? _nextPage : null,
+                tooltip: "Next Page",
+              ),
+            ],
+          ),
+        ),
+        ListView.builder(
+          shrinkWrap: true,
+          itemBuilder: (context, index) {
+            if (data == null || data!.isEmpty) {
+              return const Center(child: CircularProgressIndicator());
+            }
 
-          final post = data?.values.elementAt(index);
-          if (post == null) {
-            return const ListTile(
-              title: Text("Loading..."),
-              subtitle: Text("Please wait"),
+            final PostView post = data!.values.elementAt(index);
+            return ListTile(
+              title: Text(post.post.title),
+              subtitle: Text(
+                "${post.creator?.firstName ?? "Loading..."} ${post.creator?.lastName ?? ""} - ${DateUtil.formatDateTime(post.post.creationTimestamp, false)}",
+              ),
+              onTap: () => context.push("/post/${post.post.uuid}"),
             );
-          }
-
-          return ListTile(
-            title: Text(post.post.title),
-            subtitle: Text(post.creator?.username ?? "Loading..."),
-            onTap: () => context.push("/post/${post.post.uuid}"),
-          );
-        },
-        itemCount: data?.length ?? 0,
-      ),
-      Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          IconButton(
-            icon: const Icon(Icons.arrow_back),
-            onPressed: _page > 0 ? _previousPage : null,
-            tooltip: "Previous Page",
-          ),
-          Text(
-            "Page ${_page + 1}, ${widget.perPage} posts per page",
-            style: Theme.of(context).textTheme.bodyLarge,
-          ),
-          IconButton(
-            icon: const Icon(Icons.arrow_forward),
-            onPressed: (data?.length ?? 0) >= widget.perPage ? _nextPage : null,
-            tooltip: "Next Page",
-          ),
-        ],
-      ),
-    ],
+          },
+          itemCount: data?.length ?? 0,
+        ),
+      ],
+    ),
   );
 
   @override

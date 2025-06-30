@@ -40,7 +40,7 @@ class DateUtil {
   static String formatDateTime(int timestamp, bool includeSeconds) {
     final date = formatDate(timestamp);
     final time = formatTime(timestamp, includeSeconds);
-    return "$date $time";
+    return "$date, $time";
   }
 
   static String formatDateTimeShort(int timestamp, bool includeSeconds) {
