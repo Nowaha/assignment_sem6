@@ -1,3 +1,4 @@
+import 'package:assignment_sem6/screens/post/markdownhelp.dart';
 import 'package:assignment_sem6/widgets/textinput.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' hide TextInput;
@@ -5,11 +6,17 @@ import 'package:flutter/services.dart' hide TextInput;
 class MarkdownEditor extends StatefulWidget {
   final TextEditingController controller;
   final String label;
+  final bool enabled;
+  final String? errorText;
+  final ValueChanged<String>? onChanged;
 
   const MarkdownEditor({
     super.key,
     required this.controller,
     required this.label,
+    this.enabled = true,
+    this.errorText,
+    this.onChanged,
   });
 
   @override
@@ -63,39 +70,60 @@ class _MarkdownEditorState extends State<MarkdownEditor> {
 
   @override
   Widget build(BuildContext context) {
-    return Shortcuts(
-      shortcuts: {
-        LogicalKeySet(LogicalKeyboardKey.control, LogicalKeyboardKey.keyI):
-            const ItalicizeIntent(),
-        LogicalKeySet(LogicalKeyboardKey.meta, LogicalKeyboardKey.keyI):
-            const ItalicizeIntent(),
-        LogicalKeySet(LogicalKeyboardKey.control, LogicalKeyboardKey.keyB):
-            const BoldIntent(),
-        LogicalKeySet(LogicalKeyboardKey.meta, LogicalKeyboardKey.keyB):
-            const BoldIntent(),
-      },
-      child: Actions(
-        actions: {
-          ItalicizeIntent: CallbackAction(
-            onInvoke: (e) {
-              _wrapSelection("*", "*");
-              return null;
+    return Stack(
+      children: [
+        Shortcuts(
+          shortcuts: {
+            LogicalKeySet(LogicalKeyboardKey.control, LogicalKeyboardKey.keyI):
+                const ItalicizeIntent(),
+            LogicalKeySet(LogicalKeyboardKey.meta, LogicalKeyboardKey.keyI):
+                const ItalicizeIntent(),
+            LogicalKeySet(LogicalKeyboardKey.control, LogicalKeyboardKey.keyB):
+                const BoldIntent(),
+            LogicalKeySet(LogicalKeyboardKey.meta, LogicalKeyboardKey.keyB):
+                const BoldIntent(),
+          },
+          child: Actions(
+            actions: {
+              ItalicizeIntent: CallbackAction(
+                onInvoke: (e) {
+                  _wrapSelection("*", "*");
+                  return null;
+                },
+              ),
+              BoldIntent: CallbackAction(
+                onInvoke: (e) {
+                  _wrapSelection("**", "**");
+                  return null;
+                },
+              ),
             },
+            child: TextInput(
+              controller: widget.controller,
+              label: widget.label,
+              enabled: widget.enabled,
+              errorText: widget.errorText,
+              onChanged: widget.onChanged,
+              minLines: 3,
+              maxLines: null,
+            ),
           ),
-          BoldIntent: CallbackAction(
-            onInvoke: (e) {
-              _wrapSelection("**", "**");
-              return null;
-            },
-          ),
-        },
-        child: TextInput(
-          controller: widget.controller,
-          label: widget.label,
-          minLines: 3,
-          maxLines: null,
         ),
-      ),
+        Positioned(
+          top: 8.0,
+          right: 8.0,
+          child: Tooltip(message: "Formatting Help", child: IconButton(
+            onPressed: () {
+              showModalBottomSheet(
+                context: context,
+                builder: (context) => MarkdownHelp(),
+              );
+            },
+            icon: Icon(Icons.help),
+          ),
+          ),
+        ),
+      ],
     );
   }
 }
