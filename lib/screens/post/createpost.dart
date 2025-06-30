@@ -277,7 +277,7 @@ class _CreatePostState extends State<CreatePost> with FormMixin {
                           _selectedGroups.remove(group);
                         });
                       },
-                      suggestions: _allGroups.values.toList(),
+                      suggestions: _allGroups.keys.toList(),
                       suggestOnFocus: true,
                       strict: true,
                     ),
