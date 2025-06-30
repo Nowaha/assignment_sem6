@@ -107,10 +107,9 @@ class TimelineController extends ChangeNotifier {
   }
 
   void updateItems(List<TimelineItem> newItems) {
-    items = newItems;
-    items.sort(
-      (a, b) => b.effectiveLayer.abs().compareTo(a.effectiveLayer.abs()),
-    );
+    List<TimelineItem> sorted = List.from(newItems);
+    sorted.sort((a, b) => b.effectiveLayer.compareTo(a.effectiveLayer));
+    _items = {for (final item in sorted) item.key: item};
     notifyListeners();
   }
 
