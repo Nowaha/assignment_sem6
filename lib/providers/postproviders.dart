@@ -1,5 +1,6 @@
 import 'package:assignment_sem6/data/dao/impl/memorypostdao.dart';
 import 'package:assignment_sem6/data/dao/postdao.dart';
+import 'package:assignment_sem6/data/repo/grouprepository.dart';
 import 'package:assignment_sem6/data/repo/impl/postrepositoryimpl.dart';
 import 'package:assignment_sem6/data/repo/postrepository.dart';
 import 'package:assignment_sem6/data/service/commentservice.dart';
@@ -14,13 +15,21 @@ final postProviders = [
   ProxyProvider<PostDao, PostRepository>(
     update: (_, dao, __) => PostRepositoryImpl(dao: dao),
   ),
-  ProxyProvider3<PostRepository, UserService, CommentService, PostService>(
+  ProxyProvider4<
+    PostRepository,
+    UserService,
+    CommentService,
+    GroupRepository,
+    PostService
+  >(
     update:
-        (_, postRepository, userService, commentService, __) => PostServiceImpl(
-          repository: postRepository,
-          userService: userService,
-          commentService: commentService,
-        ),
+        (_, postRepository, userService, commentService, groupRepository, __) =>
+            PostServiceImpl(
+              repository: postRepository,
+              userService: userService,
+              commentService: commentService,
+              groupRepository: groupRepository,
+            ),
   ),
   StreamProvider<List<Post>>(
     create: (context) => context.read<PostService>().stream,

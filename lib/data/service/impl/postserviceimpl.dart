@@ -1,6 +1,6 @@
+import 'package:assignment_sem6/data/entity/impl/group.dart';
 import 'package:assignment_sem6/data/entity/impl/post.dart';
 import 'package:assignment_sem6/data/entity/impl/user.dart';
-import 'package:assignment_sem6/data/service/data/commentview.dart';
 import 'package:assignment_sem6/data/service/data/postview.dart';
 import 'package:assignment_sem6/data/service/postservice.dart';
 import 'package:assignment_sem6/util/sort.dart';
@@ -9,6 +9,7 @@ import 'package:assignment_sem6/util/validation.dart';
 class PostServiceImpl extends PostService {
   PostServiceImpl({
     required super.repository,
+    required super.groupRepository,
     required super.userService,
     required super.commentService,
   });
@@ -21,6 +22,13 @@ class PostServiceImpl extends PostService {
       post: entity,
       creator: await userService.getByUUID(entity.creatorUUID),
       comments: await commentService.getCommentsOfPostLinked(entity.uuid),
+      groups:
+          entity.groups.isEmpty
+              ? {
+                Group.everyoneUUID:
+                    (await groupRepository.getByUUID(Group.everyoneUUID))!,
+              }
+              : await groupRepository.getByUUIDs(entity.groups),
     );
   }
 
@@ -30,19 +38,19 @@ class PostServiceImpl extends PostService {
       entities.map((post) => post.creatorUUID),
     );
 
-    Map<String, Map<String, CommentView>> comments = {};
-    for (Post post in entities) {
-      comments[post.uuid] = await commentService.getCommentsOfPostLinked(
-        post.uuid,
-      );
-    }
-
     Map<String, PostView> linkedPosts = {};
     for (Post post in entities) {
       linkedPosts[post.uuid] = PostView(
         post: post,
         creator: creators[post.creatorUUID],
-        comments: comments[post.uuid],
+        comments: await commentService.getCommentsOfPostLinked(post.uuid),
+        groups:
+            post.groups.isEmpty
+                ? {
+                  Group.everyoneUUID:
+                      (await groupRepository.getByUUID(Group.everyoneUUID))!,
+                }
+                : await groupRepository.getByUUIDs(post.groups),
       );
     }
     return linkedPosts;

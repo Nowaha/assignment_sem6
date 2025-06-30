@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:assignment_sem6/data/service/groupservice.dart';
+import 'package:assignment_sem6/data/service/postservice.dart';
 import 'package:assignment_sem6/extension/entityiterable.dart';
 import 'package:assignment_sem6/widgets/dataholderstate.dart';
 import 'package:flutter/material.dart';
@@ -11,11 +12,12 @@ import '../../data/entity/impl/group.dart';
 class GroupList extends StatefulWidget {
   final Map<String, Group>? groups;
   final String? userUUID;
+  final String? postUUID;
 
-  const GroupList._({super.key, this.groups, this.userUUID})
+  const GroupList._({super.key, this.groups, this.userUUID, this.postUUID})
     : assert(
-        groups != null || userUUID != null,
-        "Either groups or userUUID must be provided",
+        groups != null || userUUID != null || postUUID != null,
+        "Either groups, userUUID or postUUID must be provided",
       );
 
   GroupList.list({Key? key, required List<Group> groups})
@@ -23,6 +25,9 @@ class GroupList extends StatefulWidget {
 
   const GroupList.ofUser({Key? key, required String userUUID})
     : this._(key: key, userUUID: userUUID);
+
+  const GroupList.ofPost({Key? key, required String postUUID})
+    : this._(key: key, postUUID: postUUID);
 
   @override
   State<StatefulWidget> createState() => _GroupListState();
@@ -70,7 +75,14 @@ class _GroupListState extends DataHolderState<GroupList, Map<String, Group>?> {
       return await groupService.getUserGroups(widget.userUUID!);
     }
 
-    throw ArgumentError("Either groups or userUUID must be provided");
+    if (widget.postUUID != null) {
+      final PostService postService = context.read<PostService>();
+      return await postService
+          .getByUUIDLinked(widget.postUUID!)
+          .then((postView) => postView?.groups);
+    }
+
+    throw ArgumentError("Either groups, userUUID or postUUID must be provided");
   }
 }
 

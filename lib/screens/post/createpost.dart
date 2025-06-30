@@ -27,7 +27,7 @@ class CreatePost extends StatefulWidget {
 }
 
 class _CreatePostState extends State<CreatePost> with FormMixin {
-  final List<String> _allGroups = [];
+  final Map<String, String> _allGroups = {}; // Name - UUID
 
   final _titleController = TextEditingController();
   final _contentsController = TextEditingController();
@@ -68,7 +68,7 @@ class _CreatePostState extends State<CreatePost> with FormMixin {
 
     setState(() {
       _allGroups.clear();
-      _allGroups.addAll(groups.map((group) => group.name).toList());
+      _allGroups.addAll({for (final group in groups) group.name: group.uuid});
       _allGroups.remove("Everyone");
     });
   }
@@ -98,7 +98,7 @@ class _CreatePostState extends State<CreatePost> with FormMixin {
             double.parse(_latitudeController.text),
             double.parse(_longitudeController.text),
           ),
-          groups: _selectedGroups,
+          groups: _selectedGroups.map((group) => _allGroups[group]!).toList(),
           tags: _tags,
         ),
       );
@@ -277,7 +277,7 @@ class _CreatePostState extends State<CreatePost> with FormMixin {
                           _selectedGroups.remove(group);
                         });
                       },
-                      suggestions: _allGroups,
+                      suggestions: _allGroups.values.toList(),
                       suggestOnFocus: true,
                       strict: true,
                     ),

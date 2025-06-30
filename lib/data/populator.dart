@@ -125,7 +125,7 @@ class Populator {
           title: Generate.sentence(rand.nextInt(5) + 5),
           postContents: Generate.paragraph(rand.nextInt(10) + 10),
           tags: ["example", Generate.word()],
-          groups: [Group.everyoneUUID],
+          groups: [],
           latLng: Generate.location(),
         ),
       );

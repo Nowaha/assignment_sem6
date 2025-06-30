@@ -1,5 +1,6 @@
 import 'package:assignment_sem6/data/service/data/postview.dart';
 import 'package:assignment_sem6/data/service/postservice.dart';
+import 'package:assignment_sem6/screens/profile/grouplist.dart';
 import 'package:assignment_sem6/util/date.dart';
 import 'package:assignment_sem6/widgets/actualtextbutton.dart';
 import 'package:assignment_sem6/widgets/comment/commentsection.dart';
@@ -28,7 +29,7 @@ class _ViewPostState extends DataHolderState<ViewPost, PostView> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
-        spacing: 16,
+        spacing: 4,
         children: [
           Text(
             data?.post.title ?? "Loading...",
@@ -60,7 +61,87 @@ class _ViewPostState extends DataHolderState<ViewPost, PostView> {
               ),
             ],
           ),
+
+          SizedBox(height: 8),
+
           MarkdownBlock(data: data?.post.postContents ?? "Loading..."),
+
+          Divider(height: 8),
+
+          SizedBox(height: 4),
+
+          SizedBox(
+            width: double.infinity,
+            child: Wrap(
+              spacing: 32,
+              runSpacing: 8,
+              alignment: WrapAlignment.center,
+              runAlignment: WrapAlignment.center,
+              children: [
+                Column(
+                  children: [
+                    Text(
+                      "Timeframe",
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
+                    Text(
+                      "Start: ${data?.post.startTimestamp != null ? DateUtil.formatDateTime(data!.post.startTimestamp, true) : "Unknown"}",
+                    ),
+                    Text(
+                      "End: ${data?.post.endTimestamp != null ? DateUtil.formatDateTime(data!.post.endTimestamp!, true) : "Unknown"}",
+                    ),
+                    SizedBox(height: 4,),
+                    Text(
+                      "Total duration: ${data?.post.startTimestamp != null ? (data!.post.endTimestamp == null ? "Endless" : DateUtil.formatInterval(data!.post.endTimestamp! - data!.post.startTimestamp)) : "Unknown"}",
+                    ),
+                  ],
+                ),
+
+                SizedBox(height: 8),
+
+                Column(
+                  spacing: 4,
+                  children: [
+                    Text(
+                      "Groups",
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
+                    if (widget.postUUID != null)
+                      GroupList.ofPost(postUUID: widget.postUUID!),
+                  ],
+                ),
+
+                SizedBox(height: 8),
+
+                Column(
+                  spacing: 4,
+                  children: [
+                    Text(
+                      "Tags",
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
+                    Wrap(
+                      spacing: 4,
+                      runSpacing: 4,
+                      children:
+                          data?.post.tags.map((tag) {
+                            return Chip(
+                              label: Text(tag),
+                              padding: EdgeInsets.zero,
+                            );
+                          }).toList() ??
+                          [],
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+
+          SizedBox(height: 8),
+
+          Divider(height: 8),
+
           CommentSection(
             postUUID: widget.postUUID ?? "",
             comments: data?.comments?.values.toList() ?? [],

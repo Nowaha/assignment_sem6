@@ -105,6 +105,7 @@ class _MapState extends State<MapWidget> {
               _filtered
                   .map(
                     (item) => MapMarker(
+                      controller: widget.controller,
                       item: item,
                       visibleTimelineStart:
                           widget.controller.visibleStartTimestamp,

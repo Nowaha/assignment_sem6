@@ -64,7 +64,7 @@ class TimelineIndicator extends StatelessWidget {
             child: Tooltip(
               message:
                   isOnEdge
-                      ? "Expand to ${isLeft ? "left" : "right"} by ${DateUtil.formatInterval(TimelineUtil.preferredExpansion(controller.visibleTimeScale))}"
+                      ? "Expand to ${isLeft ? "left" : "right"} by ${DateUtil.formatIntervalShort(TimelineUtil.preferredExpansion(controller.visibleTimeScale))}"
                       : "",
               child: Icon(iconData, size: 28, color: iconColor),
             ),

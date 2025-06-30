@@ -75,7 +75,7 @@ class ScalePainter extends CustomPainter {
 
     final textPainter = TextPainter(
       text: TextSpan(
-        text: DateUtil.formatInterval(tickEvery),
+        text: DateUtil.formatIntervalShort(tickEvery),
         style: TextStyle(color: timelineColor, fontSize: 12),
       ),
       textDirection: TextDirection.ltr,

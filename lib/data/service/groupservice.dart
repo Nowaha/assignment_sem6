@@ -11,6 +11,8 @@ abstract class GroupService
   final UserRepository userRepository;
   const GroupService({required super.repository, required this.userRepository});
 
+  Future<Map<String, Group>> getByNames(Iterable<String> names) =>
+      repository.getByNames(names);
   Future<Map<String, Group>> getUserGroups(String userUuid);
   Future<Map<String, GroupView>> getUserGroupsLinked(String userUuid) async =>
       linkAll((await repository.getUserGroups(userUuid)).values);

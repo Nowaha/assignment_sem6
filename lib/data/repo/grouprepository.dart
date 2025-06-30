@@ -6,6 +6,8 @@ abstract class GroupRepository extends Repository<Group, GroupDao> {
   const GroupRepository({required super.dao});
 
   Future<Group?> getByName(String name) => dao.findByName(name);
+  Future<Map<String, Group>> getByNames(Iterable<String> names) =>
+      dao.findByNames(names);
   Future<Map<String, Group>> getUserGroups(String userUuid) =>
       dao.getUserGroups(userUuid);
 }

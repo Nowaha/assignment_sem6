@@ -1,4 +1,5 @@
 import 'package:assignment_sem6/data/entity/impl/post.dart';
+import 'package:assignment_sem6/data/repo/grouprepository.dart';
 import 'package:assignment_sem6/data/repo/postrepository.dart';
 import 'package:assignment_sem6/data/service/commentservice.dart';
 import 'package:assignment_sem6/data/service/data/postview.dart';
@@ -10,10 +11,12 @@ import 'package:assignment_sem6/util/sort.dart';
 abstract class PostService extends LinkedService<Post, PostView, PostRepository>
     implements SingleStreamService<Post, PostRepository> {
   final UserService userService;
+  final GroupRepository groupRepository;
   final CommentService commentService;
 
   PostService({
     required super.repository,
+    required this.groupRepository,
     required this.userService,
     required this.commentService,
   });

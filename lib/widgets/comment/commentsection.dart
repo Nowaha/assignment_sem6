@@ -26,7 +26,6 @@ class _CommentSectionState extends State<CommentSection> {
       crossAxisAlignment: CrossAxisAlignment.start,
       spacing: 16,
       children: [
-        Divider(thickness: 1, color: Theme.of(context).dividerColor),
         Text("Comments", style: Theme.of(context).textTheme.headlineSmall),
         WriteComment(
           postUUID: widget.postUUID,
