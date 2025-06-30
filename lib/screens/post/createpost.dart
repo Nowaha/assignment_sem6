@@ -1,7 +1,9 @@
 import 'package:assignment_sem6/mixin/formmixin.dart';
+import 'package:assignment_sem6/screens/post/markdowneditor.dart';
 import 'package:assignment_sem6/widgets/loadingiconbutton.dart';
 import 'package:assignment_sem6/widgets/screen.dart';
 import 'package:flutter/material.dart';
+import 'package:markdown_widget/markdown_widget.dart';
 
 class CreatePost extends StatefulWidget {
   static const String routeName = "/post/create";
@@ -41,7 +43,14 @@ class _CreatePostState extends State<CreatePost> with FormMixin {
 
             buildFormTextInput("Title", titleController, autoFocus: true),
 
-            buildFormTextInput("Contents", contentsController, multiline: true),
+            // buildFormTextInput("Contents", contentsController, multiline: true),
+            ConstrainedBox(
+              constraints: BoxConstraints(maxHeight: 300),
+              child: MarkdownEditor(
+                controller: contentsController,
+                label: "Contents",
+              ),
+            ),
 
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
@@ -55,6 +64,20 @@ class _CreatePostState extends State<CreatePost> with FormMixin {
                   onPressed: validate,
                 ),
               ],
+            ),
+
+            ListenableBuilder(
+              listenable: contentsController,
+              builder: (context, _) {
+                if (contentsController.text.isEmpty) {
+                  return const Text("No contents to preview.");
+                }
+                return MarkdownWidget(
+                  shrinkWrap: true,
+                  selectable: false,
+                  data: contentsController.text,
+                );
+              },
             ),
           ],
         ),
