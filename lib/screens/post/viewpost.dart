@@ -34,7 +34,7 @@ class _ViewPostState extends DataHolderState<ViewPost, PostView> {
             data?.post.title ?? "Loading...",
             style: Theme.of(context).textTheme.headlineMedium,
           ),
-          Row(
+          Wrap(
             children: [
               Text(
                 "Written by ",
@@ -44,7 +44,7 @@ class _ViewPostState extends DataHolderState<ViewPost, PostView> {
               ),
               ActualTextButton(
                 text:
-                    "${data?.creator?.firstName ?? "Unknown"} ${data?.creator?.lastName ?? ""}",
+                    "${data?.creator?.firstName ?? "Unknown"} ${data?.creator?.lastName ?? ""} ",
                 onTap: () {
                   if (data?.creator?.uuid != null) {
                     context.push("/profile/${data!.creator!.uuid}");
@@ -53,7 +53,7 @@ class _ViewPostState extends DataHolderState<ViewPost, PostView> {
                 style: Theme.of(context).textTheme.bodyLarge,
               ),
               Text(
-                " on ${data?.post.creationTimestamp != null ? DateUtil.formatDateTime(data!.post.creationTimestamp, false) : "Unknown"}",
+                "on ${data?.post.creationTimestamp != null ? DateUtil.formatDateTime(data!.post.creationTimestamp, false) : "Unknown"}",
                 style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                   color: Theme.of(context).colorScheme.onSurface.withAlpha(200),
                 ),
