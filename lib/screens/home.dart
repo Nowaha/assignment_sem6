@@ -85,7 +85,7 @@ class _HomePageState extends State<HomePage> {
     super.initState();
   }
 
-  void _filterUpdate(Filters newFilters) async {
+  void _filterUpdate(Filters newFilters, {bool noResetPosition = false}) async {
     setState(() {
       _filters = newFilters;
       _fetchingPosts = true;
@@ -93,7 +93,6 @@ class _HomePageState extends State<HomePage> {
 
     final postService = context.read<PostService>();
     final posts = await postService.getAll();
-    _arrangeElements(posts.where((post) => _filters.matches(post)));
 
     if (_timelineController.startTimestamp !=
             _filters.startDate.millisecondsSinceEpoch ||
@@ -103,8 +102,12 @@ class _HomePageState extends State<HomePage> {
         _filters.startDate.millisecondsSinceEpoch,
         _filters.endDate.millisecondsSinceEpoch,
       );
-      _timelineController.reset();
+      if (!noResetPosition) {
+        _timelineController.reset();
+      }
     }
+
+    _arrangeElements(posts.where((post) => _filters.matches(post)), completelyNewView: !noResetPosition);
 
     await Future.delayed(const Duration(milliseconds: 100));
 
@@ -122,7 +125,7 @@ class _HomePageState extends State<HomePage> {
         _timelineController.startTimestamp,
       ),
     );
-    _filterUpdate(_filters);
+    _filterUpdate(_filters, noResetPosition: true);
   }
 
   void _expandRight() {
@@ -134,10 +137,13 @@ class _HomePageState extends State<HomePage> {
         _timelineController.endTimestamp,
       ),
     );
-    _filterUpdate(_filters);
+    _filterUpdate(_filters, noResetPosition: true);
   }
 
-  void _arrangeElements(Iterable<Post> posts) {
+  void _arrangeElements(
+    Iterable<Post> posts, {
+    bool completelyNewView = false,
+  }) {
     final sorted = posts.toList();
     sorted.sort((a, b) => a.startTimestamp.compareTo(b.startTimestamp));
 
@@ -150,6 +156,10 @@ class _HomePageState extends State<HomePage> {
           post,
           layer: TimelineUtil.resolveLayer(post.startTimestamp, arranged),
           color: Colors.primaries[i % Colors.primaries.length],
+          layerOffset:
+              _timelineController.items.isEmpty || completelyNewView
+                  ? 0.0
+                  : _timelineController.items[0].layerOffset,
         ),
       );
     }
