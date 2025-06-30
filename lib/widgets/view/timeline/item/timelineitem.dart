@@ -12,7 +12,7 @@ class TimelineItem {
   late final int rawLayer;
   final double layerOffset;
 
-  String get key => "item-$startTimestamp-$endTimestamp-$rawLayer";
+  String get key => "item-$postUUID";
 
   late final double effectiveLayer;
 

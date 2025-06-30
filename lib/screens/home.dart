@@ -61,7 +61,7 @@ class _HomePageState extends State<HomePage> {
     final startTimestamp = DateTime.now().subtract(const Duration(days: 1));
     final endTimestamp = DateTime.now();
     _timelineController = TimelineController.withTimeScale(
-      items: [],
+      items: {},
       startTimestamp: startTimestamp.millisecondsSinceEpoch,
       endTimestamp: endTimestamp.millisecondsSinceEpoch,
       timeScale: TimelineUtil.calculateInitialTimeScale(
@@ -107,7 +107,10 @@ class _HomePageState extends State<HomePage> {
       }
     }
 
-    _arrangeElements(posts.where((post) => _filters.matches(post)), completelyNewView: !noResetPosition);
+    _arrangeElements(
+      posts.where((post) => _filters.matches(post)),
+      completelyNewView: !noResetPosition,
+    );
 
     await Future.delayed(const Duration(milliseconds: 100));
 
@@ -311,21 +314,15 @@ class _HomePageState extends State<HomePage> {
                       listenable: _timelineController.selectedItem,
                       builder: (context, _) {
                         if (_timelineController.selectedItem.value != null) {
+                          final item =
+                              _timelineController.itemsMap[_timelineController
+                                  .selectedItem
+                                  .value!]!;
                           return Expanded(
                             child: ViewPost(
-                              key: ValueKey(
-                                _timelineController
-                                    .selectedItem
-                                    .value!
-                                    .startTimestamp,
-                              ),
-                              postUUID:
-                                  _timelineController
-                                      .selectedItem
-                                      .value!
-                                      .postUUID,
-                              backgroundColor:
-                                  _timelineController.selectedItem.value!.color,
+                              key: ValueKey(item.key),
+                              postUUID: item.postUUID,
+                              backgroundColor: item.color,
                             ),
                           );
                         }

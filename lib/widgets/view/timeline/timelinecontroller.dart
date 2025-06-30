@@ -7,10 +7,8 @@ import 'timeline.dart';
 typedef Range = ({int start, int end});
 
 class TimelineController extends ChangeNotifier {
-  List<TimelineItem> _items;
-  ValueNotifier<TimelineItem?> selectedItem = ValueNotifier<TimelineItem?>(
-    null,
-  );
+  Map<String, TimelineItem> _items;
+  ValueNotifier<String?> selectedItem = ValueNotifier<String?>(null);
   int _startTimestamp;
   int _endTimestamp;
 
@@ -20,7 +18,7 @@ class TimelineController extends ChangeNotifier {
   double _verticalOffset = 0;
 
   TimelineController({
-    required List<TimelineItem> items,
+    required Map<String, TimelineItem> items,
     required int startTimestamp,
     required int endTimestamp,
     required int visibleStartTimestamp,
@@ -36,7 +34,7 @@ class TimelineController extends ChangeNotifier {
        _visibleEndTimestamp = visibleEndTimestamp;
 
   TimelineController.withTimeScale({
-    required List<TimelineItem> items,
+    required Map<String, TimelineItem> items,
     required int startTimestamp,
     required int endTimestamp,
     required int timeScale,
@@ -57,7 +55,8 @@ class TimelineController extends ChangeNotifier {
              ).end,
        );
 
-  List<TimelineItem> get items => _items;
+  List<TimelineItem> get items => _items.values.toList();
+  Map<String, TimelineItem> get itemsMap => _items;
   int get startTimestamp => _startTimestamp;
   int get endTimestamp => _endTimestamp;
   int get centerTimestamp => (_startTimestamp + _endTimestamp) ~/ 2;
@@ -81,6 +80,11 @@ class TimelineController extends ChangeNotifier {
       TimelineUtil.calculateTickEvery(visibleTimeScale, totalWidth);
 
   set items(List<TimelineItem> newItems) {
+    _items = {for (final item in newItems) item.key: item};
+    notifyListeners();
+  }
+
+  set itemsMap(Map<String, TimelineItem> newItems) {
     _items = newItems;
     notifyListeners();
   }

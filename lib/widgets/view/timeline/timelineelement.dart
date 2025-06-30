@@ -6,11 +6,9 @@ class TimelineElement extends StatefulWidget {
   static const headerHeight = 60.0;
   static const snap = 20.0;
 
-  final int index;
   final TimelineItem item;
   final double left;
   final double center;
-  final double verticalOffset;
   final double width;
   final double height;
   final String startTime;
@@ -29,10 +27,8 @@ class TimelineElement extends StatefulWidget {
   TimelineElement({
     super.key,
     required this.item,
-    required this.index,
     required this.left,
     required this.center,
-    required this.verticalOffset,
     required this.width,
     required this.height,
     required this.startTime,

@@ -29,24 +29,22 @@ class Timeline extends StatefulWidget {
 }
 
 class TimelineState extends State<Timeline> {
-  final ValueNotifier<int?> _hoveredIndex = ValueNotifier(null);
-
-  void _setPutToFront(int index) {
-    _hoveredIndex.value = index;
-  }
-
-  void _clearPutToFront() {
-    _hoveredIndex.value = null;
-  }
+  final ValueNotifier<String?> _hovered = ValueNotifier(null);
 
   Widget _buildChild(
     TimelineItem item,
     double screenWidth,
     double screenHeight,
-    int index,
     int tickEvery, {
     bool hovered = false,
+    bool inFront = false,
   }) {
+    if (!inFront &&
+        (item.key == widget.controller.selectedItem.value ||
+            item.key == _hovered.value)) {
+      return SizedBox.shrink();
+    }
+
     final startTime = DateTime.fromMillisecondsSinceEpoch(item.startTimestamp);
     final endTime = DateTime.fromMillisecondsSinceEpoch(item.endTimestamp);
     String startTimeString =
@@ -69,23 +67,17 @@ class TimelineState extends State<Timeline> {
 
     final element = TimelineElement(
       key: ValueKey(item.key),
-      index: index,
       item: item,
       hovered: hovered,
       onHover: () {
-        if (widget.controller.selectedItem.value == null) {
-          _setPutToFront(index);
-        }
+        _hovered.value = item.key;
       },
       onLeave: () {
-        if (widget.controller.selectedItem.value == null) {
-          _clearPutToFront();
-        }
+        _hovered.value = null;
       },
       onSelect: () {
-        if (widget.controller.selectedItem.value != item) {
-          _setPutToFront(index);
-          widget.controller.selectedItem.value = item;
+        if (widget.controller.selectedItem.value != item.key) {
+          widget.controller.selectedItem.value = item.key;
         } else {
           widget.controller.selectedItem.value = null;
         }
@@ -98,23 +90,28 @@ class TimelineState extends State<Timeline> {
         elementWidth,
       ),
       center: screenHeight / 2,
-      verticalOffset: widget.controller.verticalOffset,
       width: elementWidth,
       height: elementHeight,
       startTime: startTimeString,
       endTime: endTimeString,
-      selected: widget.controller.selectedItem.value == item,
+      selected: widget.controller.selectedItem.value == item.key,
     );
     return element;
   }
 
   @override
   Widget build(BuildContext context) {
+    final listenables = Listenable.merge([
+      widget.controller,
+      widget.controller.selectedItem,
+      _hovered,
+    ]);
+
     return LayoutBuilder(
       builder: (context, constraints) {
         final size = Size(constraints.maxWidth, constraints.maxHeight);
         return ListenableBuilder(
-          listenable: widget.controller,
+          listenable: listenables,
           builder: (context, _) {
             final screenUtil = ScreenUtil(context);
 
@@ -150,32 +147,38 @@ class TimelineState extends State<Timeline> {
                       blendMode: BlendMode.dstIn,
                       child: Stack(
                         children: [
-                          for (int i = 0; i < visibleItems.length; i++)
+                          for (final item in visibleItems)
                             _buildChild(
-                              visibleItems[i],
+                              item,
                               size.width,
                               size.height,
-                              i,
                               tickEvery,
                             ),
 
-                          ValueListenableBuilder<int?>(
-                            valueListenable: _hoveredIndex,
-                            builder: (_, hoveredIndex, __) {
-                              if (hoveredIndex == null) {
-                                return const SizedBox.shrink();
-                              }
+                          if (widget.controller.selectedItem.value != null &&
+                              widget.controller.selectedItem.value !=
+                                  _hovered.value)
+                            _buildChild(
+                              widget.controller.itemsMap[widget
+                                  .controller
+                                  .selectedItem
+                                  .value!]!,
+                              size.width,
+                              size.height,
+                              tickEvery,
+                              hovered: true,
+                              inFront: true,
+                            ),
 
-                              return _buildChild(
-                                visibleItems[hoveredIndex],
-                                size.width,
-                                size.height,
-                                hoveredIndex,
-                                tickEvery,
-                                hovered: true,
-                              );
-                            },
-                          ),
+                          if (_hovered.value != null)
+                            _buildChild(
+                              widget.controller.itemsMap[_hovered.value!]!,
+                              size.width,
+                              size.height,
+                              tickEvery,
+                              hovered: true,
+                              inFront: true,
+                            ),
                         ],
                       ),
                     ),
