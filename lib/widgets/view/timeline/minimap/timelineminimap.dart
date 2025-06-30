@@ -46,8 +46,7 @@ class _TimelineMiniMapState extends State<TimelineMiniMap> {
     }
 
     final seekerStart =
-        (controller.visibleStartTimestamp -
-            controller.startTimestamp) /
+        (controller.visibleStartTimestamp - controller.startTimestamp) /
         (controller.endTimestamp - controller.startTimestamp);
 
     final seekerEnd =
@@ -211,6 +210,7 @@ class _TimelineMiniMapState extends State<TimelineMiniMap> {
           child: CustomPaint(
             painter: TimelineMinimapPostPainter(
               items: widget.controller.items,
+              selectedItemKey: widget.controller.selectedItem.value,
               startTimestamp: widget.controller.startTimestamp,
               endTimestamp: widget.controller.endTimestamp,
               timelineColor: Theme.of(context).colorScheme.onSurface,

@@ -32,13 +32,17 @@ class TimelineState extends State<Timeline> {
   final ValueNotifier<String?> _hovered = ValueNotifier(null);
 
   Widget _buildChild(
-    TimelineItem item,
+    TimelineItem? item,
     double screenWidth,
     double screenHeight,
     int tickEvery, {
     bool hovered = false,
     bool inFront = false,
   }) {
+    if (item == null) {
+      return SizedBox.shrink();
+    }
+
     if (!inFront &&
         (item.key == widget.controller.selectedItem.value ||
             item.key == _hovered.value)) {
@@ -162,7 +166,7 @@ class TimelineState extends State<Timeline> {
                               widget.controller.itemsMap[widget
                                   .controller
                                   .selectedItem
-                                  .value!]!,
+                                  .value!],
                               size.width,
                               size.height,
                               tickEvery,

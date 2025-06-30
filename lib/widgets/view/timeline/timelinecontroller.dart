@@ -81,11 +81,13 @@ class TimelineController extends ChangeNotifier {
 
   set items(List<TimelineItem> newItems) {
     _items = {for (final item in newItems) item.key: item};
+    selectedItem.value = null;
     notifyListeners();
   }
 
   set itemsMap(Map<String, TimelineItem> newItems) {
     _items = newItems;
+    selectedItem.value = null;
     notifyListeners();
   }
 
@@ -106,10 +108,15 @@ class TimelineController extends ChangeNotifier {
     notifyListeners();
   }
 
-  void updateItems(List<TimelineItem> newItems) {
+  void updateItems(List<TimelineItem> newItems, {bool resetSelected = true}) {
     List<TimelineItem> sorted = List.from(newItems);
     sorted.sort((a, b) => b.effectiveLayer.compareTo(a.effectiveLayer));
     _items = {for (final item in sorted) item.key: item};
+
+    if (resetSelected) {
+      selectedItem.value = null;
+    }
+
     notifyListeners();
   }
 
@@ -289,7 +296,7 @@ class TimelineController extends ChangeNotifier {
       newItems.add(item.copyWith(layerOffset: offset));
     }
 
-    updateItems(newItems);
+    updateItems(newItems, resetSelected: false);
   }
 
   void reset() {

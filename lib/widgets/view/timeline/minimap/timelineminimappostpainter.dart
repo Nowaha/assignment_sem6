@@ -7,6 +7,7 @@ class TimelineMinimapPostPainter extends CustomPainter {
   static const double timelineThickness = 2.0;
 
   final List<TimelineItem> items;
+  final String? selectedItemKey;
   final int startTimestamp;
   final int endTimestamp;
   final Color timelineColor;
@@ -18,6 +19,7 @@ class TimelineMinimapPostPainter extends CustomPainter {
 
   TimelineMinimapPostPainter({
     required this.items,
+    this.selectedItemKey,
     required this.startTimestamp,
     required this.endTimestamp,
     required this.timelineColor,
@@ -28,6 +30,7 @@ class TimelineMinimapPostPainter extends CustomPainter {
 
   TimelineMinimapPostPainter.zoom({
     required this.items,
+    this.selectedItemKey,
     required this.startTimestamp,
     required this.endTimestamp,
     required this.timelineColor,
@@ -110,10 +113,11 @@ class TimelineMinimapPostPainter extends CustomPainter {
             timelineThickness;
       }
 
+      bool unselected = selectedItemKey != null && selectedItemKey != item.key;
       canvas.drawRect(
         Rect.fromLTWH(startX, top, endX - startX, layerHeight - spacing),
         Paint()
-          ..color = item.color
+          ..color = unselected ? item.color.withAlpha(50) : item.color
           ..style = PaintingStyle.fill,
       );
     }
@@ -131,6 +135,7 @@ class TimelineMinimapPostPainter extends CustomPainter {
   @override
   bool shouldRepaint(TimelineMinimapPostPainter oldDelegate) =>
       oldDelegate.items != items ||
+      oldDelegate.selectedItemKey != selectedItemKey ||
       oldDelegate.startTimestamp != startTimestamp ||
       oldDelegate.endTimestamp != endTimestamp ||
       oldDelegate.timelineColor != timelineColor;
