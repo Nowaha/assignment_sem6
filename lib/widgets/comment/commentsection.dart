@@ -1,12 +1,17 @@
 import 'package:assignment_sem6/data/service/data/commentview.dart';
-import 'package:assignment_sem6/widgets/comment/comment.dart';
+import 'package:assignment_sem6/widgets/comment/commentwidget.dart';
 import 'package:assignment_sem6/widgets/comment/writecomment.dart';
 import 'package:flutter/material.dart';
 
 class CommentSection extends StatefulWidget {
+  final String postUUID;
   final List<CommentView> comments;
 
-  const CommentSection({super.key, required this.comments});
+  const CommentSection({
+    super.key,
+    required this.postUUID,
+    required this.comments,
+  });
 
   @override
   State<StatefulWidget> createState() => _CommentSectionState();
@@ -21,7 +26,7 @@ class _CommentSectionState extends State<CommentSection> {
       children: [
         Divider(thickness: 1, color: Theme.of(context).dividerColor),
         Text("Comments", style: Theme.of(context).textTheme.headlineSmall),
-        WriteComment(),
+        WriteComment(postUUID: widget.postUUID),
         widget.comments.isEmpty
             ? Text(
               "No comments yet.",

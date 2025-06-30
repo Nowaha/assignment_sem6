@@ -16,7 +16,7 @@ class Validation {
   static const int maxPostTags = 5;
   static const int maxPostGroups = 6;
   static const int minCommentLength = 4;
-  static const int maxCommentLength = 500;
+  static const int maxCommentLength = 1000;
 
   static final characterWhitelistRegex = RegExp(r'^[a-zA-Z0-9_]+$');
   static final emailRegex = RegExp(
