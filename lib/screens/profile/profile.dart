@@ -21,16 +21,21 @@ class _ProfileState extends DataHolderState<Profile, User> {
   Widget content(BuildContext context) => Column(
     mainAxisAlignment: MainAxisAlignment.start,
     crossAxisAlignment: CrossAxisAlignment.start,
-    spacing: 16,
     children: [
       Text(
         "Profile of ${data?.firstName ?? "Unknown"} ${data?.lastName ?? ""}",
         style: Theme.of(context).textTheme.headlineSmall,
       ),
+      SizedBox(height: 8),
+      Text("Username: ${data?.username ?? "Unknown"}"),
       Text("Role: ${data?.role.name ?? "Unknown"}"),
+      SizedBox(height: 16),
       Text("Groups", style: Theme.of(context).textTheme.headlineSmall),
+      SizedBox(height: 8),
       GroupList.ofUser(userUUID: widget.userUUID),
+      SizedBox(height: 16),
       Text("Posts", style: Theme.of(context).textTheme.headlineSmall),
+      SizedBox(height: 8),
       PostList.ofCreator(creatorUUID: widget.userUUID),
     ],
   );
