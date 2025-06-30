@@ -25,7 +25,9 @@ class _ProfileState extends DataHolderState<Profile, User> {
     children: [
       Text(
         "Profile of ${data?.firstName ?? "Unknown"} ${data?.lastName ?? ""}",
+        style: Theme.of(context).textTheme.headlineSmall,
       ),
+      Text("Role: ${data?.role.name ?? "Unknown"}"),
       Text("Groups", style: Theme.of(context).textTheme.headlineSmall),
       GroupList.ofUser(userUUID: widget.userUUID),
       Text("Posts", style: Theme.of(context).textTheme.headlineSmall),
@@ -45,6 +47,11 @@ class _ProfileState extends DataHolderState<Profile, User> {
       data != null ? "${data!.firstName} ${data!.lastName}" : "Loading...",
     ),
     alignment: isLoading || data == null ? Alignment.center : Alignment.topLeft,
-    child: getChild(context),
+    child: Center(
+      child: ConstrainedBox(
+        constraints: BoxConstraints(maxWidth: 960),
+        child: getChild(context),
+      ),
+    ),
   );
 }

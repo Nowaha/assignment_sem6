@@ -1,7 +1,11 @@
 enum Role {
-  regular,
-  moderator,
-  administrator;
+  regular("Regular"),
+  moderator("Moderator"),
+  administrator("Administrator");
+
+  final String name;
+
+  const Role(this.name);
 
   static Role? fromName(String name) {
     try {
