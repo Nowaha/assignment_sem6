@@ -35,7 +35,10 @@ class _ViewPostState extends DataHolderState<ViewPost, PostView> {
           Text(
             "Author: ${data?.creator?.firstName ?? "Unknown"} ${data?.creator?.lastName ?? ""}",
           ),
-          CommentSection(comments: data?.comments?.values.toList() ?? []),
+          CommentSection(
+            postUUID: widget.postUUID ?? "",
+            comments: data?.comments?.values.toList() ?? [],
+          ),
         ],
       ),
     ),
