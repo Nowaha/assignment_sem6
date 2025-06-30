@@ -248,7 +248,6 @@ class _HomePageState extends State<HomePage> {
       title: Text(_activeView.value.title),
       padding: EdgeInsets.zero,
       appBarActions: [
-        IconButton(onPressed: () {}, icon: Icon(Icons.notifications)),
         PopupMenuButton(
           icon: Icon(Icons.person),
           menuPadding: EdgeInsets.only(top: 4),
