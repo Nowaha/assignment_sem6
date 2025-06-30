@@ -101,6 +101,7 @@ class _MapState extends State<MapWidget> {
           alignment: Alignment.center,
           padding: const EdgeInsets.all(50),
           maxZoom: 15,
+          rotate: true,
           markers:
               _filtered
                   .map(
