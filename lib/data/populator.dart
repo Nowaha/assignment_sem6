@@ -121,7 +121,7 @@ class Populator {
         Post.create(
           creatorUUID: users.elementAt(rand.nextInt(users.length)).uuid,
           startTimestamp: i.toInt(),
-          endTimestamp: i.toInt() + (1000 * 60 * (15 + (5 * rand.nextInt(10)))),
+          endTimestamp: i.toInt() + (1000 * 60 * (15 + (5 * rand.nextInt(20)))),
           title: Generate.sentence(rand.nextInt(5) + 5),
           postContents: Generate.paragraph(rand.nextInt(10) + 10),
           tags: ["example", Generate.word()],
