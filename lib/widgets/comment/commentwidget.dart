@@ -82,8 +82,8 @@ class _CommentWidgetState extends State<CommentWidget> {
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: Theme.of(context).dividerColor),
-        color: Theme.of(context).colorScheme.surfaceContainerLow,
+        border: Border.all(color: Theme.of(context).colorScheme.outline),
+        color: Theme.of(context).colorScheme.surfaceContainerLow.withAlpha(100),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
