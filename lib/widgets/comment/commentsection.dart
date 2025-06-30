@@ -6,11 +6,13 @@ import 'package:flutter/material.dart';
 class CommentSection extends StatefulWidget {
   final String postUUID;
   final List<CommentView> comments;
+  final VoidCallback? onCommentAdded;
 
   const CommentSection({
     super.key,
     required this.postUUID,
     required this.comments,
+    this.onCommentAdded,
   });
 
   @override
@@ -26,15 +28,20 @@ class _CommentSectionState extends State<CommentSection> {
       children: [
         Divider(thickness: 1, color: Theme.of(context).dividerColor),
         Text("Comments", style: Theme.of(context).textTheme.headlineSmall),
-        WriteComment(postUUID: widget.postUUID),
+        WriteComment(
+          postUUID: widget.postUUID,
+          onCommentAdded: widget.onCommentAdded,
+        ),
+        Text("Post comments", style: Theme.of(context).textTheme.titleMedium),
         widget.comments.isEmpty
             ? Text(
               "No comments yet.",
               style: Theme.of(context).textTheme.bodyMedium,
             )
-            : ListView.builder(
+            : ListView.separated(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
+              separatorBuilder: (context, index) => SizedBox(height: 16),
               itemBuilder: (context, index) {
                 final comment = widget.comments[index];
                 return CommentWidget(comment: comment);

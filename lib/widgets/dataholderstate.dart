@@ -30,8 +30,9 @@ abstract class DataHolderState<T extends StatefulWidget, D> extends State<T> {
   Future<D?> getDataFromSource();
 
   void refreshData() async {
-    _isLoading = true;
-    setState(() {});
+    setState(() {
+      _isLoading = true;
+    });
 
     data = await getDataFromSource().onError((error, stackTrace) {
       if (mounted) {

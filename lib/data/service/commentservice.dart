@@ -57,4 +57,17 @@ abstract class CommentService
   }) async => linkAll(
     await getCommentsOfPost(postUUID, sort: sort, limit: limit, page: page),
   );
+
+  Future<void> addComment(
+    String postUUID, {
+    required String creatorUUID,
+    required String contents,
+  }) async {
+    final comment = Comment.create(
+      postUUID: postUUID,
+      contents: contents,
+      creatorUUID: creatorUUID,
+    );
+    return repository.add(comment);
+  }
 }

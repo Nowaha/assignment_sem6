@@ -125,6 +125,15 @@ class Validation {
     }
     return LatitudeValidationResult.valid;
   }
+
+  static CommentValidationResult isValidComment(String comment) {
+    if (comment.isEmpty) return CommentValidationResult.empty;
+    if (comment.length < minCommentLength)
+      return CommentValidationResult.tooShort;
+    if (comment.length > maxCommentLength)
+      return CommentValidationResult.tooLong;
+    return CommentValidationResult.valid;
+  }
 }
 
 enum NameValidationResult {
@@ -241,4 +250,15 @@ enum LatitudeValidationResult {
   final String? message;
 
   const LatitudeValidationResult({this.message});
+}
+
+enum CommentValidationResult {
+  valid,
+  empty(message: "Comment cannot be empty."),
+  tooShort(message: "Comment is too short (${Validation.minCommentLength})."),
+  tooLong(message: "Comment is too long (${Validation.maxCommentLength}).");
+
+  final String? message;
+
+  const CommentValidationResult({this.message});
 }

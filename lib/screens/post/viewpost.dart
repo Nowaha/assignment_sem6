@@ -38,6 +38,7 @@ class _ViewPostState extends DataHolderState<ViewPost, PostView> {
           CommentSection(
             postUUID: widget.postUUID ?? "",
             comments: data?.comments?.values.toList() ?? [],
+            onCommentAdded: () => refreshData(),
           ),
         ],
       ),
