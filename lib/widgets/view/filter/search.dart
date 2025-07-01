@@ -17,21 +17,20 @@ class _SearchWidgetState extends State<SearchWidget> {
     spacing: 8.0,
     children: [
       Row(
-        spacing: 8.0,
+        spacing: 10.0,
         children: [
           Expanded(
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 400),
-              child: TextField(
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(),
-                  labelText: "Search",
-                ),
-                controller: _searchController,
-                textInputAction: TextInputAction.search,
-                onSubmitted:
-                    (value) => widget.onSearch(value.trim().toLowerCase()),
+            child: TextField(
+              decoration: InputDecoration(
+                border: OutlineInputBorder(),
+                labelText: "Search",
               ),
+              controller: _searchController,
+              textInputAction: TextInputAction.search,
+              onEditingComplete:
+                  () => widget.onSearch(
+                    _searchController.text.trim().toLowerCase(),
+                  ),
             ),
           ),
           IconButton.filledTonal(

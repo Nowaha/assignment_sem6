@@ -91,54 +91,49 @@ class _LocationFilterState extends State<LocationFilter> with FormMixin {
       );
 
   @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: double.infinity,
-      child: Column(
+  Widget build(BuildContext context) => Column(
+    spacing: 8,
+    children: [
+      Row(
         spacing: 8,
         children: [
-          Row(
-            spacing: 8,
-            children: [
-              _buildNumberInput("N", nController),
-              _buildNumberInput("E", eController),
-            ],
-          ),
-          Row(
-            spacing: 8,
-            children: [
-              _buildNumberInput("S", sController),
-              _buildNumberInput("W", wController),
-            ],
-          ),
-          SizedBox(),
-          Row(
-            spacing: 8,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              OutlinedButton(
-                onPressed: () {
-                  clearAllErrors();
-                  nController.clear();
-                  eController.clear();
-                  sController.clear();
-                  wController.clear();
-                },
-                child: Text("Clear"),
-              ),
-              OutlinedButton(
-                onPressed: () {
-                  clearAllErrors();
-                  _reset();
-                },
-                child: Text("Reset"),
-              ),
-              Expanded(child: Container()),
-              FilledButton(onPressed: _onSubmit, child: Text("Apply")),
-            ],
-          ),
+          _buildNumberInput("N", nController),
+          _buildNumberInput("E", eController),
         ],
       ),
-    );
-  }
+      Row(
+        spacing: 8,
+        children: [
+          _buildNumberInput("S", sController),
+          _buildNumberInput("W", wController),
+        ],
+      ),
+      SizedBox(),
+      Row(
+        spacing: 8,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          OutlinedButton(
+            onPressed: () {
+              clearAllErrors();
+              nController.clear();
+              eController.clear();
+              sController.clear();
+              wController.clear();
+            },
+            child: Text("Clear"),
+          ),
+          OutlinedButton(
+            onPressed: () {
+              clearAllErrors();
+              _reset();
+            },
+            child: Text("Reset"),
+          ),
+          Expanded(child: Container()),
+          FilledButton(onPressed: _onSubmit, child: Text("Apply")),
+        ],
+      ),
+    ],
+  );
 }

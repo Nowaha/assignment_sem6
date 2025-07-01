@@ -30,9 +30,12 @@ class CollapsibleFilterContainer extends StatelessWidget {
           offset: const Offset(0, 2),
         ),
       ],
-      child: FilterContainer(
-        filters: filters,
-        onFilterApplied: onFilterApplied,
+      child: ConstrainedBox(
+        constraints: BoxConstraints(maxWidth: 500),
+        child: FilterContainer(
+          filters: filters,
+          onFilterApplied: onFilterApplied,
+        ),
       ),
     ),
   );

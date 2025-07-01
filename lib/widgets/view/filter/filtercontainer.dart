@@ -26,46 +26,54 @@ class FilterContainer extends StatelessWidget {
         onSearch:
             (value) => onFilterApplied(filters.copyWith(searchQuery: value)),
       ),
-      CollapsibleContainer(
-        title: "Date Range",
-        child: Padding(
-          padding: const EdgeInsets.only(top: 8.0),
-          child: StartEndSelector(
-            start: filters.startDate,
-            end: filters.endDate,
-            onStartSelected:
-                (newStart) =>
-                    onFilterApplied(filters.copyWith(startDate: newStart)),
-            onEndSelected:
-                (newEnd) => onFilterApplied(filters.copyWith(endDate: newEnd)),
-            onRangeSelected:
-                (newRange) => onFilterApplied(
-                  filters.copyWith(
-                    startDate: newRange.start,
-                    endDate: newRange.end,
+      SizedBox(
+        width: double.infinity,
+        child: CollapsibleContainer(
+          title: "Date Range",
+          child: Padding(
+            padding: const EdgeInsets.only(top: 8.0),
+            child: StartEndSelector(
+              start: filters.startDate,
+              end: filters.endDate,
+              onStartSelected:
+                  (newStart) =>
+                      onFilterApplied(filters.copyWith(startDate: newStart)),
+              onEndSelected:
+                  (newEnd) =>
+                      onFilterApplied(filters.copyWith(endDate: newEnd)),
+              onRangeSelected:
+                  (newRange) => onFilterApplied(
+                    filters.copyWith(
+                      startDate: newRange.start,
+                      endDate: newRange.end,
+                    ),
                   ),
-                ),
+            ),
           ),
         ),
       ),
-      CollapsibleContainer(
-        title: "Location",
-        initiallyCollapsed: true,
-        child: Padding(
-          padding: const EdgeInsets.only(top: 8.0),
-          child: LocationFilter(
-            locationRect: filters.locationRect,
-            updateLocation:
-                (newLocationRect) =>
-                    onFilterApplied(filters.copyWithLocation(newLocationRect)),
+      SizedBox(
+        width: double.infinity,
+        child: CollapsibleContainer(
+          title: "Location",
+          initiallyCollapsed: true,
+          child: Padding(
+            padding: const EdgeInsets.only(top: 8.0),
+            child: LocationFilter(
+              locationRect: filters.locationRect,
+              updateLocation:
+                  (newLocationRect) => onFilterApplied(
+                    filters.copyWithLocation(newLocationRect),
+                  ),
+            ),
           ),
         ),
       ),
-      CollapsibleContainer(
-        title: "Groups",
-        initiallyCollapsed: true,
-        child: ConstrainedBox(
-          constraints: BoxConstraints(maxWidth: 400),
+      SizedBox(
+        width: double.infinity,
+        child: CollapsibleContainer(
+          title: "Groups",
+          initiallyCollapsed: true,
           child: GroupInput(
             selectedGroups: filters.groups,
             onChanged:
@@ -74,7 +82,7 @@ class FilterContainer extends StatelessWidget {
           ),
         ),
       ),
-      FilterWidget(),
+      SizedBox(width: double.infinity, child: FilterWidget()),
     ],
   );
 }
