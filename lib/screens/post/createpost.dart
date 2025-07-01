@@ -199,34 +199,37 @@ class _CreatePostState extends State<CreatePost> with FormMixin {
                     Row(
                       spacing: 8,
                       children: [
-                        DateSelector(
-                          label: "Start Date *",
-                          selectedDate: _startTimestamp.value,
-                          onDateSelected: (newDate) {
-                            _startTimestamp.value = newDate;
-                            if (_endTimestamp.value != null &&
-                                _endTimestamp.value!.isBefore(newDate!)) {
-                              _endTimestamp.value = _startTimestamp.value?.add(
-                                const Duration(minutes: 5),
-                              );
-                            }
-                            setState(() {});
-                          },
+                        Expanded(
+                          child: DateSelector(
+                            label: "Start Date *",
+                            selectedDate: _startTimestamp.value,
+                            onDateSelected: (newDate) {
+                              _startTimestamp.value = newDate;
+                              if (_endTimestamp.value != null &&
+                                  _endTimestamp.value!.isBefore(newDate!)) {
+                                _endTimestamp.value = _startTimestamp.value
+                                    ?.add(const Duration(minutes: 5));
+                              }
+                              setState(() {});
+                            },
+                          ),
                         ),
-                        DateSelector(
-                          label: "End Date (optional)",
-                          selectedDate: _endTimestamp.value,
-                          onDateSelected: (newDate) {
-                            _endTimestamp.value = newDate;
-                            if (newDate != null &&
-                                _startTimestamp.value!.isAfter(newDate)) {
-                              _startTimestamp.value = newDate.subtract(
-                                const Duration(minutes: 5),
-                              );
-                            }
-                            setState(() {});
-                          },
-                          clearable: true,
+                        Expanded(
+                          child: DateSelector(
+                            label: "End Date (optional)",
+                            selectedDate: _endTimestamp.value,
+                            onDateSelected: (newDate) {
+                              _endTimestamp.value = newDate;
+                              if (newDate != null &&
+                                  _startTimestamp.value!.isAfter(newDate)) {
+                                _startTimestamp.value = newDate.subtract(
+                                  const Duration(minutes: 5),
+                                );
+                              }
+                              setState(() {});
+                            },
+                            clearable: true,
+                          ),
                         ),
                       ],
                     ),
