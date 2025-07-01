@@ -1,21 +1,21 @@
 import 'package:assignment_sem6/data/entity/impl/post.dart';
 import 'package:assignment_sem6/data/service/postservice.dart';
-import 'package:assignment_sem6/widgets/slidevisibility.dart';
-import 'package:assignment_sem6/widgets/view/filter/fullscreenfilters.dart';
-import 'package:assignment_sem6/screens/post/viewpost.dart';
+import 'package:assignment_sem6/screens/home/createpostfab.dart';
+import 'package:assignment_sem6/screens/home/fetchingoverlay.dart';
+import 'package:assignment_sem6/screens/home/filtersortoggle.dart';
+import 'package:assignment_sem6/screens/home/fullscreenfiltersdisplay.dart';
+import 'package:assignment_sem6/screens/home/homeappbaritems.dart';
+import 'package:assignment_sem6/screens/home/splitviewpost.dart';
+import 'package:assignment_sem6/screens/home/timelinezoomoverlay.dart';
 import 'package:assignment_sem6/screens/view/map.dart';
 import 'package:assignment_sem6/screens/view/timeline.dart';
 import 'package:assignment_sem6/state/authstate.dart';
-import 'package:assignment_sem6/util/role.dart';
 import 'package:assignment_sem6/util/screen.dart';
 import 'package:assignment_sem6/util/timelineutil.dart';
 import 'package:assignment_sem6/util/toast.dart';
 import 'package:assignment_sem6/widgets/screen.dart';
-import 'package:assignment_sem6/widgets/sizedcircularprogressindicator.dart';
-import 'package:assignment_sem6/widgets/view/filter/collapsiblefiltercontainer.dart';
 import 'package:assignment_sem6/widgets/view/filter/filters.dart';
 import 'package:assignment_sem6/widgets/view/timeline/minimap/timelineminimap.dart';
-import 'package:assignment_sem6/widgets/view/timeline/minimap/timelineminimapzoom.dart';
 import 'package:assignment_sem6/widgets/view/timeline/timelinecontroller.dart';
 import 'package:assignment_sem6/widgets/view/timeline/item/timelineitem.dart';
 import 'package:flutter/material.dart';
@@ -279,64 +279,10 @@ class _HomePageState extends State<HomePage> {
     return Screen(
       title: Text(_activeView.value.title),
       padding: EdgeInsets.zero,
-      appBarActions: [
-        PopupMenuButton(
-          icon: Icon(Icons.person),
-          menuPadding: EdgeInsets.only(top: 4),
-          onSelected:
-              (value) => {
-                switch (value) {
-                  "profile" => context.go("/profile/${user!.uuid}"),
-                  "admin" => context.goNamed("admin"),
-                  "settings" => context.goNamed("settings"),
-                  "logout" => _logout(),
-                  _ => FlutterError("Unknown action selected: $value"),
-                },
-              },
-          tooltip: "${user?.firstName} ${user?.lastName}",
-          itemBuilder:
-              (context) => <PopupMenuEntry>[
-                PopupMenuItem<String>(
-                  value: "info",
-                  enabled: false,
-                  child: ConstrainedBox(
-                    constraints: BoxConstraints(minWidth: 100),
-                    child: Text(
-                      'Hello, ${user?.firstName ?? "Guest"}!',
-                      style: TextStyle(
-                        color: Theme.of(context).colorScheme.primary,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                      ),
-                    ),
-                  ),
-                ),
-                PopupMenuDivider(),
-                if (user != null)
-                  PopupMenuItem(value: "profile", child: Text("Profile")),
-                if (user?.role == Role.administrator)
-                  PopupMenuItem(value: "admin", child: Text("Admin Panel")),
-                PopupMenuItem(value: "settings", child: Text("Settings")),
-                PopupMenuItem(value: "logout", child: Text("Log out")),
-              ],
-        ),
-      ],
-      floatingActionButton: Padding(
-        padding: EdgeInsets.only(bottom: _activeView.value.fabOffset),
-        child: FloatingActionButton(
-          tooltip: "Create Post",
-          onPressed: () {
-            if (user == null) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text("You must be logged in to post.")),
-              );
-              return;
-            }
-
-            context.goNamed("createPost");
-          },
-          child: Icon(Icons.add),
-        ),
+      appBarActions: homeAppBarItems(context, user, _logout),
+      floatingActionButton: CreatePostFab(
+        bottomOffset: _activeView.value.fabOffset,
+        user: user,
       ),
       child: Stack(
         children: [
@@ -345,57 +291,10 @@ class _HomePageState extends State<HomePage> {
             builder:
                 (context, _) => Column(
                   children: [
-                    if (_isBigScreen)
-                      ListenableBuilder(
-                        listenable: _timelineController.selectedItem,
-                        builder: (context, _) {
-                          if (_timelineController.selectedItem.value != null) {
-                            final item =
-                                _timelineController.itemsMap[_timelineController
-                                    .selectedItem
-                                    .value!];
-                            if (item == null) return SizedBox.shrink();
-
-                            return Expanded(
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.black.withAlpha(100),
-                                      blurRadius: 4,
-                                      offset: const Offset(0, 2),
-                                    ),
-                                  ],
-                                ),
-                                child: ViewPost(
-                                  leading: IconButton(
-                                    icon: Icon(Icons.close),
-                                    onPressed: () {
-                                      _timelineController.selectedItem.value =
-                                          null;
-                                    },
-                                  ),
-                                  actions: [
-                                    IconButton(
-                                      icon: Icon(Icons.fullscreen),
-                                      onPressed: () {
-                                        context.go(
-                                          "/post/${item.postUUID}",
-                                          extra: item.color,
-                                        );
-                                      },
-                                    ),
-                                  ],
-                                  key: ValueKey(item.key),
-                                  postUUID: item.postUUID,
-                                  backgroundColor: item.color,
-                                ),
-                              ),
-                            );
-                          }
-                          return SizedBox.shrink();
-                        },
-                      ),
+                    SplitViewPost(
+                      selectedListenable: _timelineController.selectedItem,
+                      getItem: (key) => _timelineController.itemsMap[key],
+                    ),
                     Expanded(
                       child: Stack(
                         children: [
@@ -428,61 +327,17 @@ class _HomePageState extends State<HomePage> {
                               ),
                             ),
                           ),
-                          ListenableBuilder(
-                            listenable: _timelineController,
-                            builder: (context, _) {
-                              const double width = 400.0;
-                              final screenWidth =
-                                  MediaQuery.sizeOf(context).width;
-                              final int fullLength =
-                                  _timelineController.endTimestamp -
-                                  _timelineController.startTimestamp;
-                              final int visibleCenter =
-                                  _timelineController.visibleCenterTimestamp;
-                              final double fraction =
-                                  (visibleCenter -
-                                      _timelineController.startTimestamp) /
-                                  fullLength;
-                              final double left =
-                                  fraction * screenWidth - 0.5 * width;
-                              final bool tooSmall = screenWidth - width <= 0.0;
-                              final double clamped =
-                                  tooSmall
-                                      ? 0.0
-                                      : left.clamp(0.0, screenWidth - width);
-
-                              return Positioned(
-                                bottom: 0,
-                                left: tooSmall ? 16.0 : clamped,
-                                right: tooSmall ? 16.0 : null,
-                                child: TimelineMinimapZoom(
-                                  width: width,
-                                  fullWidth: screenWidth,
-                                  height: 90,
-                                  controller: _timelineController,
-                                  visible: _showZoom,
-                                ),
-                              );
-                            },
+                          TimelineZoomOverlay(
+                            timelineController: _timelineController,
+                            showZoom: _showZoom,
                           ),
-                          Positioned(
-                            left: 16,
-                            top: 16,
-                            child:
-                                _isBigScreen
-                                    ? CollapsibleFilterContainer(
-                                      filters: _filters,
-                                      onFilterApplied: (newFilters) {
-                                        _filterUpdate(newFilters);
-                                      },
-                                    )
-                                    : IconButton.filled(
-                                      onPressed: () {
-                                        _fullscreenFiltersOpen = true;
-                                        setState(() {});
-                                      },
-                                      icon: Icon(Icons.search),
-                                    ),
+                          FiltersOrToggle(
+                            filters: _filters,
+                            filterUpdate: _filterUpdate,
+                            openFullscreenFilters:
+                                () => setState(() {
+                                  _fullscreenFiltersOpen = true;
+                                }),
                           ),
                         ],
                       ),
@@ -504,54 +359,16 @@ class _HomePageState extends State<HomePage> {
                   ],
                 ),
           ),
-          SlideVisibility(
+          FullscreenFiltersDisplay(
             visible: _fullscreenFiltersOpen,
-            child: FullscreenFilters(
-              filters: _filters,
-              onFilterApplied: (newFilters) {
-                _filterUpdate(newFilters);
-              },
-              close: () {
-                _fullscreenFiltersOpen = false;
-                setState(() {});
-              },
-            ),
+            filters: _filters,
+            filterUpdate: _filterUpdate,
+            close:
+                () => setState(() {
+                  _fullscreenFiltersOpen = false;
+                }),
           ),
-          if (_fetchingPosts)
-            Positioned.fill(
-              child: Container(
-                color: Colors.black.withAlpha(50),
-                child: Center(
-                  child: Container(
-                    padding: const EdgeInsets.all(16.0),
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.surface,
-                      borderRadius: BorderRadius.circular(8.0),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withAlpha(50),
-                          blurRadius: 4,
-                          offset: const Offset(0, 2),
-                        ),
-                      ],
-                    ),
-                    child: IntrinsicHeight(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        spacing: 24.0,
-                        children: [
-                          Text(
-                            "Refreshing posts...",
-                            style: TextStyle(fontSize: 16.0),
-                          ),
-                          SizedCircularProgressIndicator.square(size: 32),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
+          FetchingOverlay(visible: _fetchingPosts),
         ],
       ),
     );
