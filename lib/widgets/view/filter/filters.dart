@@ -1,15 +1,18 @@
 import 'package:assignment_sem6/data/entity/impl/post.dart';
+import 'package:assignment_sem6/widgets/view/filter/locationrect.dart';
 
 class Filters {
   final String searchQuery;
   final DateTime startDate;
   final DateTime endDate;
   late final List<String> searchQuerySplit;
+  final LocationRect? locationRect;
 
   Filters({
     required this.searchQuery,
     required this.startDate,
     required this.endDate,
+    this.locationRect,
   }) {
     searchQuerySplit =
         searchQuery
@@ -28,6 +31,16 @@ class Filters {
       searchQuery: searchQuery ?? this.searchQuery,
       startDate: startDate ?? this.startDate,
       endDate: endDate ?? this.endDate,
+      locationRect: locationRect,
+    );
+  }
+
+  Filters copyWithLocation(LocationRect? newLocationRect) {
+    return Filters(
+      searchQuery: searchQuery,
+      startDate: startDate,
+      endDate: endDate,
+      locationRect: newLocationRect,
     );
   }
 
@@ -58,6 +71,12 @@ class Filters {
       if (!post.title.toLowerCase().contains(lowerSearchQuery) &&
           !post.postContents.toLowerCase().contains(lowerSearchQuery) &&
           !tagMatches(post)) {
+        return false;
+      }
+    }
+
+    if (locationRect != null) {
+      if (!locationRect!.contains(post.lat, post.lng)) {
         return false;
       }
     }

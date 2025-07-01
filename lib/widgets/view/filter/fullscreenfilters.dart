@@ -3,6 +3,7 @@ import 'package:assignment_sem6/widgets/input/dateselector.dart';
 import 'package:assignment_sem6/widgets/input/timesuggestions.dart';
 import 'package:assignment_sem6/widgets/screen.dart';
 import 'package:assignment_sem6/widgets/view/filter/filters.dart';
+import 'package:assignment_sem6/widgets/view/filter/locationfilter.dart';
 import 'package:assignment_sem6/widgets/view/filter/search.dart';
 import 'package:flutter/material.dart';
 
@@ -64,6 +65,12 @@ class FullscreenFilters extends StatelessWidget {
         ),
         SizedBox(),
         Text("Location", style: Theme.of(context).textTheme.titleMedium),
+        LocationFilter(
+          locationRect: filters.locationRect,
+          updateLocation:
+              (newLocationRect) =>
+                  onFilterApplied(filters.copyWithLocation(newLocationRect)),
+        ),
       ],
     ),
   );
