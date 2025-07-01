@@ -1,4 +1,4 @@
-import 'package:assignment_sem6/screens/home.dart';
+import 'package:assignment_sem6/screens/home/home.dart';
 import 'package:assignment_sem6/widgets/view/map/marker.dart';
 import 'package:assignment_sem6/widgets/view/timeline/item/timelineitem.dart';
 import 'package:assignment_sem6/widgets/view/timeline/timelinecontroller.dart';

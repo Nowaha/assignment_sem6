@@ -1,7 +1,7 @@
 import 'package:assignment_sem6/screens/admin/adminhome.dart';
 import 'package:assignment_sem6/screens/admin/group/grouplist.dart';
 import 'package:assignment_sem6/screens/admin/user/userlist.dart';
-import 'package:assignment_sem6/screens/home.dart';
+import 'package:assignment_sem6/screens/home/home.dart';
 import 'package:assignment_sem6/screens/login/login.dart';
 import 'package:assignment_sem6/screens/login/register.dart';
 import 'package:assignment_sem6/screens/post/createpost.dart';

@@ -1,4 +1,4 @@
-import 'package:assignment_sem6/screens/home.dart';
+import 'package:assignment_sem6/screens/home/home.dart';
 import 'package:assignment_sem6/widgets/view/map/map.dart';
 import 'package:assignment_sem6/widgets/view/timeline/painter/datespainter.dart';
 import 'package:assignment_sem6/widgets/view/timeline/painter/scalepainter.dart';
