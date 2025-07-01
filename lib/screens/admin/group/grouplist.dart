@@ -47,7 +47,6 @@ class _GroupListPageState extends State<GroupListPage> {
       child: SingleChildScrollView(
         child: SingleChildScrollView(
           scrollDirection: Axis.horizontal,
-
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             spacing: 12,

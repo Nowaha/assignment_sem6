@@ -1,5 +1,4 @@
-import 'dart:ui';
-
+import 'package:assignment_sem6/allinputscrollbehavior.dart';
 import 'package:assignment_sem6/data/service/groupservice.dart';
 import 'package:assignment_sem6/data/service/postservice.dart';
 import 'package:assignment_sem6/extension/entityiterable.dart';
@@ -41,7 +40,7 @@ class _GroupListState extends DataHolderState<GroupList, Map<String, Group>?> {
 
   @override
   Widget content(BuildContext context) => ScrollConfiguration(
-    behavior: _CustomScrollBehavior(),
+    behavior: AllInputScrollBehavior(),
     child: SingleChildScrollView(
       controller: _controller,
       physics: const BouncingScrollPhysics(),
@@ -84,13 +83,4 @@ class _GroupListState extends DataHolderState<GroupList, Map<String, Group>?> {
 
     throw ArgumentError("Either groups, userUUID or postUUID must be provided");
   }
-}
-
-class _CustomScrollBehavior extends MaterialScrollBehavior {
-  @override
-  Set<PointerDeviceKind> get dragDevices => {
-    PointerDeviceKind.touch,
-    PointerDeviceKind.mouse,
-    PointerDeviceKind.trackpad,
-  };
 }
