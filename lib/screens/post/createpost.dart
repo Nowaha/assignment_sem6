@@ -1,9 +1,9 @@
 import 'package:assignment_sem6/data/entity/impl/post.dart';
-import 'package:assignment_sem6/data/service/groupservice.dart';
 import 'package:assignment_sem6/data/service/postservice.dart';
 import 'package:assignment_sem6/mixin/formmixin.dart';
 import 'package:assignment_sem6/widgets/collapsible/collapsiblewithheader.dart';
 import 'package:assignment_sem6/widgets/input/dateselector.dart';
+import 'package:assignment_sem6/widgets/input/groupinput.dart';
 import 'package:assignment_sem6/widgets/input/text/markdowneditor.dart';
 import 'package:assignment_sem6/state/authstate.dart';
 import 'package:assignment_sem6/util/toast.dart';
@@ -27,8 +27,6 @@ class CreatePost extends StatefulWidget {
 }
 
 class _CreatePostState extends State<CreatePost> with FormMixin {
-  final Map<String, String> _allGroups = {}; // Name - UUID
-
   final _titleController = TextEditingController();
   final _contentsController = TextEditingController();
   final _latitudeController = TextEditingController(text: "41.8719");
@@ -42,7 +40,7 @@ class _CreatePostState extends State<CreatePost> with FormMixin {
     DateTime.now().copyWith(millisecond: 0, microsecond: 0),
   );
   final List<String> _tags = [];
-  final List<String> _selectedGroups = [];
+  final Map<String, String> _selectedGroups = {};
 
   @override
   void initState() {
@@ -55,21 +53,6 @@ class _CreatePostState extends State<CreatePost> with FormMixin {
       _latitudeController: (input) => Validation.isValidLatitude(input).message,
       _longitudeController:
           (input) => Validation.isValidLongitude(input).message,
-    });
-
-    _fetchGroups();
-  }
-
-  void _fetchGroups() async {
-    final groupService = context.read<GroupService>();
-    final groups = await groupService.getAll();
-
-    if (!context.mounted) return;
-
-    setState(() {
-      _allGroups.clear();
-      _allGroups.addAll({for (final group in groups) group.name: group.uuid});
-      _allGroups.remove("Everyone");
     });
   }
 
@@ -98,7 +81,7 @@ class _CreatePostState extends State<CreatePost> with FormMixin {
             double.parse(_latitudeController.text),
             double.parse(_longitudeController.text),
           ),
-          groups: _selectedGroups.map((group) => _allGroups[group]!).toList(),
+          groups: _selectedGroups.values.toList(),
           tags: _tags,
         ),
       );
@@ -266,23 +249,13 @@ class _CreatePostState extends State<CreatePost> with FormMixin {
                       style: Theme.of(context).textTheme.bodySmall,
                     ),
                     SizedBox(height: 8),
-                    ChipListInput(
-                      chips: _selectedGroups,
-                      hintText: "+ Add group",
-                      maxLength: Validation.maxPostGroups,
-                      onChipAdded: (group) {
-                        setState(() {
-                          _selectedGroups.add(group);
-                        });
-                      },
-                      onChipRemoved: (group) {
-                        setState(() {
-                          _selectedGroups.remove(group);
-                        });
-                      },
-                      suggestions: _allGroups.keys.toList(),
-                      suggestOnFocus: true,
-                      strict: true,
+                    GroupInput(
+                      selectedGroups: _selectedGroups,
+                      onChanged:
+                          (newGroups) => setState(() {
+                            _selectedGroups.clear();
+                            _selectedGroups.addAll(newGroups);
+                          }),
                     ),
                   ],
                 ),

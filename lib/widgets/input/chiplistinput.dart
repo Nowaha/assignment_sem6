@@ -8,6 +8,7 @@ class ChipListInput extends StatefulWidget {
   final List<String> chips;
   final ValueChanged<String> onChipAdded;
   final ValueChanged<String> onChipRemoved;
+  final int maxTextLength;
   final int maxLength;
   final List<String> suggestions;
   final bool suggestOnFocus;
@@ -19,6 +20,7 @@ class ChipListInput extends StatefulWidget {
     required this.chips,
     required this.onChipAdded,
     required this.onChipRemoved,
+    this.maxTextLength = 16,
     this.maxLength = 50,
     this.suggestions = const [],
     this.suggestOnFocus = false,
@@ -145,7 +147,7 @@ class _ChipListInputState extends State<ChipListInput> {
                   ).copyWith(counterText: ""),
                   controller: _controller,
                   onEditingComplete: _addChip,
-                  maxLength: 16,
+                  maxLength: widget.maxTextLength,
                 ),
               ),
             ),
