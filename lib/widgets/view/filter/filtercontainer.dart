@@ -1,4 +1,5 @@
 import 'package:assignment_sem6/widgets/collapsible/collapsiblecontainer.dart';
+import 'package:assignment_sem6/widgets/input/groupinput.dart';
 import 'package:assignment_sem6/widgets/view/filter/filter.dart';
 import 'package:assignment_sem6/widgets/view/filter/filters.dart';
 import 'package:assignment_sem6/widgets/view/filter/locationfilter.dart';
@@ -60,7 +61,19 @@ class FilterContainer extends StatelessWidget {
           ),
         ),
       ),
-
+      CollapsibleContainer(
+        title: "Groups",
+        initiallyCollapsed: true,
+        child: ConstrainedBox(
+          constraints: BoxConstraints(maxWidth: 400),
+          child: GroupInput(
+            selectedGroups: filters.groups,
+            onChanged:
+                (newGroups) =>
+                    onFilterApplied(filters.copyWith(groups: newGroups)),
+          ),
+        ),
+      ),
       FilterWidget(),
     ],
   );
