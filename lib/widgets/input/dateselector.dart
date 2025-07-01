@@ -33,6 +33,7 @@ class DateSelector extends StatelessWidget {
     final time = await showTimePicker(
       context: context,
       initialTime: TimeOfDay.fromDateTime(selectedDate ?? DateTime.now()),
+      initialEntryMode: TimePickerEntryMode.input,
     );
 
     if (time == null) return;
