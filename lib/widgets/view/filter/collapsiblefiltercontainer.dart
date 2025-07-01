@@ -14,28 +14,23 @@ class CollapsibleFilterContainer extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) => IntrinsicWidth(
-    child: CollapsibleContainer(
-      title: "Search & Filters",
-      backgroundColor: Theme.of(context).colorScheme.surface,
-      borderRadius: BorderRadius.circular(8),
-      border: Border.all(
-        color: Theme.of(context).colorScheme.outline,
-        width: 1,
+  Widget build(BuildContext context) => CollapsibleContainer(
+    title: "Search & Filters",
+    backgroundColor: Theme.of(context).colorScheme.surface,
+    borderRadius: BorderRadius.circular(8),
+    border: Border.all(color: Theme.of(context).colorScheme.outline, width: 1),
+    boxShadow: [
+      BoxShadow(
+        color: Colors.black.withAlpha(50),
+        blurRadius: 4,
+        offset: const Offset(0, 2),
       ),
-      boxShadow: [
-        BoxShadow(
-          color: Colors.black.withAlpha(50),
-          blurRadius: 4,
-          offset: const Offset(0, 2),
-        ),
-      ],
-      child: ConstrainedBox(
-        constraints: BoxConstraints(maxWidth: 500),
-        child: FilterContainer(
-          filters: filters,
-          onFilterApplied: onFilterApplied,
-        ),
+    ],
+    child: ConstrainedBox(
+      constraints: BoxConstraints(maxWidth: 500),
+      child: FilterContainer(
+        filters: filters,
+        onFilterApplied: onFilterApplied,
       ),
     ),
   );
