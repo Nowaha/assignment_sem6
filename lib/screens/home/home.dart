@@ -93,6 +93,12 @@ class _HomePageState extends State<HomePage> {
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _focusNode.requestFocus();
+  }
+
+  @override
   void dispose() {
     _timelineController.selectedItem.removeListener(
       _onItemSelectedOnSmallScreen,
@@ -265,6 +271,18 @@ class _HomePageState extends State<HomePage> {
     context.read<AuthState>().logout();
   }
 
+  final FocusNode _focusNode = FocusNode();
+
+  KeyEventResult _handleKeyEvent(FocusNode node, KeyEvent event) {
+    if (event.logicalKey == LogicalKeyboardKey.escape) {
+      if (_timelineController.selectedItem.value != null) {
+        _timelineController.selectedItem.value = null;
+        return KeyEventResult.handled;
+      }
+    }
+    return KeyEventResult.ignored;
+  }
+
   @override
   Widget build(BuildContext context) {
     final authState = context.watch<AuthState>();
@@ -284,92 +302,98 @@ class _HomePageState extends State<HomePage> {
         bottomOffset: _activeView.value.fabOffset,
         user: user,
       ),
-      child: Stack(
-        children: [
-          ListenableBuilder(
-            listenable: _activeView,
-            builder:
-                (context, _) => Column(
-                  children: [
-                    SplitViewPost(
-                      selectedListenable: _timelineController.selectedItem,
-                      getItem: (key) => _timelineController.itemsMap[key],
-                    ),
-                    Expanded(
-                      child: Stack(
-                        children: [
-                          Positioned.fill(
-                            child: Visibility(
-                              visible: _activeView.value == ActiveView.timeline,
-                              maintainState: true,
-                              child: RepaintBoundary(
-                                child: TimelineView(
-                                  controller: _timelineController,
-                                  onMapButtonPressed:
-                                      () => _setActiveView(ActiveView.map),
-                                  expandLeft: _expandLeft,
-                                  expandRight: _expandRight,
-                                ),
-                              ),
-                            ),
-                          ),
-                          Positioned.fill(
-                            child: Visibility(
-                              visible: _activeView.value == ActiveView.map,
-                              maintainState: true,
-                              child: RepaintBoundary(
-                                child: MapView(
-                                  controller: _timelineController,
-                                  onTimelineButtonPressed:
-                                      () => _setActiveView(ActiveView.timeline),
-                                  activeView: _activeView,
-                                ),
-                              ),
-                            ),
-                          ),
-                          TimelineZoomOverlay(
-                            timelineController: _timelineController,
-                            showZoom: _showZoom,
-                          ),
-                          FiltersOrToggle(
-                            filters: _filters,
-                            filterUpdate: _filterUpdate,
-                            openFullscreenFilters:
-                                () => setState(() {
-                                  _fullscreenFiltersOpen = true;
-                                }),
-                          ),
-                        ],
+      child: Focus(
+        focusNode: _focusNode,
+        onKeyEvent: _handleKeyEvent,
+        child: Stack(
+          children: [
+            ListenableBuilder(
+              listenable: _activeView,
+              builder:
+                  (context, _) => Column(
+                    children: [
+                      SplitViewPost(
+                        selectedListenable: _timelineController.selectedItem,
+                        getItem: (key) => _timelineController.itemsMap[key],
                       ),
-                    ),
-                    ListenableBuilder(
-                      listenable: Listenable.merge([
-                        _timelineController,
-                        _timelineController.selectedItem,
-                      ]),
-                      builder:
-                          (context, _) => SizedBox(
-                            width: double.infinity,
-                            child: TimelineMiniMap(
-                              controller: _timelineController,
-                              setShowZoom: _setShowZoom,
+                      Expanded(
+                        child: Stack(
+                          children: [
+                            Positioned.fill(
+                              child: Visibility(
+                                visible:
+                                    _activeView.value == ActiveView.timeline,
+                                maintainState: true,
+                                child: RepaintBoundary(
+                                  child: TimelineView(
+                                    controller: _timelineController,
+                                    onMapButtonPressed:
+                                        () => _setActiveView(ActiveView.map),
+                                    expandLeft: _expandLeft,
+                                    expandRight: _expandRight,
+                                  ),
+                                ),
+                              ),
                             ),
-                          ),
-                    ),
-                  ],
-                ),
-          ),
-          FullscreenFiltersDisplay(
-            visible: _fullscreenFiltersOpen,
-            filters: _filters,
-            filterUpdate: _filterUpdate,
-            close:
-                () => setState(() {
-                  _fullscreenFiltersOpen = false;
-                }),
-          ),
-          FetchingOverlay(visible: _fetchingPosts),
-        ],
+                            Positioned.fill(
+                              child: Visibility(
+                                visible: _activeView.value == ActiveView.map,
+                                maintainState: true,
+                                child: RepaintBoundary(
+                                  child: MapView(
+                                    controller: _timelineController,
+                                    onTimelineButtonPressed:
+                                        () =>
+                                            _setActiveView(ActiveView.timeline),
+                                    activeView: _activeView,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            TimelineZoomOverlay(
+                              timelineController: _timelineController,
+                              showZoom: _showZoom,
+                            ),
+                            FiltersOrToggle(
+                              filters: _filters,
+                              filterUpdate: _filterUpdate,
+                              openFullscreenFilters:
+                                  () => setState(() {
+                                    _fullscreenFiltersOpen = true;
+                                  }),
+                            ),
+                          ],
+                        ),
+                      ),
+                      ListenableBuilder(
+                        listenable: Listenable.merge([
+                          _timelineController,
+                          _timelineController.selectedItem,
+                        ]),
+                        builder:
+                            (context, _) => SizedBox(
+                              width: double.infinity,
+                              child: TimelineMiniMap(
+                                controller: _timelineController,
+                                setShowZoom: _setShowZoom,
+                              ),
+                            ),
+                      ),
+                    ],
+                  ),
+            ),
+            FullscreenFiltersDisplay(
+              visible: _fullscreenFiltersOpen,
+              filters: _filters,
+              filterUpdate: _filterUpdate,
+              close:
+                  () => setState(() {
+                    _fullscreenFiltersOpen = false;
+                  }),
+            ),
+            FetchingOverlay(visible: _fetchingPosts),
+          ],
+        ),
       ),
     );
   }
