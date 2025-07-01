@@ -22,6 +22,7 @@ class FullscreenFilters extends StatelessWidget {
   Widget build(BuildContext context) => Screen.scroll(
     title: Text("Filters"),
     backgroundColor: Theme.of(context).colorScheme.surfaceContainer,
+    leading: IconButton(icon: const Icon(Icons.close), onPressed: close),
     child: Column(
       spacing: 16.0,
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -34,6 +35,7 @@ class FullscreenFilters extends StatelessWidget {
         DateSelector(
           label: "Start Date",
           selectedDate: filters.startDate,
+          maxDate: filters.endDate,
           onDateSelected: (start) {
             onFilterApplied(filters.copyWith(startDate: start));
           },

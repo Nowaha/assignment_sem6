@@ -41,6 +41,7 @@ class _HomePageState extends State<HomePage> {
   bool _fetchingPosts = false;
   bool _showZoom = false;
   bool _isBigScreen = true;
+  bool _fullscreenFiltersOpen = false;
 
   double visibleStart = -1;
   double visibleEnd = -1;
@@ -476,22 +477,8 @@ class _HomePageState extends State<HomePage> {
                                     )
                                     : IconButton.filled(
                                       onPressed: () {
-                                        showModalBottomSheet(
-                                          context: context,
-                                          constraints: BoxConstraints(),
-                                          isScrollControlled: true,
-                                          builder: (context) {
-                                            return FullscreenFilters(
-                                              filters: _filters,
-                                              onFilterApplied: (newFilters) {
-                                                _filterUpdate(newFilters);
-                                              },
-                                              close: () {
-                                                Navigator.pop(context);
-                                              },
-                                            );
-                                          },
-                                        );
+                                        _fullscreenFiltersOpen = true;
+                                        setState(() {});
                                       },
                                       icon: Icon(Icons.search),
                                     ),
@@ -515,6 +502,21 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ],
                 ),
+          ),
+          AnimatedSlide(
+            offset: _fullscreenFiltersOpen ? Offset(0, 0) : Offset(1, 0),
+            duration: Duration(milliseconds: 200),
+            curve: Curves.easeOut,
+            child: FullscreenFilters(
+              filters: _filters,
+              onFilterApplied: (newFilters) {
+                _filterUpdate(newFilters);
+              },
+              close: () {
+                _fullscreenFiltersOpen = false;
+                setState(() {});
+              },
+            ),
           ),
           if (_fetchingPosts)
             Positioned.fill(
