@@ -39,7 +39,10 @@ class MarkerTimePainter extends CustomPainter {
 
     canvas.drawLine(
       Offset(offset.dx, size.height / 2 + thickness / 2 + offset.dy),
-      Offset(offset.dx + size.width, size.height / 2 + thickness / 2 + offset.dy),
+      Offset(
+        offset.dx + size.width,
+        size.height / 2 + thickness / 2 + offset.dy,
+      ),
       timelinePaint,
     );
 

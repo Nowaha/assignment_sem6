@@ -110,7 +110,9 @@ class TimelineController extends ChangeNotifier {
 
   void updateItems(List<TimelineItem> newItems, {bool resetSelected = true}) {
     List<TimelineItem> sorted = List.from(newItems);
-    sorted.sort((a, b) => b.effectiveLayer.abs().compareTo(a.effectiveLayer.abs()));
+    sorted.sort(
+      (a, b) => b.effectiveLayer.abs().compareTo(a.effectiveLayer.abs()),
+    );
     _items = {for (final item in sorted) item.key: item};
 
     if (resetSelected) {

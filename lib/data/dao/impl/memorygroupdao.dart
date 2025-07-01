@@ -61,6 +61,8 @@ class MemoryGroupDao extends MemoryDao<Group> implements GroupDao {
   @override
   Future<Map<String, Group>> findByNames(Iterable<String> names) async {
     print(names);
-    return memory.values.where((group) => names.contains(group.name)).toUuidMap();
+    return memory.values
+        .where((group) => names.contains(group.name))
+        .toUuidMap();
   }
 }

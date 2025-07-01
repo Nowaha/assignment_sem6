@@ -9,6 +9,10 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 void main() {
+  // FlutterError.onError = (FlutterErrorDetails details) {
+  //   print('Flutter Error: ${details.exceptionAsString()}');
+  // };
+
   runApp(
     MultiProvider(
       providers: [
@@ -16,7 +20,6 @@ void main() {
         ...authProviders,
         ...userProviders,
         ...commentProviders,
-        ...postProviders,
         ...groupProviders,
         ...postProviders,
       ],

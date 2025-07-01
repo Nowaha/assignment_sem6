@@ -18,7 +18,9 @@ class _CreateGroupPageState extends State<CreateGroupPage> {
         spacing: 12,
         children: [
           Expanded(
-            child: Center(child: Text("Create group form will be displayed here.")),
+            child: Center(
+              child: Text("Create group form will be displayed here."),
+            ),
           ),
         ],
       ),

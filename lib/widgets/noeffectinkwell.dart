@@ -13,6 +13,6 @@ class NoEffectInkWell extends StatelessWidget {
     highlightColor: Colors.transparent,
     hoverColor: Colors.transparent,
     focusColor: Colors.transparent,
-    child: child
+    child: child,
   );
 }

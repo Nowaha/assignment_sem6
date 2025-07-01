@@ -173,8 +173,8 @@ class DatesPainter extends CustomPainter {
     bool fromRight = false,
     bool fromBottom = true,
   }) {
-    final rectX;
-    final rectY;
+    final double rectX;
+    final double rectY;
     final rectWidth = textPainter.width + textPaddingX * 2;
     final rectHeight = textPainter.height + textPaddingY * 2;
 

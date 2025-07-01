@@ -8,12 +8,8 @@ class FilterWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return CollapsibleContainer(
       title: "Filters",
-      child: Column(
-        children: [
-          Text("Filter options will go here"),
-        ],
-      ),
       initiallyCollapsed: true,
+      child: Column(children: [Text("Filter options will go here")]),
     );
   }
 }
