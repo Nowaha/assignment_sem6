@@ -9,7 +9,7 @@ void main() {
         "moderator": Role.moderator,
         "administrator": Role.administrator,
         "operator": null,
-        "Regular": null,
+        "Regular": Role.regular,
       };
 
       matches.forEach(
