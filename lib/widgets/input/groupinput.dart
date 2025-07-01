@@ -28,7 +28,6 @@ class _GroupInputState extends State<GroupInput> {
   @override
   void initState() {
     super.initState();
-
     _fetchGroups();
   }
 
@@ -58,7 +57,8 @@ class _GroupInputState extends State<GroupInput> {
           chip: _allGroups[chip]!,
         }),
     onChipRemoved:
-        (String chip) => widget.onChanged(widget.selectedGroups..remove(chip)),
+        (String chip) =>
+            widget.onChanged({...widget.selectedGroups}..remove(chip)),
     suggestOnFocus: true,
     strict: true,
   );

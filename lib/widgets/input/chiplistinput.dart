@@ -39,7 +39,7 @@ class _ChipListInputState extends State<ChipListInput> {
 
   @override
   void initState() {
-    _controller.addListener(_onTextChanged);
+    _controller.addListener(_updateFiltered);
     super.initState();
   }
 
@@ -76,6 +76,7 @@ class _ChipListInputState extends State<ChipListInput> {
 
     widget.onChipAdded(chip);
     _controller.clear();
+    _updateFiltered();
   }
 
   void _onKeyEvent(KeyEvent event) {
@@ -88,12 +89,12 @@ class _ChipListInputState extends State<ChipListInput> {
         _controller.selection = TextSelection.fromPosition(
           TextPosition(offset: _controller.text.length),
         );
-        _onTextChanged();
+        _updateFiltered();
       }
     }
   }
 
-  void _onTextChanged() {
+  void _updateFiltered() {
     final input = _controller.text.toLowerCase();
     if (input.isEmpty && !widget.suggestOnFocus) {
       setState(() {
@@ -124,7 +125,7 @@ class _ChipListInputState extends State<ChipListInput> {
             deleteIcon: Icon(Icons.close),
             onDeleted: () {
               widget.onChipRemoved(chip);
-              _onTextChanged();
+              _updateFiltered();
             },
           ),
         ),
@@ -154,29 +155,34 @@ class _ChipListInputState extends State<ChipListInput> {
           ),
         ),
       if (widget.chips.length < widget.maxLength)
-        ...filteredSuggestions.map(
-          (suggestion) => ActionChip(
-            backgroundColor: Colors.transparent,
-            labelStyle: TextStyle(
-              color: Theme.of(context).colorScheme.onSurface.withAlpha(150),
-            ),
-            label: Row(
-              mainAxisSize: MainAxisSize.min,
-              spacing: 4,
-              children: [Text(suggestion), Icon(Icons.add, size: 12)],
-            ),
-            onPressed: () {
-              _controller.text = suggestion;
-              _addChip();
-            },
-            shape: StadiumBorder(
-              side: BorderSide(
-                color: Theme.of(context).colorScheme.outline.withAlpha(150),
-                width: 0.5, // Border width
+        ...widget.suggestions
+            .where(
+              (s) => s.toLowerCase().contains(_controller.text.toLowerCase()),
+            )
+            .where((s) => !widget.chips.contains(s))
+            .map(
+              (suggestion) => ActionChip(
+                backgroundColor: Colors.transparent,
+                labelStyle: TextStyle(
+                  color: Theme.of(context).colorScheme.onSurface.withAlpha(150),
+                ),
+                label: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  spacing: 4,
+                  children: [Text(suggestion), Icon(Icons.add, size: 12)],
+                ),
+                onPressed: () {
+                  _controller.text = suggestion;
+                  _addChip();
+                },
+                shape: StadiumBorder(
+                  side: BorderSide(
+                    color: Theme.of(context).colorScheme.outline.withAlpha(150),
+                    width: 0.5, // Border width
+                  ),
+                ),
               ),
             ),
-          ),
-        ),
     ],
   );
 }
