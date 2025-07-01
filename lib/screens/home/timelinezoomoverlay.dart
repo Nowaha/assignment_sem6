@@ -29,7 +29,7 @@ class TimelineZoomOverlay extends StatelessWidget {
           tooSmall ? 0.0 : left.clamp(0.0, screenWidth - width);
 
       return Positioned(
-        bottom: 90.0,
+        bottom: 0,
         left: tooSmall ? 16.0 : clamped,
         right: tooSmall ? 16.0 : null,
         child: TimelineMinimapZoom(
