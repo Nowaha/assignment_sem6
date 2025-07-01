@@ -1,4 +1,5 @@
 import 'package:assignment_sem6/widgets/input/dateselector.dart';
+import 'package:assignment_sem6/widgets/input/timesuggestions.dart';
 import 'package:flutter/material.dart';
 
 class StartEndSelector extends StatelessWidget {
@@ -35,77 +36,27 @@ class StartEndSelector extends StatelessWidget {
         Row(
           spacing: 8.0,
           children: [
-            DateSelector(
-              label: startLabel ?? "Start Date",
-              selectedDate: start,
-              maxDate: end,
-              onDateSelected: onStartSelected,
-              clearable: startClearable,
+            Expanded(
+              child: DateSelector(
+                label: startLabel ?? "Start Date",
+                selectedDate: start,
+                maxDate: end,
+                onDateSelected: onStartSelected,
+                clearable: startClearable,
+              ),
             ),
-            DateSelector(
-              label: endLabel ?? "End Date",
-              selectedDate: end,
-              minDate: start,
-              onDateSelected: onEndSelected,
-              clearable: endClearable,
+            Expanded(
+              child: DateSelector(
+                label: endLabel ?? "End Date",
+                selectedDate: end,
+                minDate: start,
+                onDateSelected: onEndSelected,
+                clearable: endClearable,
+              ),
             ),
           ],
         ),
-        if (suggestions)
-          Row(
-            spacing: 8.0,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              OutlinedButton(
-                onPressed: () {
-                  final now = DateTime.now().copyWith(millisecond: 0);
-                  onRangeSelected(
-                    DateTimeRange(
-                      start: DateTime(now.year, now.month, now.day),
-                      end: now,
-                    ),
-                  );
-                },
-                child: const Text("Today"),
-              ),
-              OutlinedButton(
-                onPressed: () {
-                  final now = DateTime.now().copyWith(millisecond: 0);
-                  onRangeSelected(
-                    DateTimeRange(
-                      start: now.subtract(const Duration(days: 1)),
-                      end: now,
-                    ),
-                  );
-                },
-                child: const Text("24 hours"),
-              ),
-              OutlinedButton(
-                onPressed: () {
-                  final now = DateTime.now().copyWith(millisecond: 0);
-                  onRangeSelected(
-                    DateTimeRange(
-                      start: now.subtract(const Duration(days: 3)),
-                      end: now,
-                    ),
-                  );
-                },
-                child: const Text("3 days"),
-              ),
-              OutlinedButton(
-                onPressed: () {
-                  final now = DateTime.now().copyWith(millisecond: 0);
-                  onRangeSelected(
-                    DateTimeRange(
-                      start: now.subtract(const Duration(days: 7)),
-                      end: now,
-                    ),
-                  );
-                },
-                child: const Text("1 week"),
-              ),
-            ],
-          ),
+        if (suggestions) TimeSuggestions(onRangeSelected: onRangeSelected),
       ],
     );
   }

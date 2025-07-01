@@ -48,6 +48,14 @@ class FilterContainer extends StatelessWidget {
           ),
         ),
       ),
+      CollapsibleContainer(
+        title: "Location",
+        initiallyCollapsed: true,
+        child: Padding(
+          padding: const EdgeInsets.only(top: 8.0),
+          child: Text("todo"),
+        ),
+      ),
       FilterWidget(),
     ],
   );

@@ -51,36 +51,34 @@ class DateSelector extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: TextField(
-        controller: TextEditingController(
-          text:
-              selectedDate != null
-                  ? DateUtil.formatDateTime(
-                    selectedDate!.millisecondsSinceEpoch,
-                    false,
-                  )
-                  : "",
-        ),
-        readOnly: true,
-        decoration: InputDecoration(
-          border: OutlineInputBorder(),
-          labelText: label,
-          suffixIcon: Padding(
-            padding: EdgeInsets.only(right: 8.0),
-            child:
-                !clearable
-                    ? Icon(Icons.calendar_today)
-                    : IconButton(
-                      icon: Icon(Icons.clear),
-                      onPressed: () {
-                        onDateSelected(null);
-                      },
-                    ),
-          ),
-        ),
-        onTap: () => _selectDate(context),
+    return TextField(
+      controller: TextEditingController(
+        text:
+            selectedDate != null
+                ? DateUtil.formatDateTime(
+                  selectedDate!.millisecondsSinceEpoch,
+                  false,
+                )
+                : "",
       ),
+      readOnly: true,
+      decoration: InputDecoration(
+        border: OutlineInputBorder(),
+        labelText: label,
+        suffixIcon: Padding(
+          padding: EdgeInsets.only(right: 8.0),
+          child:
+              !clearable
+                  ? Icon(Icons.calendar_today)
+                  : IconButton(
+                    icon: Icon(Icons.clear),
+                    onPressed: () {
+                      onDateSelected(null);
+                    },
+                  ),
+        ),
+      ),
+      onTap: () => _selectDate(context),
     );
   }
 }

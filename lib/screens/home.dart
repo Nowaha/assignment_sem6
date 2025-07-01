@@ -38,7 +38,6 @@ class _HomePageState extends State<HomePage> {
     ActiveView.timeline,
   );
   late Filters _filters;
-  bool _fullscreenFiltersOpen = false;
   bool _fetchingPosts = false;
   bool _showZoom = false;
   bool _isBigScreen = true;
@@ -477,9 +476,22 @@ class _HomePageState extends State<HomePage> {
                                     )
                                     : IconButton.filled(
                                       onPressed: () {
-                                        setState(() {
-                                          _fullscreenFiltersOpen = true;
-                                        });
+                                        showModalBottomSheet(
+                                          context: context,
+                                          constraints: BoxConstraints(),
+                                          isScrollControlled: true,
+                                          builder: (context) {
+                                            return FullscreenFilters(
+                                              filters: _filters,
+                                              onFilterApplied: (newFilters) {
+                                                _filterUpdate(newFilters);
+                                              },
+                                              close: () {
+                                                Navigator.pop(context);
+                                              },
+                                            );
+                                          },
+                                        );
                                       },
                                       icon: Icon(Icons.search),
                                     ),
@@ -504,20 +516,6 @@ class _HomePageState extends State<HomePage> {
                   ],
                 ),
           ),
-          if (_fullscreenFiltersOpen)
-            Positioned.fill(
-              child: FullscreenFilters(
-                filters: _filters,
-                onFilterApplied: (newFilters) {
-                  _filterUpdate(newFilters);
-                },
-                close: () {
-                  setState(() {
-                    _fullscreenFiltersOpen = false;
-                  });
-                },
-              ),
-            ),
           if (_fetchingPosts)
             Positioned.fill(
               child: Container(
