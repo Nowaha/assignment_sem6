@@ -7,6 +7,7 @@ class TimelineItem {
   final String postUUID;
   final Color color;
   final LatLng location;
+  final List<String> tags;
   late final int startTimestamp;
   late final int endTimestamp;
   late final int rawLayer;
@@ -24,6 +25,7 @@ class TimelineItem {
     required this.postUUID,
     this.color = Colors.purple,
     required this.location,
+    required this.tags,
     required this.startTimestamp,
     int? endTimestamp,
     required this.rawLayer,
@@ -43,6 +45,7 @@ class TimelineItem {
          startTimestamp: post.startTimestamp,
          endTimestamp: post.endTimestamp ?? post.startTimestamp,
          name: post.title,
+         tags: post.tags,
          color: color ?? Colors.purple,
          location: LatLng(post.lat, post.lng),
          rawLayer: layer,
@@ -56,6 +59,7 @@ class TimelineItem {
     String? name,
     Color? color,
     LatLng? location,
+    List<String>? tags,
     int? rawLayer,
     double? layerOffset,
   }) {
@@ -66,6 +70,7 @@ class TimelineItem {
       name: name ?? this.name,
       color: color ?? this.color,
       location: location ?? this.location,
+      tags: tags ?? this.tags,
       rawLayer: rawLayer ?? this.rawLayer,
       layerOffset: layerOffset ?? this.layerOffset,
     );
