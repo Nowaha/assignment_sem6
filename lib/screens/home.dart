@@ -1,5 +1,6 @@
 import 'package:assignment_sem6/data/entity/impl/post.dart';
 import 'package:assignment_sem6/data/service/postservice.dart';
+import 'package:assignment_sem6/widgets/slidevisibility.dart';
 import 'package:assignment_sem6/widgets/view/filter/fullscreenfilters.dart';
 import 'package:assignment_sem6/screens/post/viewpost.dart';
 import 'package:assignment_sem6/screens/view/map.dart';
@@ -503,10 +504,8 @@ class _HomePageState extends State<HomePage> {
                   ],
                 ),
           ),
-          AnimatedSlide(
-            offset: _fullscreenFiltersOpen ? Offset(0, 0) : Offset(1, 0),
-            duration: Duration(milliseconds: 200),
-            curve: Curves.easeOut,
+          SlideVisibility(
+            visible: _fullscreenFiltersOpen,
             child: FullscreenFilters(
               filters: _filters,
               onFilterApplied: (newFilters) {
