@@ -43,12 +43,6 @@ class TimelineState extends State<Timeline> {
       return SizedBox.shrink();
     }
 
-    if (!inFront &&
-        (item.key == widget.controller.selectedItem.value ||
-            item.key == _hovered.value)) {
-      return SizedBox.shrink();
-    }
-
     final startTime = DateTime.fromMillisecondsSinceEpoch(item.startTimestamp);
     final endTime = DateTime.fromMillisecondsSinceEpoch(item.endTimestamp);
     String startTimeString =
@@ -70,9 +64,12 @@ class TimelineState extends State<Timeline> {
     final elementHeight = 80.0;
 
     final element = TimelineElement(
-      key: ValueKey(item.key),
+      key: ValueKey(
+        item.key + (hovered ? "-hovered" : (inFront ? "-infront" : "")),
+      ),
       item: item,
       hovered: hovered,
+      inFront: inFront,
       onHover: () {
         _hovered.value = item.key;
       },

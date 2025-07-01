@@ -15,6 +15,7 @@ class TimelineElement extends StatefulWidget {
   final String endTime;
   final bool hovered;
   final bool selected;
+  final bool inFront;
   final VoidCallback? onHover;
   final VoidCallback? onLeave;
   final VoidCallback? onSelect;
@@ -35,6 +36,7 @@ class TimelineElement extends StatefulWidget {
     required this.endTime,
     this.hovered = false,
     this.selected = false,
+    this.inFront = false,
     this.onHover,
     this.onLeave,
     this.onSelect,
@@ -115,62 +117,74 @@ class _TimelineElementState extends State<TimelineElement> {
     return Positioned(
       left: widget.left,
       top: widget.top,
-      child: MouseRegion(
-        onEnter: (_) => widget.onHover?.call(),
-        onExit: (_) => widget.onLeave?.call(),
-        child: Listener(
-          onPointerDown: (event) {
-            _dragStart = event.localPosition;
-          },
-          onPointerUp: (event) {
-            if (_dragStart == null ||
-                (event.localPosition - _dragStart!).distance < 5) {
-              widget.onSelect?.call();
-            }
-          },
-          child: Tooltip(
-            message:
-                "${widget.item.name}\n(${widget.startTime} - ${widget.endTime})",
-            child: SizedBox(
-              width: widget.width,
-              height: widget.finalHeight,
-              child: Container(
-                decoration: BoxDecoration(
-                  color:
-                      widget.selected
+      child: SizedBox(
+        width: widget.width,
+        height: widget.finalHeight,
+        child: IgnorePointer(
+          ignoring: widget.inFront,
+          child: Container(
+            decoration: BoxDecoration(
+              color:
+                  widget.inFront
+                      ? widget.item.color.withAlpha(100)
+                      : (widget.selected || widget.hovered
                           ? widget.item.color
-                          : (widget.hovered
-                              ? widget.item.color.withAlpha(175)
-                              : widget.item.color.withAlpha(150)),
-                  border: Border(
-                    left: BorderSide(color: widget.item.color, width: 4),
-                    right: BorderSide(color: widget.item.color, width: 4),
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withAlpha(126),
-                      blurRadius: 8.0,
-                      offset: const Offset(2, 2),
-                    ),
-                  ],
-                ),
-                child: Column(
-                  mainAxisAlignment:
-                      widget.isHanging
-                          ? MainAxisAlignment.end
-                          : MainAxisAlignment.start,
-                  children: [
-                    Container(
-                      color: widget.item.color,
-                      alignment: Alignment.centerLeft,
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: textRow,
+                          : widget.item.color.withAlpha(150)),
+              border: Border(
+                left: BorderSide(color: widget.item.color, width: 4),
+                right: BorderSide(color: widget.item.color, width: 4),
+              ),
+              boxShadow:
+                  !widget.inFront
+                      ? [
+                        BoxShadow(
+                          color: Colors.black.withAlpha(126),
+                          blurRadius: 8.0,
+                          offset: const Offset(2, 2),
+                        ),
+                      ]
+                      : [],
+            ),
+            child: Column(
+              mainAxisAlignment:
+                  widget.isHanging
+                      ? MainAxisAlignment.end
+                      : MainAxisAlignment.start,
+              children: [
+                MouseRegion(
+                  onEnter: (_) => widget.onHover?.call(),
+                  onExit: (_) => widget.onLeave?.call(),
+                  child: Listener(
+                    onPointerDown: (event) {
+                      _dragStart = event.localPosition;
+                    },
+                    onPointerUp: (event) {
+                      if (_dragStart == null ||
+                          (event.localPosition - _dragStart!).distance < 5) {
+                        widget.onSelect?.call();
+                      }
+                    },
+                    child: Tooltip(
+                      preferBelow: widget.isHanging,
+                      message:
+                          "${widget.item.name}\n(${widget.startTime} - ${widget.endTime})\nTags: ${widget.item.tags.join(", ")}",
+                      decoration: BoxDecoration(
+                        color: widget.item.color.withAlpha(200),
+                        borderRadius: BorderRadius.circular(8.0),
+                      ),
+                      textStyle: TextStyle(color: widget.textColor),
+                      child: Container(
+                        color: widget.item.color,
+                        alignment: Alignment.centerLeft,
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: textRow,
+                        ),
                       ),
                     ),
-                  ],
+                  ),
                 ),
-              ),
+              ],
             ),
           ),
         ),
