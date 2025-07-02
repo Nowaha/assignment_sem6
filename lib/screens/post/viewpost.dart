@@ -1,3 +1,4 @@
+import 'package:assignment_sem6/config/postmarkdownconfig.dart';
 import 'package:assignment_sem6/data/service/data/postview.dart';
 import 'package:assignment_sem6/data/service/postservice.dart';
 import 'package:assignment_sem6/screens/profile/grouplist.dart';
@@ -72,7 +73,10 @@ class _ViewPostState extends DataHolderState<ViewPost, PostView> {
 
           SizedBox(height: 8),
 
-          MarkdownBlock(data: data?.post.postContents ?? "Loading..."),
+          MarkdownBlock(
+            data: data?.post.postContents ?? "Loading...",
+            config: postMarkdownConfig(context),
+          ),
 
           Divider(height: 8),
 

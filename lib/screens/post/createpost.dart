@@ -1,7 +1,14 @@
+import 'package:assignment_sem6/config/posteditmarkdownconfig.dart';
+import 'package:assignment_sem6/data/dao/impl/memoryresourcedao.dart';
 import 'package:assignment_sem6/data/entity/impl/post.dart';
+import 'package:assignment_sem6/data/entity/impl/resource.dart';
+import 'package:assignment_sem6/data/repo/impl/resourcerepositoryimpl.dart';
+import 'package:assignment_sem6/data/service/impl/resourceserviceimpl.dart';
 import 'package:assignment_sem6/data/service/postservice.dart';
+import 'package:assignment_sem6/data/service/resourceservice.dart';
 import 'package:assignment_sem6/mixin/formmixin.dart';
 import 'package:assignment_sem6/widgets/collapsible/collapsiblewithheader.dart';
+import 'package:assignment_sem6/widgets/filepickerbutton.dart';
 import 'package:assignment_sem6/widgets/input/dateselector.dart';
 import 'package:assignment_sem6/widgets/input/groupinput.dart';
 import 'package:assignment_sem6/widgets/input/text/markdowneditor.dart';
@@ -11,6 +18,7 @@ import 'package:assignment_sem6/util/validation.dart';
 import 'package:assignment_sem6/widgets/loadingiconbutton.dart';
 import 'package:assignment_sem6/widgets/screen.dart';
 import 'package:assignment_sem6/widgets/input/chiplistinput.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:latlong2/latlong.dart';
@@ -42,6 +50,10 @@ class _CreatePostState extends State<CreatePost> with FormMixin {
   final List<String> _tags = [];
   final Map<String, String> _selectedGroups = {};
 
+  final ResourceService localResourceService = ResourceServiceImpl(
+    repository: ResourceRepositoryImpl(dao: MemoryResourceDao()..init()),
+  );
+
   @override
   void initState() {
     super.initState();
@@ -68,8 +80,14 @@ class _CreatePostState extends State<CreatePost> with FormMixin {
 
     final authState = context.read<AuthState>();
     final postService = context.read<PostService>();
+    final resourceService = context.read<ResourceService>();
 
     try {
+      for (final resource in await localResourceService.getAll()) {
+        if (!_contentsController.text.contains(resource.uuid)) continue;
+        await resourceService.addResource(resource);
+      }
+
       final post = await postService.createNewPost(
         Post.create(
           creatorUUID: authState.getCurrentUser!.uuid,
@@ -139,6 +157,40 @@ class _CreatePostState extends State<CreatePost> with FormMixin {
                 onChanged: (_) => clearError(_contentsController),
                 maxLength: Validation.maxPostContentsLength,
               ),
+            ),
+
+            Row(
+              spacing: 8,
+              children: [
+                IconButton.filledTonal(
+                  onPressed: () {},
+                  icon: Icon(Icons.format_bold),
+                  tooltip: "Bold",
+                ),
+                IconButton.filledTonal(
+                  onPressed: () {},
+                  icon: Icon(Icons.format_italic),
+                  tooltip: "Italic",
+                ),
+                SizedBox(),
+                FilePickerButton(
+                  fileType: FileType.image,
+                  type: FilePickerButtonType.iconTonal,
+                  child: Icon(Icons.image),
+                  onFilePicked: (bytes, fileName) async {
+                    final resource = Resource.create(
+                      type: ResourceType.image,
+                      data: bytes,
+                    );
+                    await localResourceService.addResource(resource);
+
+                    setState(() {
+                      _contentsController.text +=
+                          "\n![$fileName](${resource.uuid}|width=300)";
+                    });
+                  },
+                ),
+              ],
             ),
 
             CollapsibleWithHeader(
@@ -275,7 +327,6 @@ class _CreatePostState extends State<CreatePost> with FormMixin {
                 ),
               ],
             ),
-
             ListenableBuilder(
               listenable: _contentsController,
               builder: (context, _) {
@@ -286,6 +337,16 @@ class _CreatePostState extends State<CreatePost> with FormMixin {
                   shrinkWrap: true,
                   selectable: false,
                   data: _contentsController.text,
+                  config: postEditMarkdownConfig(
+                    context: context,
+                    localResourceService: localResourceService,
+                    getContents: () => _contentsController.text,
+                    setContents: (contents) {
+                      setState(() {
+                        _contentsController.text = contents;
+                      });
+                    },
+                  ),
                 );
               },
             ),
