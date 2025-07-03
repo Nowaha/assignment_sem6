@@ -5,6 +5,7 @@ import 'package:assignment_sem6/state/authstate.dart';
 import 'package:assignment_sem6/util/date.dart';
 import 'package:assignment_sem6/util/role.dart';
 import 'package:assignment_sem6/widgets/actualtextbutton.dart';
+import 'package:assignment_sem6/widgets/comment/writecomment.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:markdown_widget/config/markdown_generator.dart';
@@ -14,8 +15,14 @@ import 'package:provider/provider.dart';
 class CommentWidget extends StatefulWidget {
   final CommentView comment;
   final Function()? onDelete;
+  final Function()? onReply;
 
-  const CommentWidget({super.key, required this.comment, this.onDelete});
+  const CommentWidget({
+    super.key,
+    required this.comment,
+    this.onDelete,
+    this.onReply,
+  });
 
   @override
   State<StatefulWidget> createState() => _CommentWidgetState();
@@ -27,6 +34,7 @@ class _CommentWidgetState extends State<CommentWidget> {
   final _contentKey = GlobalKey();
   bool _isExpanded = false;
   bool _hasOverflow = false;
+  bool _replyOpen = false;
 
   late final bool canDelete;
 
@@ -100,62 +108,104 @@ class _CommentWidgetState extends State<CommentWidget> {
       wrappedContent = SizedBox(width: double.infinity, child: content);
     }
 
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: Theme.of(context).colorScheme.outline),
-        color: Theme.of(context).colorScheme.surfaceContainerLow.withAlpha(100),
+    bool isReply = widget.comment.comment.replyToUUID != null;
+    return Padding(
+      padding: EdgeInsets.only(
+        left: isReply ? 32.0 : 0.0,
+        top: isReply ? 16.0 : 32.0,
       ),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        spacing: 8,
         children: [
-          Row(
-            children: [
-              ActualTextButton(
-                onTap: () {
-                  context.push(
-                    "/profile/${widget.comment.creator?.uuid ?? ""}",
-                  );
-                },
-                text:
-                    "${widget.comment.creator?.firstName ?? "Unknown"} ${widget.comment.creator?.lastName ?? ""}",
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14.0),
-              ),
-              Expanded(
-                child: Text(" commented:", style: TextStyle(fontSize: 14.0)),
-              ),
-              if (canDelete)
-                IconButton(
-                  icon: Icon(Icons.delete, color: Colors.red),
-                  tooltip: "Delete comment",
-                  constraints: BoxConstraints(),
-                  padding: EdgeInsets.all(4.0),
-                  iconSize: 18.0,
-                  onPressed: () {
-                    widget.onDelete?.call();
-                  },
-                ),
-            ],
-          ),
-          Divider(height: 0),
-          wrappedContent,
-          if (_hasOverflow || _isExpanded)
-            ActualTextButton(
-              text: _isExpanded ? "Show less" : "Show more",
-              onTap: () {
-                setState(() {
-                  _isExpanded = !_isExpanded;
-                });
-              },
-              style: TextStyle(color: Theme.of(context).colorScheme.primary),
-              hoverColor: Theme.of(context).colorScheme.onSurface,
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(color: Theme.of(context).colorScheme.outline),
+              color: Theme.of(
+                context,
+              ).colorScheme.surfaceContainerLow.withAlpha(100),
             ),
-          Text(
-            "${timestamp.day.toTwoDigits()} ${DateUtil.months[timestamp.month - 1]} ${timestamp.year}, ${timestamp.hour.toTwoDigits()}:${timestamp.minute.toTwoDigits()}:${timestamp.second.toTwoDigits()}",
-            style: TextStyle(color: Colors.grey),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              spacing: 8,
+              children: [
+                Row(
+                  children: [
+                    ActualTextButton(
+                      onTap: () {
+                        context.push(
+                          "/profile/${widget.comment.creator?.uuid ?? ""}",
+                        );
+                      },
+                      text:
+                          "${widget.comment.creator?.firstName ?? "Unknown"} ${widget.comment.creator?.lastName ?? ""}",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14.0,
+                      ),
+                    ),
+                    Expanded(
+                      child: Text(
+                        " at ${timestamp.day.toTwoDigits()} ${DateUtil.months[timestamp.month - 1]} ${timestamp.year}, ${timestamp.hour.toTwoDigits()}:${timestamp.minute.toTwoDigits()}:${timestamp.second.toTwoDigits()}",
+                        style: TextStyle(color: Colors.grey),
+                      ),
+                    ),
+                    if (canDelete)
+                      IconButton(
+                        icon: Icon(Icons.delete, color: Colors.red),
+                        tooltip: "Delete comment",
+                        constraints: BoxConstraints(),
+                        padding: EdgeInsets.all(4.0),
+                        iconSize: 18.0,
+                        onPressed: () {
+                          widget.onDelete?.call();
+                        },
+                      ),
+                  ],
+                ),
+                Divider(height: 0),
+                wrappedContent,
+                if (_hasOverflow || _isExpanded)
+                  ActualTextButton(
+                    text: _isExpanded ? "Show less" : "Show more",
+                    onTap: () {
+                      setState(() {
+                        _isExpanded = !_isExpanded;
+                      });
+                    },
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
+                    hoverColor: Theme.of(context).colorScheme.onSurface,
+                  ),
+                if (!isReply && widget.onReply != null)
+                  ElevatedButton.icon(
+                    onPressed: () {
+                      setState(() {
+                        _replyOpen = !_replyOpen;
+                      });
+                    },
+                    label: Text("Reply"),
+                    icon: Icon(Icons.reply),
+                  ),
+              ],
+            ),
           ),
+          if (_replyOpen)
+            Padding(
+              padding: const EdgeInsets.only(left: 32.0, top: 16.0),
+              child: WriteComment(
+                postUUID: widget.comment.comment.postUUID,
+                replyToUUID: widget.comment.comment.uuid,
+                onCommentAdded: () {
+                  setState(() {
+                    _replyOpen = false;
+                  });
+
+                  widget.onReply?.call();
+                },
+              ),
+            ),
         ],
       ),
     );

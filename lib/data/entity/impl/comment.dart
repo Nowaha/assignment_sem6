@@ -7,6 +7,7 @@ class Comment extends Entity {
   final String postUUID;
   final String creatorUUID;
   final String contents;
+  final String? replyToUUID;
 
   Comment({
     required super.uuid,
@@ -14,17 +15,20 @@ class Comment extends Entity {
     required this.postUUID,
     required this.creatorUUID,
     required this.contents,
+    this.replyToUUID,
   });
 
   static create({
     required String creatorUUID,
     required String postUUID,
     required String contents,
+    String? replyToUUID,
   }) => Comment(
     uuid: UUIDv4.generate(),
     creationTimestamp: Time.nowAsTimestamp(),
     postUUID: postUUID,
     creatorUUID: creatorUUID,
     contents: contents,
+    replyToUUID: replyToUUID,
   );
 }

@@ -11,9 +11,15 @@ import 'package:provider/provider.dart';
 
 class WriteComment extends StatefulWidget {
   final String postUUID;
+  final String? replyToUUID;
   final VoidCallback? onCommentAdded;
 
-  const WriteComment({super.key, required this.postUUID, this.onCommentAdded});
+  const WriteComment({
+    super.key,
+    required this.postUUID,
+    this.replyToUUID,
+    this.onCommentAdded,
+  });
 
   @override
   State<StatefulWidget> createState() => _WriteCommentState();
@@ -50,6 +56,7 @@ class _WriteCommentState extends State<WriteComment> {
         widget.postUUID,
         creatorUUID: authState.getCurrentUser!.uuid,
         contents: comment,
+        replyToUUID: widget.replyToUUID,
       );
     } catch (e) {
       setState(() {

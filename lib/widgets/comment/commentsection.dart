@@ -8,6 +8,7 @@ class CommentSection extends StatefulWidget {
   final List<CommentView> comments;
   final VoidCallback? onCommentAdded;
   final Function(String)? onDelete;
+  final VoidCallback? onReply;
 
   const CommentSection({
     super.key,
@@ -15,6 +16,7 @@ class CommentSection extends StatefulWidget {
     required this.comments,
     this.onCommentAdded,
     this.onDelete,
+    this.onReply,
   });
 
   @override
@@ -26,9 +28,9 @@ class _CommentSectionState extends State<CommentSection> {
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      spacing: 16,
       children: [
         Text("Comments", style: Theme.of(context).textTheme.headlineSmall),
+        const SizedBox(height: 16.0),
         WriteComment(
           postUUID: widget.postUUID,
           onCommentAdded: widget.onCommentAdded,
@@ -39,15 +41,15 @@ class _CommentSectionState extends State<CommentSection> {
               "No comments yet.",
               style: Theme.of(context).textTheme.bodyMedium,
             )
-            : ListView.separated(
+            : ListView.builder(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
-              separatorBuilder: (context, index) => SizedBox(height: 32),
               itemBuilder: (context, index) {
                 final comment = widget.comments[index];
                 return CommentWidget(
                   comment: comment,
                   onDelete: () => widget.onDelete?.call(comment.comment.uuid),
+                  onReply: () => widget.onReply?.call(),
                 );
               },
               itemCount: widget.comments.length,

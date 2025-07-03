@@ -62,11 +62,13 @@ abstract class CommentService
     String postUUID, {
     required String creatorUUID,
     required String contents,
+    String? replyToUUID,
   }) async {
     final comment = Comment.create(
       postUUID: postUUID,
       contents: contents,
       creatorUUID: creatorUUID,
+      replyToUUID: replyToUUID,
     );
     return repository.add(comment);
   }

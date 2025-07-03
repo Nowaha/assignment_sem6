@@ -22,12 +22,52 @@ class MemoryCommentDao extends MemoryDao<Comment> implements CommentDao {
     }
   }
 
-  Future<void> _sortComments(Sort sort, List<Comment> posts) async =>
-      posts.sort(
-        (a, b) =>
-            (sort == Sort.ascending ? 1 : -1) *
-            a.creationTimestamp.compareTo(b.creationTimestamp),
-      );
+  Future<List<Comment>> _sortAndGroupComments(
+    Sort sort,
+    List<Comment> comments,
+  ) async {
+    comments.sort(
+      (a, b) =>
+          (sort == Sort.ascending ? 1 : -1) *
+          a.creationTimestamp.compareTo(b.creationTimestamp),
+    );
+
+    final Map<String, CommentNode> commentMap = {};
+    for (final c in comments) {
+      commentMap[c.uuid] = CommentNode(c);
+    }
+
+    CommentNode? root = CommentNode(null);
+
+    for (final comment in comments) {
+      final node = commentMap[comment.uuid]!;
+
+      if (comment.replyToUUID == null) {
+        root.children.add(node);
+      } else {
+        final parentNode = commentMap[comment.replyToUUID];
+        if (parentNode != null) {
+          parentNode.children.add(node);
+        } else {
+          root.children.add(node);
+        }
+      }
+    }
+
+    List<Comment> result = [];
+    void traverse(CommentNode node) {
+      if (node.comment != null) {
+        result.add(node.comment!);
+      }
+      for (final child in node.children) {
+        traverse(child);
+      }
+    }
+
+    traverse(root);
+
+    return result;
+  }
 
   @override
   Future<List<Comment>> findOfCreator(
@@ -42,9 +82,7 @@ class MemoryCommentDao extends MemoryDao<Comment> implements CommentDao {
             .toList();
     if (comments.isEmpty) return List.empty();
 
-    await _sortComments(sort, comments);
-
-    return comments.takePage(page, limit);
+    return (await _sortAndGroupComments(sort, comments)).takePage(page, limit);
   });
 
   @override
@@ -58,8 +96,13 @@ class MemoryCommentDao extends MemoryDao<Comment> implements CommentDao {
         memory.values.where((comment) => comment.postUUID == postUUID).toList();
     if (comments.isEmpty) return List.empty();
 
-    await _sortComments(sort, comments);
-
-    return comments.takePage(page, limit);
+    return (await _sortAndGroupComments(sort, comments)).takePage(page, limit);
   });
+}
+
+class CommentNode {
+  final Comment? comment;
+  final List<CommentNode> children = [];
+
+  CommentNode(this.comment);
 }

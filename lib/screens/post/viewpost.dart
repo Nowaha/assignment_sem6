@@ -197,6 +197,7 @@ class _ViewPostState extends DataHolderState<ViewPost, PostView> {
               }
               refreshData();
             },
+            onReply: () => refreshData(),
           ),
         ],
       ),
