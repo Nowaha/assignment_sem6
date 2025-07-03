@@ -35,6 +35,8 @@ class _CommentSectionState extends State<CommentSection> {
           postUUID: widget.postUUID,
           onCommentAdded: widget.onCommentAdded,
         ),
+        const SizedBox(height: 16.0),
+        Divider(),
         Text("Post comments", style: Theme.of(context).textTheme.titleMedium),
         widget.comments.isEmpty
             ? Text(

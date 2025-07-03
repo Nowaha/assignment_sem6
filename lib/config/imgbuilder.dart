@@ -7,12 +7,20 @@ import 'package:assignment_sem6/widgets/resizeable.dart';
 import 'package:flutter/material.dart';
 import 'package:markdown_widget/widget/inlines/img.dart';
 
-ImgBuilder postImgBuilder(BuildContext context) => _imgBuilder(
+ImgBuilder postImgBuilder(
+  BuildContext context, {
+  double? minWidth,
+  double? startingWidth,
+  double? maxWidth,
+}) => _imgBuilder(
   context: context,
   resizable: false,
   localResourceService: null,
   getContents: null,
   setContents: null,
+  minWidth: minWidth ?? 100,
+  startingWidth: startingWidth ?? 300,
+  maxWidth: maxWidth ?? 600,
 );
 
 ImgBuilder editPostImgBuilder({
@@ -20,12 +28,18 @@ ImgBuilder editPostImgBuilder({
   required ResourceService localResourceService,
   required String Function() getContents,
   required Function(String contents) setContents,
+  double? minWidth,
+  double? startingWidth,
+  double? maxWidth,
 }) => _imgBuilder(
   context: context,
   resizable: true,
   localResourceService: localResourceService,
   getContents: getContents,
   setContents: setContents,
+  minWidth: minWidth ?? 100,
+  startingWidth: startingWidth ?? 300,
+  maxWidth: maxWidth ?? 600,
 );
 
 ImgBuilder _imgBuilder({
@@ -34,6 +48,9 @@ ImgBuilder _imgBuilder({
   ResourceService? localResourceService,
   required String Function()? getContents,
   required Function(String contents)? setContents,
+  double minWidth = 100,
+  double startingWidth = 300,
+  double maxWidth = 600,
 }) => (String urlRaw, Map<String, String> attributes) {
   final urlNormal = urlRaw.replaceAll("%7C", "|");
   final split = urlNormal.split("|").map((e) => e.trim());
@@ -62,7 +79,7 @@ ImgBuilder _imgBuilder({
 
   final wrapped = InkWell(
     child: ConstrainedBox(
-      constraints: BoxConstraints(maxWidth: width?.toDouble() ?? 300.0),
+      constraints: BoxConstraints(maxWidth: width?.toDouble() ?? startingWidth),
       child: Expanded(child: image),
     ),
     onTap:
@@ -78,9 +95,9 @@ ImgBuilder _imgBuilder({
   }
 
   return Resizeable(
-    startingWidth: width?.toDouble() ?? 300.0,
-    minWidth: 100,
-    maxWidth: 600,
+    startingWidth: width?.toDouble() ?? startingWidth,
+    minWidth: minWidth,
+    maxWidth: maxWidth,
     onResize: (newSize) {
       final adjustedUrl = _adjustWidth(urlNormal, newSize.toInt(), width);
       setContents!(getContents!().replaceFirst(urlNormal, adjustedUrl));

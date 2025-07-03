@@ -1,11 +1,18 @@
+import 'package:assignment_sem6/data/dao/impl/memoryresourcedao.dart';
 import 'package:assignment_sem6/data/entity/impl/comment.dart';
+import 'package:assignment_sem6/data/entity/impl/resource.dart';
+import 'package:assignment_sem6/data/repo/impl/resourcerepositoryimpl.dart';
 import 'package:assignment_sem6/data/service/commentservice.dart';
 import 'package:assignment_sem6/data/service/data/commentview.dart';
+import 'package:assignment_sem6/data/service/impl/resourceserviceimpl.dart';
+import 'package:assignment_sem6/data/service/resourceservice.dart';
 import 'package:assignment_sem6/state/authstate.dart';
+import 'package:assignment_sem6/util/fileutil.dart';
 import 'package:assignment_sem6/util/validation.dart';
 import 'package:assignment_sem6/widgets/comment/commentwidget.dart';
 import 'package:assignment_sem6/widgets/input/text/markdowneditor.dart';
 import 'package:assignment_sem6/widgets/loadingiconbutton.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -26,6 +33,9 @@ class WriteComment extends StatefulWidget {
 }
 
 class _WriteCommentState extends State<WriteComment> {
+  final ResourceService _localResourceService = ResourceServiceImpl(
+    repository: ResourceRepositoryImpl(dao: MemoryResourceDao()..init()),
+  );
   final TextEditingController _controller = TextEditingController();
   String? errorText;
   bool _isPreviewing = false;
@@ -50,8 +60,16 @@ class _WriteCommentState extends State<WriteComment> {
 
     final authState = context.read<AuthState>();
     final commentService = context.read<CommentService>();
+    final resourceService = context.read<ResourceService>();
 
     try {
+      for (final resource in await _localResourceService.getAll()) {
+        if (!_controller.text.contains(resource.uuid)) {
+          continue;
+        }
+        await resourceService.addResource(resource);
+      }
+      
       await commentService.addComment(
         widget.postUUID,
         creatorUUID: authState.getCurrentUser!.uuid,
@@ -81,7 +99,7 @@ class _WriteCommentState extends State<WriteComment> {
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      spacing: 16,
+      spacing: 4,
       children: [
         ConstrainedBox(
           constraints: BoxConstraints(maxHeight: 200),
@@ -98,8 +116,34 @@ class _WriteCommentState extends State<WriteComment> {
         ),
         Row(
           mainAxisAlignment: MainAxisAlignment.end,
-          spacing: 16,
+          spacing: 8,
           children: [
+            IconButton.filledTonal(
+              icon: Icon(Icons.add_photo_alternate_outlined),
+              iconSize: 20,
+              constraints: BoxConstraints(),
+              onPressed: () async {
+                final file = await FileUtil.pickFile(FileType.image);
+                if (file == null) return;
+                if (file.bytes == null || file.bytes!.isEmpty) return;
+
+                final fileName = file.name;
+                final fileExtension = fileName.split(".").last.toLowerCase();
+                final resource = Resource.create(
+                  type: ResourceType.image,
+                  name: fileName.replaceAll(".$fileExtension", ""),
+                  originalExtension: fileExtension,
+                  data: file.bytes!,
+                );
+                await _localResourceService.addResource(resource);
+
+                setState(() {
+                  _controller.text +=
+                      "\n![$fileName](${resource.uuid}|width=300)";
+                });
+              },
+            ),
+            Spacer(),
             OutlinedButton(
               onPressed: () {
                 setState(() {
@@ -120,7 +164,7 @@ class _WriteCommentState extends State<WriteComment> {
           ListenableBuilder(
             listenable: _controller,
             builder:
-                (context, _) => CommentWidget(
+                (context, _) => CommentWidget.preview(
                   comment: CommentView(
                     comment: Comment.create(
                       creatorUUID: authState.getCurrentUser!.uuid,
@@ -129,6 +173,11 @@ class _WriteCommentState extends State<WriteComment> {
                     ),
                     creator: authState.getCurrentUser,
                   ),
+                  resourceService: _localResourceService,
+                  getContents: () => _controller.text,
+                  setContents: (contents) {
+                    _controller.text = contents;
+                  },
                 ),
           ),
       ],

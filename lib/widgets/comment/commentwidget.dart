@@ -1,5 +1,6 @@
 import 'package:assignment_sem6/config/commentmarkdownconfig.dart';
 import 'package:assignment_sem6/data/service/data/commentview.dart';
+import 'package:assignment_sem6/data/service/resourceservice.dart';
 import 'package:assignment_sem6/extension/intextension.dart';
 import 'package:assignment_sem6/state/authstate.dart';
 import 'package:assignment_sem6/util/date.dart';
@@ -17,12 +18,43 @@ class CommentWidget extends StatefulWidget {
   final Function()? onDelete;
   final Function()? onReply;
 
-  const CommentWidget({
+  final bool isPreview;
+  final ResourceService? resourceService;
+  final String Function()? getContents;
+  final Function(String contents)? setContents;
+
+  const CommentWidget._({
     super.key,
     required this.comment,
     this.onDelete,
     this.onReply,
+    this.isPreview = false,
+    this.resourceService,
+    this.getContents,
+    this.setContents,
   });
+
+  const CommentWidget({
+    Key? key,
+    required CommentView comment,
+    Function()? onDelete,
+    Function()? onReply,
+  }) : this._(key: key, comment: comment, onDelete: onDelete, onReply: onReply);
+
+  const CommentWidget.preview({
+    Key? key,
+    required CommentView comment,
+    required ResourceService resourceService,
+    required String Function() getContents,
+    required Function(String contents) setContents,
+  }) : this._(
+         key: key,
+         comment: comment,
+         isPreview: true,
+         resourceService: resourceService,
+         getContents: getContents,
+         setContents: setContents,
+       );
 
   @override
   State<StatefulWidget> createState() => _CommentWidgetState();
@@ -84,7 +116,15 @@ class _CommentWidgetState extends State<CommentWidget> {
       generator: MarkdownGenerator(
         linesMargin: const EdgeInsets.symmetric(vertical: 2),
       ),
-      config: commentMarkdownConfig,
+      config:
+          widget.isPreview
+              ? commentEditMarkdownConfig(
+                context: context,
+                localResourceService: widget.resourceService!,
+                getContents: widget.getContents!,
+                setContents: widget.setContents!,
+              )
+              : commentMarkdownConfig(context: context),
     );
 
     final Widget? wrappedContent;
