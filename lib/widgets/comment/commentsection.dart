@@ -7,12 +7,14 @@ class CommentSection extends StatefulWidget {
   final String postUUID;
   final List<CommentView> comments;
   final VoidCallback? onCommentAdded;
+  final Function(String)? onDelete;
 
   const CommentSection({
     super.key,
     required this.postUUID,
     required this.comments,
     this.onCommentAdded,
+    this.onDelete,
   });
 
   @override
@@ -43,7 +45,10 @@ class _CommentSectionState extends State<CommentSection> {
               separatorBuilder: (context, index) => SizedBox(height: 32),
               itemBuilder: (context, index) {
                 final comment = widget.comments[index];
-                return CommentWidget(comment: comment);
+                return CommentWidget(
+                  comment: comment,
+                  onDelete: () => widget.onDelete?.call(comment.comment.uuid),
+                );
               },
               itemCount: widget.comments.length,
             ),

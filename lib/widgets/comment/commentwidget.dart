@@ -1,17 +1,20 @@
 import 'package:assignment_sem6/config/commentmarkdownconfig.dart';
 import 'package:assignment_sem6/data/service/data/commentview.dart';
 import 'package:assignment_sem6/extension/intextension.dart';
+import 'package:assignment_sem6/state/authstate.dart';
 import 'package:assignment_sem6/util/date.dart';
 import 'package:assignment_sem6/widgets/actualtextbutton.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:markdown_widget/config/markdown_generator.dart';
 import 'package:markdown_widget/widget/markdown_block.dart';
+import 'package:provider/provider.dart';
 
 class CommentWidget extends StatefulWidget {
   final CommentView comment;
+  final Function()? onDelete;
 
-  const CommentWidget({super.key, required this.comment});
+  const CommentWidget({super.key, required this.comment, this.onDelete});
 
   @override
   State<StatefulWidget> createState() => _CommentWidgetState();
@@ -24,9 +27,22 @@ class _CommentWidgetState extends State<CommentWidget> {
   bool _isExpanded = false;
   bool _hasOverflow = false;
 
+  late final bool canDelete;
+
   @override
   void initState() {
     super.initState();
+
+    if (widget.onDelete == null) {
+      canDelete = false;
+    } else if (widget.comment.creator != null) {
+      final authService = context.read<AuthState>();
+      canDelete =
+          authService.getCurrentUser?.uuid ==
+          widget.comment.comment.creatorUUID;
+    } else {
+      canDelete = false;
+    }
   }
 
   @override
@@ -101,7 +117,20 @@ class _CommentWidgetState extends State<CommentWidget> {
                     "${widget.comment.creator?.firstName ?? "Unknown"} ${widget.comment.creator?.lastName ?? ""}",
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14.0),
               ),
-              Text(" commented:", style: TextStyle(fontSize: 14.0)),
+              Expanded(
+                child: Text(" commented:", style: TextStyle(fontSize: 14.0)),
+              ),
+              if (canDelete)
+                IconButton(
+                  icon: Icon(Icons.delete, color: Colors.red),
+                  tooltip: "Delete comment",
+                  constraints: BoxConstraints(),
+                  padding: EdgeInsets.all(4.0),
+                  iconSize: 18.0,
+                  onPressed: () {
+                    widget.onDelete?.call();
+                  },
+                ),
             ],
           ),
           Divider(height: 0),

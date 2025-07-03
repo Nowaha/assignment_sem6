@@ -70,4 +70,7 @@ abstract class CommentService
     );
     return repository.add(comment);
   }
+
+  Future<bool> deleteComment(String commentUUID) =>
+      repository.remove(commentUUID);
 }

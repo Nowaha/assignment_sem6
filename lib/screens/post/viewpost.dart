@@ -1,9 +1,11 @@
 import 'package:assignment_sem6/config/postmarkdownconfig.dart';
+import 'package:assignment_sem6/data/service/commentservice.dart';
 import 'package:assignment_sem6/data/service/data/postview.dart';
 import 'package:assignment_sem6/data/service/postservice.dart';
 import 'package:assignment_sem6/screens/post/attachments/attachmentlist.dart';
 import 'package:assignment_sem6/screens/profile/grouplist.dart';
 import 'package:assignment_sem6/util/date.dart';
+import 'package:assignment_sem6/util/toast.dart';
 import 'package:assignment_sem6/widgets/actualtextbutton.dart';
 import 'package:assignment_sem6/widgets/comment/commentsection.dart';
 import 'package:assignment_sem6/widgets/dataholderstate.dart';
@@ -185,6 +187,16 @@ class _ViewPostState extends DataHolderState<ViewPost, PostView> {
             postUUID: widget.postUUID ?? "",
             comments: data?.comments?.values.toList() ?? [],
             onCommentAdded: () => refreshData(),
+            onDelete: (commentUUID) {
+              try {
+                final commentService = context.read<CommentService>();
+                commentService.deleteComment(commentUUID);
+                Toast.showToast(context, "Comment deleted successfully.");
+              } catch (e) {
+                Toast.showToast(context, "Failed to delete comment.");
+              }
+              refreshData();
+            },
           ),
         ],
       ),
