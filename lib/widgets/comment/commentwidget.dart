@@ -3,6 +3,7 @@ import 'package:assignment_sem6/data/service/data/commentview.dart';
 import 'package:assignment_sem6/extension/intextension.dart';
 import 'package:assignment_sem6/state/authstate.dart';
 import 'package:assignment_sem6/util/date.dart';
+import 'package:assignment_sem6/util/role.dart';
 import 'package:assignment_sem6/widgets/actualtextbutton.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -37,9 +38,14 @@ class _CommentWidgetState extends State<CommentWidget> {
       canDelete = false;
     } else if (widget.comment.creator != null) {
       final authService = context.read<AuthState>();
+      final currentUser = authService.getCurrentUser;
+      final authorUUID = widget.comment.comment.creatorUUID;
+
       canDelete =
-          authService.getCurrentUser?.uuid ==
-          widget.comment.comment.creatorUUID;
+          currentUser != null &&
+          (currentUser.uuid == authorUUID ||
+              currentUser.role == Role.administrator ||
+              currentUser.role == Role.moderator);
     } else {
       canDelete = false;
     }
