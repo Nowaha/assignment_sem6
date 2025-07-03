@@ -184,7 +184,8 @@ class _CreatePostState extends State<CreatePost> with FormMixin {
                   type: FilePickerButtonType.iconTonal,
                   child: Icon(Icons.image),
                   onFilePicked: (bytes, fileName) async {
-                    final fileExtension = fileName.split(".").last;
+                    final fileExtension =
+                        fileName.split(".").last.toLowerCase();
                     final resource = Resource.create(
                       type: ResourceType.image,
                       name: fileName.replaceAll(".$fileExtension", ""),

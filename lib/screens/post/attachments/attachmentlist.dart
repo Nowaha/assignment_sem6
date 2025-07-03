@@ -47,7 +47,7 @@ class AttachmentList extends StatefulWidget {
          editable: true,
          resourceService: resourceService,
          onAttachmentAdded: onAttachmentAdded,
-        onDelete: onDelete,
+         onDelete: onDelete,
        );
 
   @override
@@ -69,7 +69,7 @@ class _AttachmentListState
   void _onFilePicked(PlatformFile file) async {
     final resourceService =
         widget.resourceService ?? context.read<ResourceService>();
-    final fileExtension = file.name.split(".").last;
+    final fileExtension = file.name.split(".").last.toLowerCase();
 
     if (!ResourceType.allExtensions.contains(fileExtension)) {
       Toast.showToast(context, "Unsupported file type: $fileExtension");
