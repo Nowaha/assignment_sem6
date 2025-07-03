@@ -2,6 +2,8 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:file_picker/file_picker.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:share_plus/share_plus.dart';
 
 class FileUtil {
   static Future<PlatformFile?> pickFile(
@@ -23,7 +25,25 @@ class FileUtil {
     return null;
   }
 
+  static Future<void> shareFile(Uint8List data, String suggestedName) async {
+    try {
+      final tempDir = await getTemporaryDirectory();
+      final file = File('${tempDir.path}/$suggestedName');
+
+      await file.writeAsBytes(data);
+
+      await SharePlus.instance.share(ShareParams(files: [XFile(file.path)]));
+    } catch (e) {
+      print("Error sharing file: $e");
+    }
+  }
+
   static Future<void> saveFile(Uint8List data, String suggestedName) async {
+    if (Platform.isAndroid || Platform.isIOS) {
+      shareFile(data, suggestedName);
+      return;
+    }
+
     final output = await FilePicker.platform.saveFile(
       dialogTitle: "Select a location to save the file",
       fileName: suggestedName,
