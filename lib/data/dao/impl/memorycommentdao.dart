@@ -98,6 +98,23 @@ class MemoryCommentDao extends MemoryDao<Comment> implements CommentDao {
 
     return (await _sortAndGroupComments(sort, comments)).takePage(page, limit);
   });
+
+  @override
+  Future<bool> delete(String uuid) async {
+    if (!await super.delete(uuid)) {
+      return false;
+    }
+
+    // Remove all replies to this comment
+    final all = await findAll();
+    for (final comment in all) {
+      if (comment.replyToUUID == uuid) {
+        await delete(comment.uuid);
+      }
+    }
+
+    return true;
+  }
 }
 
 class CommentNode {
