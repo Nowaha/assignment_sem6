@@ -152,7 +152,7 @@ class _CommentWidgetState extends State<CommentWidget> {
                     ),
                     if (canDelete)
                       IconButton(
-                        icon: Icon(Icons.delete, color: Colors.red),
+                        icon: Icon(Icons.delete),
                         tooltip: "Delete comment",
                         constraints: BoxConstraints(),
                         padding: EdgeInsets.all(4.0),
