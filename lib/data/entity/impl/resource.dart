@@ -37,8 +37,32 @@ class Resource extends Entity {
 
   @override
   String toString() {
-    return 'Resource{id: $uuid, creationTimestamp: $creationTimestamp, type: $type, name: $name, originalExtension: $originalExtension, data length: ${data.length}}';
+    return "Resource{id: $uuid, creationTimestamp: $creationTimestamp, type: $type, name: $name, originalExtension: $originalExtension, data length: ${data.length}}";
   }
 }
 
-enum ResourceType { image, video, document }
+enum ResourceType {
+  image(["jpg", "jpeg", "png", "gif"]),
+  video(["mp4", "avi", "mov"]),
+  document(["pdf", "doc", "docx", "ppt", "pptx", "txt"]);
+
+  final List<String> extensions;
+  const ResourceType(this.extensions);
+
+  bool isValidExtension(String ext) {
+    return extensions.contains(ext.toLowerCase());
+  }
+
+  static ResourceType fromExtension(String ext) {
+    for (final type in ResourceType.values) {
+      if (type.isValidExtension(ext)) {
+        return type;
+      }
+    }
+    throw ArgumentError("No valid ResourceType found for extension: $ext");
+  }
+
+  static List<String> get allExtensions {
+    return ResourceType.values.expand((type) => type.extensions).toList();
+  }
+}

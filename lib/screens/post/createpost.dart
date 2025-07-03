@@ -7,6 +7,7 @@ import 'package:assignment_sem6/data/service/impl/resourceserviceimpl.dart';
 import 'package:assignment_sem6/data/service/postservice.dart';
 import 'package:assignment_sem6/data/service/resourceservice.dart';
 import 'package:assignment_sem6/mixin/formmixin.dart';
+import 'package:assignment_sem6/screens/post/attachments/attachmentlist.dart';
 import 'package:assignment_sem6/widgets/collapsible/collapsiblewithheader.dart';
 import 'package:assignment_sem6/widgets/filepickerbutton.dart';
 import 'package:assignment_sem6/widgets/input/dateselector.dart';
@@ -49,6 +50,7 @@ class _CreatePostState extends State<CreatePost> with FormMixin {
   );
   final List<String> _tags = [];
   final Map<String, String> _selectedGroups = {};
+  final List<String> _attachments = [];
 
   final ResourceService localResourceService = ResourceServiceImpl(
     repository: ResourceRepositoryImpl(dao: MemoryResourceDao()..init()),
@@ -84,7 +86,10 @@ class _CreatePostState extends State<CreatePost> with FormMixin {
 
     try {
       for (final resource in await localResourceService.getAll()) {
-        if (!_contentsController.text.contains(resource.uuid)) continue;
+        if (!_contentsController.text.contains(resource.uuid) &&
+            !_attachments.contains(resource.uuid)) {
+          continue;
+        }
         await resourceService.addResource(resource);
       }
 
@@ -101,6 +106,7 @@ class _CreatePostState extends State<CreatePost> with FormMixin {
           ),
           groups: _selectedGroups.values.toList(),
           tags: _tags,
+          attachments: _attachments,
         ),
       );
 
@@ -194,6 +200,25 @@ class _CreatePostState extends State<CreatePost> with FormMixin {
                   },
                 ),
               ],
+            ),
+
+            Text(
+              "Attachments (${_attachments.length}):",
+              style: Theme.of(context).textTheme.bodyLarge,
+            ),
+            AttachmentList.editable(
+              attachments: _attachments,
+              resourceService: localResourceService,
+              onAttachmentAdded: (resource) {
+                setState(() {
+                  _attachments.add(resource.uuid);
+                });
+              },
+              onDelete: (uuid) {
+                setState(() {
+                  _attachments.remove(uuid);
+                });
+              },
             ),
 
             CollapsibleWithHeader(
@@ -294,7 +319,9 @@ class _CreatePostState extends State<CreatePost> with FormMixin {
                         });
                       },
                     ),
+
                     SizedBox(height: 12),
+
                     Text(
                       "Groups (${_selectedGroups.length}/${Validation.maxPostGroups}):",
                       style: Theme.of(context).textTheme.bodyLarge,

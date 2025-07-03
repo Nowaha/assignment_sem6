@@ -14,6 +14,7 @@ class Post extends Entity {
   final double lng;
   final List<String> tags;
   final List<String> groups;
+  final List<String> attachments;
 
   get isSinglePoint => endTimestamp == startTimestamp;
   get isEndless => endTimestamp == null;
@@ -30,17 +31,19 @@ class Post extends Entity {
     required this.lng,
     this.tags = const [],
     this.groups = const [],
+    this.attachments = const [],
   });
 
   static create({
     required String creatorUUID,
     required String title,
     required String postContents,
-    List<String> tags = const [],
     required int startTimestamp,
     int? endTimestamp,
-    List<String> groups = const [],
     required LatLng latLng,
+    List<String> tags = const [],
+    List<String> groups = const [],
+    List<String> attachments = const [],
   }) => Post(
     uuid: UUIDv4.generate(),
     creationTimestamp: Time.nowAsTimestamp(),
@@ -49,9 +52,10 @@ class Post extends Entity {
     endTimestamp: endTimestamp,
     title: title,
     postContents: postContents,
-    tags: tags,
-    groups: groups,
     lat: latLng.latitude,
     lng: latLng.longitude,
+    tags: tags,
+    groups: groups,
+    attachments: attachments,
   );
 }

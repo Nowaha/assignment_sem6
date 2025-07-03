@@ -1,6 +1,7 @@
 import 'package:assignment_sem6/config/postmarkdownconfig.dart';
 import 'package:assignment_sem6/data/service/data/postview.dart';
 import 'package:assignment_sem6/data/service/postservice.dart';
+import 'package:assignment_sem6/screens/post/attachments/attachmentlist.dart';
 import 'package:assignment_sem6/screens/profile/grouplist.dart';
 import 'package:assignment_sem6/util/date.dart';
 import 'package:assignment_sem6/widgets/actualtextbutton.dart';
@@ -73,10 +74,34 @@ class _ViewPostState extends DataHolderState<ViewPost, PostView> {
 
           SizedBox(height: 8),
 
+          Divider(height: 8),
+
           MarkdownBlock(
             data: data?.post.postContents ?? "Loading...",
             config: postMarkdownConfig(context),
           ),
+
+          SizedBox(height: 8),
+
+          Divider(height: 8),
+
+          SizedBox(height: 8),
+
+          if (data?.post.attachments != null &&
+              data!.post.attachments.isNotEmpty)
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              spacing: 16,
+              children: [
+                Text(
+                  "Attachments",
+                  style: Theme.of(context).textTheme.headlineSmall,
+                ),
+                AttachmentList(attachments: data!.post.attachments),
+              ],
+            ),
+
+          SizedBox(height: 16),
 
           Divider(height: 8),
 
@@ -153,6 +178,8 @@ class _ViewPostState extends DataHolderState<ViewPost, PostView> {
           SizedBox(height: 8),
 
           Divider(height: 8),
+
+          SizedBox(height: 8),
 
           CommentSection(
             postUUID: widget.postUUID ?? "",
