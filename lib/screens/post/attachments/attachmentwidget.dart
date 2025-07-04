@@ -99,17 +99,20 @@ class _AttachmentWidgetState extends State<AttachmentWidget> {
                     Positioned(
                       top: 4,
                       right: 4,
-                      child: IconButton.filledTonal(
-                        iconSize: 16,
-                        padding: EdgeInsets.all(4),
-                        constraints: BoxConstraints(),
-                        icon: Icon(
-                          Icons.delete,
-                          color: Theme.of(context).colorScheme.error,
+                      child: SizedBox(
+                        width: 28,
+                        height: 28,
+                        child: IconButton.filledTonal(
+                          iconSize: 16,
+                          padding: EdgeInsets.all(4),
+                          icon: Icon(
+                            Icons.delete,
+                            color: Theme.of(context).colorScheme.error,
+                          ),
+                          tooltip: "Delete Attachment",
+                          onPressed:
+                              () => widget.onDelete!(widget.attachmentUUID),
                         ),
-                        tooltip: "Delete Attachment",
-                        onPressed:
-                            () => widget.onDelete!(widget.attachmentUUID),
                       ),
                     ),
 
