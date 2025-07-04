@@ -150,7 +150,7 @@ class _LoginPageState extends State<LoginPage> with FormMixin {
                 LoadingIconButton(
                   label: "Log in",
                   loading: loading,
-                  icon: Icon(Icons.login),
+                  icon: Icons.login,
                   onPressed: () => _attemptToAuthenticate(context),
                 ),
               ],
