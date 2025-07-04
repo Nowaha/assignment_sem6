@@ -35,174 +35,180 @@ class ViewPost extends StatefulWidget {
 
 class _ViewPostState extends DataHolderState<ViewPost, PostView> {
   @override
-  Widget content(BuildContext context) => Center(
-    child: ConstrainedBox(
-      constraints: BoxConstraints(maxWidth: 960),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        spacing: 4,
-        children: [
-          Text(
-            data?.post.title ?? "Loading...",
-            style: Theme.of(context).textTheme.headlineMedium,
-          ),
-          Wrap(
-            children: [
-              Text(
-                "Written by ",
-                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                  color: Theme.of(context).colorScheme.onSurface.withAlpha(200),
-                ),
-              ),
-              ActualTextButton(
-                text:
-                    "${data?.creator?.firstName ?? "Unknown"} ${data?.creator?.lastName ?? ""} ",
-                onTap: () {
-                  if (data?.creator?.uuid != null) {
-                    context.push("/profile/${data!.creator!.uuid}");
-                  }
-                },
-                style: Theme.of(context).textTheme.bodyLarge,
-              ),
-              Text(
-                "on ${data?.post.creationTimestamp != null ? DateUtil.formatDateTime(data!.post.creationTimestamp, false) : "Unknown"}",
-                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                  color: Theme.of(context).colorScheme.onSurface.withAlpha(200),
-                ),
-              ),
-            ],
-          ),
-
-          SizedBox(height: 8),
-
-          Divider(height: 8),
-
-          MarkdownBlock(
-            data: data?.post.postContents ?? "Loading...",
-            config: postMarkdownConfig(context),
-          ),
-
-          SizedBox(height: 8),
-
-          Divider(height: 8),
-
-          SizedBox(height: 8),
-
-          if (data?.post.attachments != null &&
-              data!.post.attachments.isNotEmpty)
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              spacing: 16,
+  Widget content(BuildContext context) {
+    bool hasAttachments =
+        data?.post.attachments != null && data!.post.attachments.isNotEmpty;
+    return Center(
+      child: ConstrainedBox(
+        constraints: BoxConstraints(maxWidth: 960),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          spacing: 4,
+          children: [
+            Text(
+              data?.post.title ?? "Loading...",
+              style: Theme.of(context).textTheme.headlineMedium,
+            ),
+            Wrap(
               children: [
                 Text(
-                  "Attachments",
-                  style: Theme.of(context).textTheme.headlineSmall,
+                  "Written by ",
+                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.onSurface.withAlpha(200),
+                  ),
                 ),
-                AttachmentList(attachments: data!.post.attachments),
-              ],
-            ),
-
-          SizedBox(height: 16),
-
-          Divider(height: 8),
-
-          SizedBox(height: 4),
-
-          SizedBox(
-            width: double.infinity,
-            child: Wrap(
-              spacing: 32,
-              runSpacing: 8,
-              alignment: WrapAlignment.center,
-              runAlignment: WrapAlignment.center,
-              children: [
-                Column(
-                  children: [
-                    Text(
-                      "Timeframe",
-                      style: Theme.of(context).textTheme.titleMedium,
-                    ),
-                    Text(
-                      "Start: ${data?.post.startTimestamp != null ? DateUtil.formatDateTime(data!.post.startTimestamp, true) : "Unknown"}",
-                    ),
-                    Text(
-                      "End: ${data?.post.endTimestamp != null ? DateUtil.formatDateTime(data!.post.endTimestamp!, true) : "Unknown"}",
-                    ),
-                    SizedBox(height: 4),
-                    Text(
-                      "Total duration: ${data?.post.startTimestamp != null ? (data!.post.endTimestamp == null ? "Endless" : DateUtil.formatInterval(data!.post.endTimestamp! - data!.post.startTimestamp)) : "Unknown"}",
-                    ),
-                  ],
+                ActualTextButton(
+                  text:
+                      "${data?.creator?.firstName ?? "Unknown"} ${data?.creator?.lastName ?? ""} ",
+                  onTap: () {
+                    if (data?.creator?.uuid != null) {
+                      context.push("/profile/${data!.creator!.uuid}");
+                    }
+                  },
+                  style: Theme.of(context).textTheme.bodyLarge,
                 ),
-
-                SizedBox(height: 8),
-
-                Column(
-                  spacing: 4,
-                  children: [
-                    Text(
-                      "Groups",
-                      style: Theme.of(context).textTheme.titleMedium,
-                    ),
-                    if (widget.postUUID != null)
-                      GroupList.ofPost(postUUID: widget.postUUID!),
-                  ],
-                ),
-
-                SizedBox(height: 8),
-
-                Column(
-                  spacing: 4,
-                  children: [
-                    Text(
-                      "Tags",
-                      style: Theme.of(context).textTheme.titleMedium,
-                    ),
-                    Wrap(
-                      spacing: 4,
-                      runSpacing: 4,
-                      children:
-                          data?.post.tags.map((tag) {
-                            return Chip(
-                              label: Text(tag),
-                              padding: EdgeInsets.zero,
-                            );
-                          }).toList() ??
-                          [],
-                    ),
-                  ],
+                Text(
+                  "on ${data?.post.creationTimestamp != null ? DateUtil.formatDateTime(data!.post.creationTimestamp, false) : "Unknown"}",
+                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.onSurface.withAlpha(200),
+                  ),
                 ),
               ],
             ),
-          ),
 
-          SizedBox(height: 8),
+            SizedBox(height: 8),
 
-          Divider(height: 8),
+            Divider(height: 8),
 
-          SizedBox(height: 8),
+            MarkdownBlock(
+              data: data?.post.postContents ?? "Loading...",
+              config: postMarkdownConfig(context),
+            ),
 
-          CommentSection(
-            postUUID: widget.postUUID ?? "",
-            comments: data?.comments?.values.toList() ?? [],
-            onCommentAdded: () => refreshData(),
-            onDelete: (commentUUID) {
-              try {
-                final commentService = context.read<CommentService>();
-                commentService.deleteComment(commentUUID);
-                Toast.showToast(context, "Comment deleted successfully.");
-              } catch (e) {
-                Toast.showToast(context, "Failed to delete comment.");
-              }
-              refreshData();
-            },
-            onReply: () => refreshData(),
-          ),
-        ],
+            SizedBox(height: 8),
+
+            Divider(height: 8),
+
+            SizedBox(height: 8),
+
+            if (hasAttachments) ...[
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                spacing: 16,
+                children: [
+                  Text(
+                    "Attachments",
+                    style: Theme.of(context).textTheme.headlineSmall,
+                  ),
+                  AttachmentList(attachments: data!.post.attachments),
+                ],
+              ),
+              SizedBox(height: 16),
+              Divider(height: 8),
+            ],
+
+            SizedBox(height: 4),
+
+            SizedBox(
+              width: double.infinity,
+              child: Wrap(
+                spacing: 32,
+                runSpacing: 8,
+                alignment: WrapAlignment.center,
+                runAlignment: WrapAlignment.center,
+                children: [
+                  Column(
+                    children: [
+                      Text(
+                        "Timeframe",
+                        style: Theme.of(context).textTheme.titleMedium,
+                      ),
+                      Text(
+                        "Start: ${data?.post.startTimestamp != null ? DateUtil.formatDateTime(data!.post.startTimestamp, true) : "Unknown"}",
+                      ),
+                      Text(
+                        "End: ${data?.post.endTimestamp != null ? DateUtil.formatDateTime(data!.post.endTimestamp!, true) : "Unknown"}",
+                      ),
+                      SizedBox(height: 4),
+                      Text(
+                        "Total duration: ${data?.post.startTimestamp != null ? (data!.post.endTimestamp == null ? "Endless" : DateUtil.formatInterval(data!.post.endTimestamp! - data!.post.startTimestamp)) : "Unknown"}",
+                      ),
+                    ],
+                  ),
+
+                  SizedBox(height: 8),
+
+                  Column(
+                    spacing: 4,
+                    children: [
+                      Text(
+                        "Groups",
+                        style: Theme.of(context).textTheme.titleMedium,
+                      ),
+                      if (widget.postUUID != null)
+                        GroupList.ofPost(postUUID: widget.postUUID!),
+                    ],
+                  ),
+
+                  SizedBox(height: 8),
+
+                  Column(
+                    spacing: 4,
+                    children: [
+                      Text(
+                        "Tags",
+                        style: Theme.of(context).textTheme.titleMedium,
+                      ),
+                      Wrap(
+                        spacing: 4,
+                        runSpacing: 4,
+                        children:
+                            data?.post.tags.map((tag) {
+                              return Chip(
+                                label: Text(tag),
+                                padding: EdgeInsets.zero,
+                              );
+                            }).toList() ??
+                            [],
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+
+            SizedBox(height: 8),
+
+            Divider(height: 8),
+
+            SizedBox(height: 8),
+
+            CommentSection(
+              postUUID: widget.postUUID ?? "",
+              comments: data?.comments?.values.toList() ?? [],
+              onCommentAdded: () => refreshData(),
+              onDelete: (commentUUID) {
+                try {
+                  final commentService = context.read<CommentService>();
+                  commentService.deleteComment(commentUUID);
+                  Toast.showToast(context, "Comment deleted successfully.");
+                } catch (e) {
+                  Toast.showToast(context, "Failed to delete comment.");
+                }
+                refreshData();
+              },
+              onReply: () => refreshData(),
+            ),
+          ],
+        ),
       ),
-    ),
-  );
+    );
+  }
 
   @override
   Future<PostView?> getDataFromSource() async {
