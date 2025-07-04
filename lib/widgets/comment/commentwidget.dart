@@ -154,7 +154,7 @@ class _CommentWidgetState extends State<CommentWidget> {
     return Padding(
       padding: EdgeInsets.only(
         left: isReply ? 42.0 : 0.0,
-        top: isReply ? 16.0 : 32.0,
+        top: widget.isPreview ? 0.0 : (isReply ? 16.0 : 32.0),
       ),
       child: Column(
         children: [

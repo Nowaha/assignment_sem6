@@ -137,20 +137,30 @@ class _WriteCommentState extends State<WriteComment> {
           ListenableBuilder(
             listenable: _controller,
             builder:
-                (context, _) => CommentWidget.preview(
-                  comment: CommentView(
-                    comment: Comment.create(
-                      creatorUUID: authState.getCurrentUser!.uuid,
-                      postUUID: widget.postUUID,
-                      contents: _controller.text,
+                (context, _) => Column(
+                  spacing: 8,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "Preview",
+                      style: Theme.of(context).textTheme.titleMedium,
                     ),
-                    creator: authState.getCurrentUser,
-                  ),
-                  resourceService: _localResourceService,
-                  getContents: () => _controller.text,
-                  setContents: (contents) {
-                    _controller.text = contents;
-                  },
+                    CommentWidget.preview(
+                      comment: CommentView(
+                        comment: Comment.create(
+                          creatorUUID: authState.getCurrentUser!.uuid,
+                          postUUID: widget.postUUID,
+                          contents: _controller.text,
+                        ),
+                        creator: authState.getCurrentUser,
+                      ),
+                      resourceService: _localResourceService,
+                      getContents: () => _controller.text,
+                      setContents: (contents) {
+                        _controller.text = contents;
+                      },
+                    ),
+                  ],
                 ),
           ),
       ],
