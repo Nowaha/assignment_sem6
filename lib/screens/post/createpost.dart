@@ -1,7 +1,6 @@
 import 'package:assignment_sem6/config/posteditmarkdownconfig.dart';
 import 'package:assignment_sem6/data/dao/impl/memoryresourcedao.dart';
 import 'package:assignment_sem6/data/entity/impl/post.dart';
-import 'package:assignment_sem6/data/entity/impl/resource.dart';
 import 'package:assignment_sem6/data/repo/impl/resourcerepositoryimpl.dart';
 import 'package:assignment_sem6/data/service/impl/resourceserviceimpl.dart';
 import 'package:assignment_sem6/data/service/postservice.dart';
@@ -9,7 +8,6 @@ import 'package:assignment_sem6/data/service/resourceservice.dart';
 import 'package:assignment_sem6/mixin/formmixin.dart';
 import 'package:assignment_sem6/screens/post/attachments/attachmentlist.dart';
 import 'package:assignment_sem6/widgets/collapsible/collapsiblewithheader.dart';
-import 'package:assignment_sem6/widgets/filepickerbutton.dart';
 import 'package:assignment_sem6/widgets/input/dateselector.dart';
 import 'package:assignment_sem6/widgets/input/groupinput.dart';
 import 'package:assignment_sem6/widgets/input/text/markdowneditor.dart';
@@ -19,7 +17,6 @@ import 'package:assignment_sem6/util/validation.dart';
 import 'package:assignment_sem6/widgets/loadingiconbutton.dart';
 import 'package:assignment_sem6/widgets/screen.dart';
 import 'package:assignment_sem6/widgets/input/chiplistinput.dart';
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:latlong2/latlong.dart';
@@ -157,50 +154,13 @@ class _CreatePostState extends State<CreatePost> with FormMixin {
               constraints: BoxConstraints(maxHeight: 300),
               child: MarkdownEditor(
                 controller: _contentsController,
+                resourceService: localResourceService,
                 label: "Contents *",
                 enabled: !loading,
                 errorText: getError(_contentsController),
                 onChanged: (_) => clearError(_contentsController),
                 maxLength: Validation.maxPostContentsLength,
               ),
-            ),
-
-            Row(
-              spacing: 8,
-              children: [
-                IconButton.filledTonal(
-                  onPressed: () {},
-                  icon: Icon(Icons.format_bold),
-                  tooltip: "Bold",
-                ),
-                IconButton.filledTonal(
-                  onPressed: () {},
-                  icon: Icon(Icons.format_italic),
-                  tooltip: "Italic",
-                ),
-                SizedBox(),
-                FilePickerButton(
-                  fileType: FileType.image,
-                  type: FilePickerButtonType.iconTonal,
-                  child: Icon(Icons.image),
-                  onFilePicked: (bytes, fileName) async {
-                    final fileExtension =
-                        fileName.split(".").last.toLowerCase();
-                    final resource = Resource.create(
-                      type: ResourceType.image,
-                      name: fileName.replaceAll(".$fileExtension", ""),
-                      originalExtension: fileExtension,
-                      data: bytes,
-                    );
-                    await localResourceService.addResource(resource);
-
-                    setState(() {
-                      _contentsController.text +=
-                          "\n![$fileName](${resource.uuid}|width=300)";
-                    });
-                  },
-                ),
-              ],
             ),
 
             Text(

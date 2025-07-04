@@ -1,10 +1,16 @@
+import 'package:assignment_sem6/data/service/resourceservice.dart';
+import 'package:assignment_sem6/extension/textformatting.dart';
 import 'package:assignment_sem6/screens/post/markdownhelp.dart';
+import 'package:assignment_sem6/util/fileutil.dart';
+import 'package:assignment_sem6/widgets/input/text/editorcontrols.dart';
 import 'package:assignment_sem6/widgets/input/text/textinput.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' hide TextInput;
 
 class MarkdownEditor extends StatefulWidget {
   final TextEditingController controller;
+  final ResourceService resourceService;
   final String label;
   final bool enabled;
   final String? errorText;
@@ -14,6 +20,7 @@ class MarkdownEditor extends StatefulWidget {
 
   const MarkdownEditor({
     super.key,
+    required this.resourceService,
     required this.controller,
     required this.label,
     this.enabled = true,
@@ -28,48 +35,17 @@ class MarkdownEditor extends StatefulWidget {
 }
 
 class _MarkdownEditorState extends State<MarkdownEditor> {
-  void _wrapSelection(String left, String right) {
-    final text = widget.controller.text;
-    final selection = widget.controller.selection;
+  final FocusNode _focusNode = FocusNode();
 
-    if (!selection.isValid || selection.isCollapsed) return;
+  void _pickImage() async {
+    if (!widget.enabled) return;
 
-    final existing = selection.textInside(text);
-    if (existing.startsWith(left) && existing.endsWith(right)) {
-      final newText =
-          selection.textBefore(text) +
-          existing.substring(left.length, existing.length - right.length) +
-          selection.textAfter(text);
-
-      final newSelection = TextSelection(
-        baseOffset: selection.start,
-        extentOffset: selection.end - left.length - right.length,
-      );
-
-      widget.controller.value = TextEditingValue(
-        text: newText,
-        selection: newSelection,
-      );
-      return;
+    final resource = await FileUtil.pickFileAsResource(FileType.image);
+    if (resource != null) {
+      await widget.resourceService.addResource(resource);
+      widget.controller.insertImage(resource.name, resource.uuid);
+      _focusNode.requestFocus();
     }
-
-    final selectedText = selection.textInside(text);
-    final newText =
-        selection.textBefore(text) +
-        left +
-        selectedText +
-        right +
-        selection.textAfter(text);
-
-    final newSelection = TextSelection(
-      baseOffset: selection.start,
-      extentOffset: selection.end + left.length + right.length,
-    );
-
-    widget.controller.value = TextEditingValue(
-      text: newText,
-      selection: newSelection,
-    );
   }
 
   @override
@@ -91,18 +67,19 @@ class _MarkdownEditorState extends State<MarkdownEditor> {
             actions: {
               ItalicizeIntent: CallbackAction(
                 onInvoke: (e) {
-                  _wrapSelection("*", "*");
+                  widget.controller.wrapSelection("*", "*");
                   return null;
                 },
               ),
               BoldIntent: CallbackAction(
                 onInvoke: (e) {
-                  _wrapSelection("**", "**");
+                  widget.controller.wrapSelection("**", "**");
                   return null;
                 },
               ),
             },
             child: TextInput(
+              focusNode: _focusNode,
               controller: widget.controller,
               label: widget.label,
               enabled: widget.enabled,
@@ -112,6 +89,12 @@ class _MarkdownEditorState extends State<MarkdownEditor> {
               maxLines: null,
               maxLength: widget.maxLength,
               showCounter: widget.showCounter,
+              padding: EdgeInsets.only(
+                top: 16.0,
+                right: 12.0,
+                bottom: 54.0,
+                left: 12.0,
+              ),
             ),
           ),
         ),
@@ -134,6 +117,15 @@ class _MarkdownEditorState extends State<MarkdownEditor> {
               },
               icon: Icon(Icons.help),
             ),
+          ),
+        ),
+        Positioned(
+          left: 4.0,
+          bottom: 24.0,
+          child: EditorControls(
+            textFocusNode: _focusNode,
+            textController: widget.controller,
+            openImageSelector: _pickImage,
           ),
         ),
       ],

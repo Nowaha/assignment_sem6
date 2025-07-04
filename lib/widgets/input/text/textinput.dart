@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 class TextInput extends StatefulWidget {
+  final FocusNode? focusNode;
   final String label;
   final String? errorText;
   final TextEditingController? controller;
@@ -18,9 +19,11 @@ class TextInput extends StatefulWidget {
   final bool? showCounter;
   final ValueChanged<String>? onSubmitted;
   final bool autoFocus;
+  final EdgeInsets? padding;
 
   const TextInput({
     super.key,
+    this.focusNode,
     required this.label,
     this.errorText,
     this.controller,
@@ -36,6 +39,7 @@ class TextInput extends StatefulWidget {
     this.showCounter = false,
     this.onSubmitted,
     this.autoFocus = false,
+    this.padding,
   });
 
   @override
@@ -76,6 +80,7 @@ class _TextInputState extends State<TextInput> {
     }
 
     return TextField(
+      focusNode: widget.focusNode,
       controller: widget.controller,
       onChanged: widget.onChanged,
       enabled: widget.enabled,
@@ -94,6 +99,7 @@ class _TextInputState extends State<TextInput> {
         border: OutlineInputBorder(),
         errorText: widget.errorText,
         label: Text(widget.label),
+        contentPadding: widget.padding,
         floatingLabelAlignment: FloatingLabelAlignment.start,
         alignLabelWithHint: true,
         counterText: widget.showCounter == true ? null : "",

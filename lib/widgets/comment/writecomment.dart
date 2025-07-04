@@ -69,7 +69,7 @@ class _WriteCommentState extends State<WriteComment> {
         }
         await resourceService.addResource(resource);
       }
-      
+
       await commentService.addComment(
         widget.postUUID,
         creatorUUID: authState.getCurrentUser!.uuid,
@@ -105,6 +105,7 @@ class _WriteCommentState extends State<WriteComment> {
           constraints: BoxConstraints(maxHeight: 200),
           child: MarkdownEditor(
             controller: _controller,
+            resourceService: _localResourceService,
             label: "Write a comment",
             maxLength: Validation.maxCommentLength,
             errorText: errorText,
