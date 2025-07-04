@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:assignment_sem6/data/entity/impl/post.dart';
 import 'package:assignment_sem6/data/service/postservice.dart';
 import 'package:assignment_sem6/screens/home/createpostfab.dart';
@@ -95,7 +97,9 @@ class _HomePageState extends State<HomePage> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    _focusNode.requestFocus();
+    if (Platform.isMacOS || Platform.isLinux || Platform.isWindows) {
+      _focusNode.requestFocus();
+    }
   }
 
   @override

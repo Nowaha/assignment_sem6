@@ -8,6 +8,7 @@ class Screen extends StatelessWidget {
   final Widget child;
   final List<Widget>? appBarActions;
   final Widget? floatingActionButton;
+  final FloatingActionButtonLocation? floatingActionButtonLocation;
   final Color? backgroundColor;
   final Widget? leading;
 
@@ -18,6 +19,7 @@ class Screen extends StatelessWidget {
     this.leading,
     this.appBarActions,
     this.floatingActionButton,
+    this.floatingActionButtonLocation,
     this.backgroundColor,
   });
 
@@ -35,6 +37,7 @@ class Screen extends StatelessWidget {
     ),
     body: child,
     floatingActionButton: floatingActionButton,
+    floatingActionButtonLocation: floatingActionButtonLocation,
   );
 
   factory Screen({
@@ -44,6 +47,7 @@ class Screen extends StatelessWidget {
     Widget? leading,
     List<Widget>? appBarActions,
     Widget? floatingActionButton,
+    FloatingActionButtonLocation? floatingActionButtonLocation,
     EdgeInsets padding = defaultPadding,
     Color? backgroundColor,
     Color? foregroundColor,
@@ -53,6 +57,7 @@ class Screen extends StatelessWidget {
     leading: leading,
     appBarActions: appBarActions,
     floatingActionButton: floatingActionButton,
+    floatingActionButtonLocation: floatingActionButtonLocation,
     backgroundColor: backgroundColor,
     child: Padding(padding: padding, child: child),
   );
@@ -64,6 +69,7 @@ class Screen extends StatelessWidget {
     Widget? leading,
     List<Widget>? appBarActions,
     Widget? floatingActionButton,
+    FloatingActionButtonLocation? floatingActionButtonLocation,
     EdgeInsets padding = defaultPadding,
     Color? backgroundColor,
     Color? foregroundColor,
@@ -73,6 +79,7 @@ class Screen extends StatelessWidget {
     leading: leading,
     appBarActions: appBarActions,
     floatingActionButton: floatingActionButton,
+    floatingActionButtonLocation: floatingActionButtonLocation,
     backgroundColor: backgroundColor,
     child: Padding(padding: padding, child: Center(child: child)),
   );
@@ -84,6 +91,8 @@ class Screen extends StatelessWidget {
     Widget? leading,
     List<Widget>? appBarActions,
     Widget? floatingActionButton,
+    FloatingActionButtonLocation? floatingActionButtonLocation,
+    EdgeInsets defaultPadding = const EdgeInsets.all(16),
     Alignment alignment = Alignment.topCenter,
     EdgeInsets padding = defaultPadding,
     Color? backgroundColor,
@@ -94,6 +103,7 @@ class Screen extends StatelessWidget {
     leading: leading,
     appBarActions: appBarActions,
     floatingActionButton: floatingActionButton,
+    floatingActionButtonLocation: floatingActionButtonLocation,
     backgroundColor: backgroundColor,
     child: Align(
       alignment: alignment,

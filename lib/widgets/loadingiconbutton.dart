@@ -5,18 +5,24 @@ class LoadingIconButton extends StatelessWidget {
   final String label;
   final bool loading;
   final VoidCallback? onPressed;
-  final Widget icon;
   final bool disabledLookOnLoad;
   final ButtonType buttonType;
+  final IconData icon;
+  final double iconSize;
+  final double textSize;
+  final EdgeInsetsGeometry? padding;
 
   const LoadingIconButton({
     super.key,
     required this.label,
     required this.loading,
     this.onPressed,
-    required this.icon,
     this.disabledLookOnLoad = false,
     this.buttonType = ButtonType.filled,
+    required this.icon,
+    this.iconSize = 14,
+    this.textSize = 14,
+    this.padding,
   });
 
   VoidCallback? getOnPressed() {
@@ -29,40 +35,48 @@ class LoadingIconButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final buttonIcon =
         !loading
-            ? icon
+            ? Icon(icon, size: iconSize)
             : SizedCircularProgressIndicator.square(
-              size: 14,
+              size: iconSize,
               strokeWidth: 2,
               onPrimary: buttonType == ButtonType.filled,
             );
+
+    final textStyle = TextStyle(fontSize: textSize);
 
     switch (buttonType) {
       case ButtonType.filled:
         return FilledButton.icon(
           onPressed: getOnPressed(),
-          label: Text(label),
+          label: Text(label, style: textStyle),
           icon: buttonIcon,
         );
       case ButtonType.outlined:
         return OutlinedButton.icon(
           onPressed: getOnPressed(),
-          label: Text(label),
           icon: buttonIcon,
+          label: Text(label, style: textStyle),
         );
       case ButtonType.text:
         return TextButton.icon(
           onPressed: getOnPressed(),
-          label: Text(label),
           icon: buttonIcon,
+          label: Text(label, style: textStyle),
         );
       case ButtonType.elevated:
         return ElevatedButton.icon(
           onPressed: getOnPressed(),
-          label: Text(label),
           icon: buttonIcon,
+          label: Text(label, style: textStyle),
+        );
+      case ButtonType.fab:
+        return FloatingActionButton(
+          onPressed: getOnPressed(),
+          tooltip: label,
+          child: buttonIcon,
         );
     }
   }
 }
 
-enum ButtonType { filled, outlined, text, elevated }
+enum ButtonType { filled, outlined, text, elevated, fab }

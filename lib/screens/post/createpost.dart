@@ -134,214 +134,251 @@ class _CreatePostState extends State<CreatePost> with FormMixin {
 
   @override
   Widget build(BuildContext context) {
-    return Screen.scroll(
+    bool anyMetadataErrors =
+        getError(_latitudeController) != null ||
+        getError(_longitudeController) != null;
+
+    return Screen(
       title: Text("Create Post"),
-      child: SizedBox(
-        width: 960,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          spacing: 16,
-          children: [
-            buildFormTextInput(
-              "Title *",
-              _titleController,
-              maxLength: Validation.maxPostTitleLength,
-              autoFocus: true,
-            ),
-
-            ConstrainedBox(
-              constraints: BoxConstraints(maxHeight: 300),
-              child: MarkdownEditor(
-                controller: _contentsController,
-                resourceService: localResourceService,
-                label: "Contents *",
-                enabled: !loading,
-                errorText: getError(_contentsController),
-                onChanged: (_) => clearError(_contentsController),
-                maxLength: Validation.maxPostContentsLength,
-              ),
-            ),
-
-            Text(
-              "Attachments (${_attachments.length}):",
-              style: Theme.of(context).textTheme.bodyLarge,
-            ),
-            AttachmentList.editable(
-              attachments: _attachments,
-              resourceService: localResourceService,
-              onAttachmentAdded: (resource) {
-                setState(() {
-                  _attachments.add(resource.uuid);
-                });
-              },
-              onDelete: (uuid) {
-                setState(() {
-                  _attachments.remove(uuid);
-                });
-              },
-            ),
-
-            CollapsibleWithHeader(
-              title: "Post Metadata",
-              noIntrinsicWidth: true,
-              child: SizedBox(
-                width: double.infinity,
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      child: Align(
+        alignment: Alignment.topCenter,
+        child: SizedBox(
+          width: 960,
+          child: Stack(
+            children: [
+              SingleChildScrollView(
+                padding: const EdgeInsets.only(bottom: 48),
                 child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      "Location:",
-                      style: Theme.of(context).textTheme.bodyLarge,
+                    buildFormTextInput(
+                      "Title *",
+                      _titleController,
+                      maxLength: Validation.maxPostTitleLength,
+                      autoFocus: true,
                     ),
+
                     SizedBox(height: 12),
-                    Row(
-                      spacing: 8,
-                      children: [
-                        Expanded(
-                          child: buildFormTextInput(
-                            "Latitude *",
-                            _latitudeController,
-                          ),
+
+                    ConstrainedBox(
+                      constraints: BoxConstraints(maxHeight: 300),
+                      child: MarkdownEditor(
+                        controller: _contentsController,
+                        resourceService: localResourceService,
+                        label: "Contents *",
+                        enabled: !loading,
+                        errorText: getError(_contentsController),
+                        onChanged: (_) => clearError(_contentsController),
+                        maxLength: Validation.maxPostContentsLength,
+                      ),
+                    ),
+
+                    SizedBox(height: 12),
+
+                    CollapsibleWithHeader(
+                      title: "Attachments (${_attachments.length})",
+                      noIntrinsicWidth: true,
+                      initiallyCollapsed: true,
+                      child: AttachmentList.editable(
+                        attachments: _attachments,
+                        resourceService: localResourceService,
+                        onAttachmentAdded: (resource) {
+                          setState(() {
+                            _attachments.add(resource.uuid);
+                          });
+                        },
+                        onDelete: (uuid) {
+                          setState(() {
+                            _attachments.remove(uuid);
+                          });
+                        },
+                      ),
+                    ),
+
+                    Divider(height: 32),
+
+                    CollapsibleWithHeader(
+                      title: "Post Metadata",
+                      noIntrinsicWidth: true,
+                      containsError: anyMetadataErrors,
+                      child: SizedBox(
+                        width: double.infinity,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              "Location:",
+                              style: Theme.of(context).textTheme.bodyLarge,
+                            ),
+                            SizedBox(height: 12),
+                            Row(
+                              spacing: 8,
+                              children: [
+                                Expanded(
+                                  child: buildFormTextInput(
+                                    "Latitude *",
+                                    _latitudeController,
+                                  ),
+                                ),
+                                Expanded(
+                                  child: buildFormTextInput(
+                                    "Longitude *",
+                                    _longitudeController,
+                                  ),
+                                ),
+                              ],
+                            ),
+
+                            SizedBox(height: 12),
+
+                            Text(
+                              "Date range:",
+                              style: Theme.of(context).textTheme.bodyLarge,
+                            ),
+                            SizedBox(height: 12),
+                            Row(
+                              spacing: 8,
+                              children: [
+                                Expanded(
+                                  child: DateSelector(
+                                    label: "Start Date *",
+                                    selectedDate: _startTimestamp.value,
+                                    onDateSelected: (newDate) {
+                                      _startTimestamp.value = newDate;
+                                      if (_endTimestamp.value != null &&
+                                          _endTimestamp.value!.isBefore(
+                                            newDate!,
+                                          )) {
+                                        _endTimestamp.value = _startTimestamp
+                                            .value
+                                            ?.add(const Duration(minutes: 5));
+                                      }
+                                      setState(() {});
+                                    },
+                                  ),
+                                ),
+                                Expanded(
+                                  child: DateSelector(
+                                    label: "End Date (optional)",
+                                    selectedDate: _endTimestamp.value,
+                                    onDateSelected: (newDate) {
+                                      _endTimestamp.value = newDate;
+                                      if (newDate != null &&
+                                          _startTimestamp.value!.isAfter(
+                                            newDate,
+                                          )) {
+                                        _startTimestamp.value = newDate
+                                            .subtract(
+                                              const Duration(minutes: 5),
+                                            );
+                                      }
+                                      setState(() {});
+                                    },
+                                    clearable: true,
+                                  ),
+                                ),
+                              ],
+                            ),
+
+                            SizedBox(height: 12),
+
+                            Text(
+                              "Tags (${_tags.length}/${Validation.maxPostTags}):",
+                              style: Theme.of(context).textTheme.bodyLarge,
+                            ),
+                            SizedBox(height: 8),
+                            ChipListInput(
+                              chips: _tags,
+                              hintText: "+ Add tag",
+                              maxLength: Validation.maxPostTags,
+                              onChipAdded: (tag) {
+                                setState(() {
+                                  _tags.add(tag);
+                                });
+                              },
+                              onChipRemoved: (tag) {
+                                setState(() {
+                                  _tags.remove(tag);
+                                });
+                              },
+                            ),
+
+                            SizedBox(height: 12),
+
+                            Text(
+                              "Groups (${_selectedGroups.length}/${Validation.maxPostGroups}):",
+                              style: Theme.of(context).textTheme.bodyLarge,
+                            ),
+                            Text(
+                              "Leave empty to allow everyone to view the post.",
+                              style: Theme.of(context).textTheme.bodySmall,
+                            ),
+                            SizedBox(height: 8),
+                            GroupInput(
+                              selectedGroups: _selectedGroups,
+                              onChanged:
+                                  (newGroups) => setState(() {
+                                    _selectedGroups.clear();
+                                    _selectedGroups.addAll(newGroups);
+                                  }),
+                            ),
+                          ],
                         ),
-                        Expanded(
-                          child: buildFormTextInput(
-                            "Longitude *",
-                            _longitudeController,
-                          ),
-                        ),
-                      ],
+                      ),
                     ),
 
-                    SizedBox(height: 12),
+                    Divider(height: 32),
 
-                    Text(
-                      "Date range:",
-                      style: Theme.of(context).textTheme.bodyLarge,
-                    ),
-                    SizedBox(height: 12),
-                    Row(
-                      spacing: 8,
-                      children: [
-                        Expanded(
-                          child: DateSelector(
-                            label: "Start Date *",
-                            selectedDate: _startTimestamp.value,
-                            onDateSelected: (newDate) {
-                              _startTimestamp.value = newDate;
-                              if (_endTimestamp.value != null &&
-                                  _endTimestamp.value!.isBefore(newDate!)) {
-                                _endTimestamp.value = _startTimestamp.value
-                                    ?.add(const Duration(minutes: 5));
-                              }
-                              setState(() {});
-                            },
-                          ),
-                        ),
-                        Expanded(
-                          child: DateSelector(
-                            label: "End Date (optional)",
-                            selectedDate: _endTimestamp.value,
-                            onDateSelected: (newDate) {
-                              _endTimestamp.value = newDate;
-                              if (newDate != null &&
-                                  _startTimestamp.value!.isAfter(newDate)) {
-                                _startTimestamp.value = newDate.subtract(
-                                  const Duration(minutes: 5),
-                                );
-                              }
-                              setState(() {});
-                            },
-                            clearable: true,
-                          ),
-                        ),
-                      ],
-                    ),
-
-                    SizedBox(height: 12),
-
-                    Text(
-                      "Tags (${_tags.length}/${Validation.maxPostTags}):",
-                      style: Theme.of(context).textTheme.bodyLarge,
-                    ),
-                    SizedBox(height: 8),
-                    ChipListInput(
-                      chips: _tags,
-                      hintText: "+ Add tag",
-                      maxLength: Validation.maxPostTags,
-                      onChipAdded: (tag) {
-                        setState(() {
-                          _tags.add(tag);
-                        });
-                      },
-                      onChipRemoved: (tag) {
-                        setState(() {
-                          _tags.remove(tag);
-                        });
-                      },
-                    ),
-
-                    SizedBox(height: 12),
-
-                    Text(
-                      "Groups (${_selectedGroups.length}/${Validation.maxPostGroups}):",
-                      style: Theme.of(context).textTheme.bodyLarge,
-                    ),
-                    Text(
-                      "Leave empty to allow everyone to view the post.",
-                      style: Theme.of(context).textTheme.bodySmall,
-                    ),
-                    SizedBox(height: 8),
-                    GroupInput(
-                      selectedGroups: _selectedGroups,
-                      onChanged:
-                          (newGroups) => setState(() {
-                            _selectedGroups.clear();
-                            _selectedGroups.addAll(newGroups);
-                          }),
+                    CollapsibleWithHeader(
+                      title: "Preview",
+                      noIntrinsicWidth: true,
+                      child: ListenableBuilder(
+                        listenable: _contentsController,
+                        builder: (context, _) {
+                          if (_contentsController.text.isEmpty) {
+                            return const Text("No contents to preview.");
+                          }
+                          return MarkdownWidget(
+                            shrinkWrap: true,
+                            selectable: false,
+                            data: _contentsController.text,
+                            config: postEditMarkdownConfig(
+                              context: context,
+                              localResourceService: localResourceService,
+                              getContents: () => _contentsController.text,
+                              setContents: (contents) {
+                                setState(() {
+                                  _contentsController.text = contents;
+                                });
+                              },
+                            ),
+                          );
+                        },
+                      ),
                     ),
                   ],
                 ),
               ),
-            ),
-
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              spacing: 16,
-              children: [
-                // OutlinedButton(child: const Text("Preview"), onPressed: () {}),
-                LoadingIconButton(
-                  icon: Icon(Icons.add),
-                  label: "Create Post",
-                  loading: loading,
-                  onPressed: _attemptToCreate,
-                ),
-              ],
-            ),
-            ListenableBuilder(
-              listenable: _contentsController,
-              builder: (context, _) {
-                if (_contentsController.text.isEmpty) {
-                  return const Text("No contents to preview.");
-                }
-                return MarkdownWidget(
-                  shrinkWrap: true,
-                  selectable: false,
-                  data: _contentsController.text,
-                  config: postEditMarkdownConfig(
-                    context: context,
-                    localResourceService: localResourceService,
-                    getContents: () => _contentsController.text,
-                    setContents: (contents) {
-                      setState(() {
-                        _contentsController.text = contents;
-                      });
-                    },
+              Positioned(
+                bottom: 0,
+                left: 0,
+                right: 0,
+                child: Align(
+                  alignment: Alignment.center,
+                  child: LoadingIconButton(
+                    icon: Icons.send,
+                    iconSize: 18.0,
+                    label: "Publish Post",
+                    loading: loading,
+                    onPressed: _attemptToCreate,
+                    textSize: 16.0,
                   ),
-                );
-              },
-            ),
-          ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

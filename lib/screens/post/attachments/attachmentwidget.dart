@@ -4,7 +4,7 @@ import 'package:assignment_sem6/widgets/image/postimageerrorbuilder.dart';
 import 'package:assignment_sem6/widgets/image/postimageframebuilder.dart';
 import 'package:flutter/material.dart';
 
-class AttachmentWidget extends StatelessWidget {
+class AttachmentWidget extends StatefulWidget {
   final String attachmentUUID;
   final Resource attachmentResource;
   final bool editable;
@@ -22,9 +22,16 @@ class AttachmentWidget extends StatelessWidget {
        );
 
   @override
+  State<AttachmentWidget> createState() => _AttachmentWidgetState();
+}
+
+class _AttachmentWidgetState extends State<AttachmentWidget> {
+  bool _hovered = false;
+
+  @override
   Widget build(BuildContext context) {
     final String fullName =
-        "${attachmentResource.name}.${attachmentResource.originalExtension}";
+        "${widget.attachmentResource.name}.${widget.attachmentResource.originalExtension}";
 
     return ConstrainedBox(
       constraints: const BoxConstraints(
@@ -41,7 +48,12 @@ class AttachmentWidget extends StatelessWidget {
           child: InkWell(
             borderRadius: BorderRadius.all(Radius.circular(8)),
             onTap: () async {
-              FileUtil.saveFile(attachmentResource.data, fullName);
+              FileUtil.saveFile(widget.attachmentResource.data, fullName);
+            },
+            onHover: (hovered) {
+              setState(() {
+                _hovered = hovered;
+              });
             },
             child: Container(
               padding: const EdgeInsets.all(4),
@@ -55,9 +67,9 @@ class AttachmentWidget extends StatelessWidget {
               child: Stack(
                 alignment: Alignment.center,
                 children: [
-                  if (attachmentResource.type == ResourceType.image)
+                  if (widget.attachmentResource.type == ResourceType.image)
                     Image.memory(
-                      attachmentResource.data,
+                      widget.attachmentResource.data,
                       fit: BoxFit.fitHeight,
                       frameBuilder: postImageFrameBuilder,
                       errorBuilder: postImageErrorBuilder,
@@ -83,7 +95,7 @@ class AttachmentWidget extends StatelessWidget {
                     ),
                   ),
 
-                  if (editable)
+                  if (widget.editable)
                     Positioned(
                       top: 4,
                       right: 4,
@@ -96,8 +108,18 @@ class AttachmentWidget extends StatelessWidget {
                           color: Theme.of(context).colorScheme.error,
                         ),
                         tooltip: "Delete Attachment",
-                        onPressed: () => onDelete!(attachmentUUID),
+                        onPressed:
+                            () => widget.onDelete!(widget.attachmentUUID),
                       ),
+                    ),
+
+                  if (_hovered)
+                    Positioned.fill(
+                      child: Center(child: Icon(Icons.download, size: 24)),
+                    ),
+                  if (_hovered)
+                    Positioned.fill(
+                      child: Center(child: Icon(Icons.download, size: 24)),
                     ),
                 ],
               ),

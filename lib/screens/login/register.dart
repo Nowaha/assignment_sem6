@@ -185,7 +185,7 @@ class _RegisterPageState extends State<RegisterPage> with FormMixin {
                 LoadingIconButton(
                   label: "Register",
                   loading: loading,
-                  icon: Icon(Icons.login),
+                  icon: Icons.login,
                   onPressed: () => _attemptToRegister(context),
                 ),
               ],

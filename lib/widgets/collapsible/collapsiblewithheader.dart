@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 class CollapsibleWithHeader extends StatefulWidget {
   final String title;
+  final bool containsError;
   final Widget child;
   final bool initiallyCollapsed;
   final Function(bool)? onCollapseChanged;
@@ -12,10 +13,11 @@ class CollapsibleWithHeader extends StatefulWidget {
   const CollapsibleWithHeader({
     super.key,
     required this.title,
-    required this.child,
+    this.containsError = false,
     this.initiallyCollapsed = false,
     this.onCollapseChanged,
     this.noIntrinsicWidth = false,
+    required this.child,
   });
 
   @override
@@ -42,6 +44,17 @@ class _CollapsibleWithHeaderState extends State<CollapsibleWithHeader> {
   }
 
   @override
+  void didUpdateWidget(covariant CollapsibleWithHeader oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    if (!oldWidget.containsError && widget.containsError) {
+      setState(() {
+        _isCollapsed = false;
+      });
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     final built = Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -63,13 +76,37 @@ class _CollapsibleWithHeaderState extends State<CollapsibleWithHeader> {
                     padding: EdgeInsets.zero,
                     icon: Icon(
                       _isCollapsed ? Icons.expand_more : Icons.expand_less,
+                      color:
+                          widget.containsError
+                              ? Theme.of(context).colorScheme.error
+                              : null,
                     ),
                   ),
                 ),
                 Expanded(
-                  child: Text(
-                    widget.title,
-                    style: Theme.of(context).textTheme.titleMedium,
+                  child: RichText(
+                    text: TextSpan(
+                      text: widget.title,
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        color:
+                            widget.containsError
+                                ? Theme.of(context).colorScheme.error
+                                : null,
+                      ),
+                      children:
+                          widget.containsError
+                              ? [
+                                TextSpan(
+                                  text: " (contains errors)",
+                                  style: Theme.of(
+                                    context,
+                                  ).textTheme.bodySmall?.copyWith(
+                                    color: Theme.of(context).colorScheme.error,
+                                  ),
+                                ),
+                              ]
+                              : [],
+                    ),
                   ),
                 ),
               ],

@@ -79,8 +79,13 @@ ImgBuilder _imgBuilder({
 
   final wrapped = InkWell(
     child: ConstrainedBox(
-      constraints: BoxConstraints(maxWidth: width?.toDouble() ?? startingWidth),
-      child: Expanded(child: image),
+      constraints: BoxConstraints(
+        maxWidth: (width?.toDouble() ?? startingWidth).clamp(
+          minWidth,
+          maxWidth,
+        ),
+      ),
+      child: image,
     ),
     onTap:
         () => Navigator.of(context).push(
