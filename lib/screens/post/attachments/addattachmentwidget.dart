@@ -10,37 +10,77 @@ class AddAttachmentWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Material(
-    color: Theme.of(context).colorScheme.surfaceContainerLow,
+    color: Theme.of(context).colorScheme.surfaceContainerHigh,
     borderRadius: BorderRadius.all(Radius.circular(8)),
-    child: Tooltip(
-      message: "Add Attachment",
-      child: InkWell(
+    child: Container(
+      decoration: BoxDecoration(
         borderRadius: BorderRadius.all(Radius.circular(8)),
-        onTap: () async {
-          final result = await FileUtil.pickFile(
-            FileType.custom,
-            allowedExtensions: ResourceType.allExtensions,
-          );
-          if (result != null) {
-            onFilePicked(result);
-          }
-        },
-        child: Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.all(Radius.circular(8)),
-            border: Border.all(
-              color: Theme.of(context).colorScheme.outline,
-              width: 1,
+        border: Border.all(
+          color: Theme.of(context).colorScheme.outline,
+          width: 1,
+        ),
+      ),
+      width: 128,
+      height: 96,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Expanded(
+            child: Tooltip(
+              message: "Attach Photo",
+              child: InkWell(
+                borderRadius: BorderRadius.all(Radius.circular(8)),
+                onTap: () async {
+                  final result = await FileUtil.pickFile(FileType.image);
+                  if (result != null) {
+                    onFilePicked(result);
+                  }
+                },
+                child: Center(
+                  child: Icon(
+                    Icons.add_photo_alternate,
+                    size: 32,
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.onSurface.withAlpha(200),
+                  ),
+                ),
+              ),
             ),
           ),
-          width: 96,
-          height: 96,
-          child: Icon(
-            Icons.add,
-            size: 32,
-            color: Theme.of(context).colorScheme.onSurfaceVariant,
+          Container(
+            color: Theme.of(context).colorScheme.onSurface.withAlpha(128),
+            width: 2,
+            height: 24,
           ),
-        ),
+          Expanded(
+            child: Tooltip(
+              message: "Attach File",
+              child: InkWell(
+                borderRadius: BorderRadius.all(Radius.circular(8)),
+                onTap: () async {
+                  final result = await FileUtil.pickFile(
+                    FileType.custom,
+                    allowedExtensions: ResourceType.allExtensions,
+                  );
+                  if (result != null) {
+                    onFilePicked(result);
+                  }
+                },
+                child: Center(
+                  child: Icon(
+                    Icons.attach_file,
+                    size: 32,
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.onSurface.withAlpha(200),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     ),
   );
