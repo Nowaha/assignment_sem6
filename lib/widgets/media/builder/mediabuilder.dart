@@ -1,5 +1,5 @@
-import 'package:assignment_sem6/config/builder/imagebuilder.dart';
-import 'package:assignment_sem6/config/builder/videobuilder.dart';
+import 'package:assignment_sem6/widgets/media/builder/imagebuilder.dart';
+import 'package:assignment_sem6/widgets/media/builder/videobuilder.dart';
 import 'package:assignment_sem6/data/service/resourceservice.dart';
 import 'package:assignment_sem6/extension/iterable.dart';
 import 'package:assignment_sem6/widgets/media/mediaerror.dart';

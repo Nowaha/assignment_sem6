@@ -1,4 +1,4 @@
-import 'package:assignment_sem6/config/builder/mediabuilder.dart';
+import 'package:assignment_sem6/widgets/media/builder/mediabuilder.dart';
 import 'package:assignment_sem6/data/service/resourceservice.dart';
 import 'package:flutter/widgets.dart';
 import 'package:markdown_widget/config/configs.dart';
