@@ -1,4 +1,4 @@
-import 'package:assignment_sem6/config/imgbuilder.dart';
+import 'package:assignment_sem6/config/builder/mediabuilder.dart';
 import 'package:assignment_sem6/data/service/resourceservice.dart';
 import 'package:flutter/material.dart';
 import 'package:markdown_widget/config/configs.dart';
@@ -12,7 +12,7 @@ MarkdownConfig postEditMarkdownConfig({
 }) => MarkdownConfig(
   configs: [
     ImgConfig(
-      builder: editPostImgBuilder(
+      builder: editPostMediaBuilder(
         context: context,
         localResourceService: localResourceService,
         getContents: getContents,

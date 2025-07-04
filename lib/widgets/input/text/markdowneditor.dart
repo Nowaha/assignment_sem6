@@ -48,6 +48,17 @@ class _MarkdownEditorState extends State<MarkdownEditor> {
     }
   }
 
+  void _pickVideo() async {
+    if (!widget.enabled) return;
+
+    final resource = await FileUtil.pickFileAsResource(FileType.video);
+    if (resource != null) {
+      await widget.resourceService.addResource(resource);
+      widget.controller.insertVideo(resource.name, resource.uuid);
+      _focusNode.requestFocus();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Stack(
@@ -122,10 +133,15 @@ class _MarkdownEditorState extends State<MarkdownEditor> {
         Positioned(
           left: 4.0,
           bottom: 4.0,
-          child: EditorControls(
-            textFocusNode: _focusNode,
-            textController: widget.controller,
-            openImageSelector: _pickImage,
+          right: 0.0,
+          child: Align(
+            alignment: Alignment.bottomLeft,
+            child: EditorControls(
+              textFocusNode: _focusNode,
+              textController: widget.controller,
+              openImageSelector: _pickImage,
+              openVideoSelector: _pickVideo,
+            ),
           ),
         ),
       ],

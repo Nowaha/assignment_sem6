@@ -1,4 +1,4 @@
-import 'package:assignment_sem6/config/imgbuilder.dart';
+import 'package:assignment_sem6/config/builder/mediabuilder.dart';
 import 'package:assignment_sem6/data/service/resourceservice.dart';
 import 'package:flutter/widgets.dart';
 import 'package:markdown_widget/config/configs.dart';
@@ -17,7 +17,7 @@ final commentMarkdownConfigs = [
 MarkdownConfig commentMarkdownConfig({required BuildContext context}) =>
     MarkdownConfig(
       configs: [
-        ImgConfig(builder: postImgBuilder(context, maxWidth: 300)),
+        ImgConfig(builder: postMediaBuilder(context, maxWidth: 300)),
         ...commentMarkdownConfigs,
       ],
     );
@@ -30,7 +30,7 @@ MarkdownConfig commentEditMarkdownConfig({
 }) => MarkdownConfig(
   configs: [
     ImgConfig(
-      builder: editPostImgBuilder(
+      builder: editPostMediaBuilder(
         context: context,
         localResourceService: localResourceService,
         getContents: getContents,

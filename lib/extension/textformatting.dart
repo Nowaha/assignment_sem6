@@ -62,13 +62,30 @@ extension TextFormattingExtension on TextEditingController {
     String fileUUID, {
     int startingWidth = 300,
   }) {
-    final imageMarkdown = "![$fileName]($fileUUID|width=$startingWidth)";
+    final imageMarkdown = "![$fileName](image:$fileUUID|width=$startingWidth)";
     final newText =
         selection.textBefore(text) + imageMarkdown + selection.textAfter(text);
 
     final newSelection = TextSelection(
       baseOffset: selection.start,
       extentOffset: selection.end + imageMarkdown.length,
+    );
+
+    value = TextEditingValue(text: newText, selection: newSelection);
+  }
+
+  void insertVideo(
+    String fileName,
+    String fileUUID, {
+    int startingWidth = 300,
+  }) {
+    final videoMarkdown = "![$fileName](video:$fileUUID|width=$startingWidth)";
+    final newText =
+        selection.textBefore(text) + videoMarkdown + selection.textAfter(text);
+
+    final newSelection = TextSelection(
+      baseOffset: selection.start,
+      extentOffset: selection.end + videoMarkdown.length,
     );
 
     value = TextEditingValue(text: newText, selection: newSelection);
