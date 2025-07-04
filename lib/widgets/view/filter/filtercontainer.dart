@@ -1,6 +1,5 @@
 import 'package:assignment_sem6/widgets/collapsible/collapsiblecontainer.dart';
 import 'package:assignment_sem6/widgets/input/groupinput.dart';
-import 'package:assignment_sem6/widgets/view/filter/filter.dart';
 import 'package:assignment_sem6/widgets/view/filter/filters.dart';
 import 'package:assignment_sem6/widgets/view/filter/locationfilter.dart';
 import 'package:assignment_sem6/widgets/view/filter/search.dart';
@@ -76,13 +75,13 @@ class FilterContainer extends StatelessWidget {
           initiallyCollapsed: true,
           child: GroupInput(
             selectedGroups: filters.groups,
+            maxLength: 100,
             onChanged:
                 (newGroups) =>
                     onFilterApplied(filters.copyWith(groups: newGroups)),
           ),
         ),
       ),
-      SizedBox(width: double.infinity, child: FilterWidget()),
     ],
   );
 }
