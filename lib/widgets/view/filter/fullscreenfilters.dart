@@ -1,7 +1,7 @@
-import 'package:assignment_sem6/allinputscrollbehavior.dart';
 import 'package:assignment_sem6/widgets/input/dateselector.dart';
 import 'package:assignment_sem6/widgets/input/groupinput.dart';
 import 'package:assignment_sem6/widgets/input/timesuggestions.dart';
+import 'package:assignment_sem6/widgets/mouse/dragscrollable.dart';
 import 'package:assignment_sem6/widgets/screen.dart';
 import 'package:assignment_sem6/widgets/view/filter/filters.dart';
 import 'package:assignment_sem6/widgets/view/filter/locationfilter.dart';
@@ -50,18 +50,14 @@ class FullscreenFilters extends StatelessWidget {
             onFilterApplied(filters.copyWith(endDate: end));
           },
         ),
-        ScrollConfiguration(
-          behavior: AllInputScrollBehavior(),
-          child: SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            physics: const BouncingScrollPhysics(),
-            child: TimeSuggestions(
-              onRangeSelected: (range) {
-                onFilterApplied(
-                  filters.copyWith(startDate: range.start, endDate: range.end),
-                );
-              },
-            ),
+        DragScrollable(
+          scrollDirection: Axis.horizontal,
+          child: TimeSuggestions(
+            onRangeSelected: (range) {
+              onFilterApplied(
+                filters.copyWith(startDate: range.start, endDate: range.end),
+              );
+            },
           ),
         ),
         SizedBox(),
