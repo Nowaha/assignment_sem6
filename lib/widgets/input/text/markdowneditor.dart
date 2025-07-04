@@ -121,7 +121,7 @@ class _MarkdownEditorState extends State<MarkdownEditor> {
         ),
         Positioned(
           left: 4.0,
-          bottom: 24.0,
+          bottom: 4.0,
           child: EditorControls(
             textFocusNode: _focusNode,
             textController: widget.controller,

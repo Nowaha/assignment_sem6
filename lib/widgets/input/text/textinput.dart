@@ -6,7 +6,7 @@ class TextInput extends StatefulWidget {
   final FocusNode? focusNode;
   final String label;
   final String? errorText;
-  final TextEditingController? controller;
+  final TextEditingController controller;
   final ValueChanged<String>? onChanged;
   final bool? obscure;
   final bool? enabled;
@@ -26,7 +26,7 @@ class TextInput extends StatefulWidget {
     this.focusNode,
     required this.label,
     this.errorText,
-    this.controller,
+    required this.controller,
     this.onChanged,
     this.obscure,
     this.enabled,
@@ -79,7 +79,7 @@ class _TextInputState extends State<TextInput> {
               : TextInputType.text);
     }
 
-    return TextField(
+    final textField = TextField(
       focusNode: widget.focusNode,
       controller: widget.controller,
       onChanged: widget.onChanged,
@@ -102,7 +102,7 @@ class _TextInputState extends State<TextInput> {
         contentPadding: widget.padding,
         floatingLabelAlignment: FloatingLabelAlignment.start,
         alignLabelWithHint: true,
-        counterText: widget.showCounter == true ? null : "",
+        counterText: "",
         suffixIcon:
             widget.obscure != null
                 ? ObscureToggle(
@@ -112,6 +112,35 @@ class _TextInputState extends State<TextInput> {
                 : null,
       ),
     );
+
+    if (widget.showCounter == true && widget.maxLength != null) {
+      return Stack(
+        children: [
+          textField,
+          ListenableBuilder(
+            listenable: widget.controller,
+            builder: (context, child) {
+              final length = widget.controller.text.length;
+              return Positioned(
+                right: 12,
+                bottom: 12,
+                child: IgnorePointer(
+                  child: Text(
+                    "$length/${widget.maxLength}",
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      fontSize: 12,
+                    ),
+                  ),
+                ),
+              );
+            },
+          ),
+        ],
+      );
+    }
+
+    return textField;
   }
 
   @override
