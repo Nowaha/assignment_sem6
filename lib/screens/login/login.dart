@@ -125,7 +125,7 @@ class _LoginPageState extends State<LoginPage> with FormMixin {
             ),
 
             buildFormTextInput(
-              "Username/ Email Address",
+              "Username / Email Address",
               usernameEmailController,
               autoFocus: true,
             ),
