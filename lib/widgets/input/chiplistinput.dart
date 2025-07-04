@@ -1,4 +1,5 @@
 import 'package:assignment_sem6/extension/iterable.dart';
+import 'package:assignment_sem6/util/keyboard.dart';
 import 'package:assignment_sem6/widgets/shakeable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -79,19 +80,58 @@ class _ChipListInputState extends State<ChipListInput> {
     _updateFiltered();
   }
 
-  void _onKeyEvent(KeyEvent event) {
-    if ((event is KeyDownEvent || event is KeyRepeatEvent) &&
-        event.logicalKey == LogicalKeyboardKey.backspace) {
-      if (_controller.text.isEmpty && widget.chips.isNotEmpty) {
-        final lastChip = widget.chips.last;
-        widget.onChipRemoved(lastChip);
-        _controller.text = "$lastChip ";
-        _controller.selection = TextSelection.fromPosition(
-          TextPosition(offset: _controller.text.length),
-        );
+  KeyEventResult _onKeyEvent(FocusNode focusNode, KeyEvent event) {
+    if (event is KeyDownEvent || event is KeyRepeatEvent) {
+      if (event.logicalKey == LogicalKeyboardKey.backspace) {
+        if (_controller.text.isEmpty && widget.chips.isEmpty) {
+          shakeKey.currentState?.shake();
+          return KeyEventResult.handled;
+        }
+
+        if (_controller.text.isNotEmpty || widget.chips.isEmpty) {
+          return KeyEventResult.ignored;
+        }
+
+        _goToPreviousChip();
+        return KeyEventResult.handled;
+      } else if (event.logicalKey == LogicalKeyboardKey.tab) {
+        final isShiftPressed = KeyboardUtil.isShiftPressed();
+
+        if (isShiftPressed) {
+          if (widget.chips.isEmpty) {
+            shakeKey.currentState?.shake();
+            return KeyEventResult.handled;
+          }
+
+          _goToPreviousChip();
+          return KeyEventResult.handled;
+        }
+
         _updateFiltered();
+        if (filteredSuggestions.isNotEmpty) {
+          _controller.text = filteredSuggestions.first;
+          _addChip();
+          return KeyEventResult.handled;
+        } else if (widget.suggestions.contains(_controller.text) ||
+            widget.suggestions.isEmpty) {
+          _addChip();
+        } else {
+          shakeKey.currentState?.shake();
+        }
+        return KeyEventResult.handled;
       }
     }
+    return KeyEventResult.ignored;
+  }
+
+  void _goToPreviousChip() {
+    final lastChip = widget.chips.last;
+    widget.onChipRemoved(lastChip);
+    _controller.text = lastChip;
+    _controller.selection = TextSelection.fromPosition(
+      TextPosition(offset: _controller.text.length),
+    );
+    _updateFiltered();
   }
 
   void _updateFiltered() {
@@ -137,7 +177,7 @@ class _ChipListInputState extends State<ChipListInput> {
             backgroundColor: Theme.of(context).colorScheme.surfaceContainer,
             onPressed: _inputFocusNode.requestFocus,
             label: IntrinsicWidth(
-              child: KeyboardListener(
+              child: Focus(
                 focusNode: FocusNode(),
                 onKeyEvent: _onKeyEvent,
                 child: TextField(
