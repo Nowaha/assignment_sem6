@@ -1,4 +1,4 @@
-import 'package:assignment_sem6/widgets/image/mediaerror.dart';
+import 'package:assignment_sem6/widgets/media/mediaerror.dart';
 import 'package:flutter/material.dart';
 
 ImageErrorWidgetBuilder postImageErrorBuilder =

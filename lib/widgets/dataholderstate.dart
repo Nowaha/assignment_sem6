@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 abstract class DataHolderState<T extends StatefulWidget, D> extends State<T> {
   bool _isLoading = true;
+  bool get silent => false;
   D? data;
 
   bool get isLoading => _isLoading;
@@ -35,7 +36,7 @@ abstract class DataHolderState<T extends StatefulWidget, D> extends State<T> {
     });
 
     data = await getDataFromSource().onError((error, stackTrace) {
-      if (mounted) {
+      if (!silent && mounted) {
         Toast.showToast(context, "There was an error loading your data.");
       }
       print(error);
@@ -48,7 +49,7 @@ abstract class DataHolderState<T extends StatefulWidget, D> extends State<T> {
     });
 
     if (!mounted) return;
-    if (data == null) {
+    if (!silent && data == null) {
       Toast.showToast(context, "Data could not be found.");
     }
 

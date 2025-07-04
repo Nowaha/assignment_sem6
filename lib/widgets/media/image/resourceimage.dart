@@ -1,8 +1,9 @@
 import 'package:assignment_sem6/data/entity/impl/resource.dart';
 import 'package:assignment_sem6/data/service/resourceservice.dart';
 import 'package:assignment_sem6/widgets/dataholderstate.dart';
-import 'package:assignment_sem6/widgets/image/postimageerrorbuilder.dart';
-import 'package:assignment_sem6/widgets/image/postimageframebuilder.dart';
+import 'package:assignment_sem6/widgets/media/mediaerror.dart';
+import 'package:assignment_sem6/widgets/media/image/postimageerrorbuilder.dart';
+import 'package:assignment_sem6/widgets/media/image/postimageframebuilder.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -21,6 +22,13 @@ class ResourceImage extends StatefulWidget {
 }
 
 class _ResourceImageState extends DataHolderState<ResourceImage, Resource> {
+  @override
+  bool silent = true;
+
+  @override
+  Widget errorIndicator(BuildContext context) =>
+      MediaError(message: "Failed to load image.");
+
   @override
   Widget content(BuildContext context) {
     if (data == null) {

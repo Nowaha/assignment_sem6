@@ -1,7 +1,7 @@
 import 'package:assignment_sem6/data/entity/impl/resource.dart';
 import 'package:assignment_sem6/util/fileutil.dart';
-import 'package:assignment_sem6/widgets/image/postimageerrorbuilder.dart';
-import 'package:assignment_sem6/widgets/image/postimageframebuilder.dart';
+import 'package:assignment_sem6/widgets/media/image/postimageerrorbuilder.dart';
+import 'package:assignment_sem6/widgets/media/image/postimageframebuilder.dart';
 import 'package:flutter/material.dart';
 
 class AttachmentWidget extends StatefulWidget {
