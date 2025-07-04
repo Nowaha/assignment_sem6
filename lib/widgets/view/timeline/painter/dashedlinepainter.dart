@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 
 class DashedLinePainter extends CustomPainter {
@@ -69,7 +71,11 @@ class DashedLinePainter extends CustomPainter {
   ) {
     double startY = 0;
     while (startY < size.height) {
-      canvas.drawLine(Offset(x, startY), Offset(x, startY + dashHeight), paint);
+      canvas.drawLine(
+        Offset(x, startY),
+        Offset(x, min(startY + dashHeight, size.height)),
+        paint,
+      );
       startY += dashHeight + dashSpacing;
     }
   }

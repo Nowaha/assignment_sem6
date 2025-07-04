@@ -1,18 +1,15 @@
 import 'package:assignment_sem6/data/dao/impl/memoryresourcedao.dart';
 import 'package:assignment_sem6/data/entity/impl/comment.dart';
-import 'package:assignment_sem6/data/entity/impl/resource.dart';
 import 'package:assignment_sem6/data/repo/impl/resourcerepositoryimpl.dart';
 import 'package:assignment_sem6/data/service/commentservice.dart';
 import 'package:assignment_sem6/data/service/data/commentview.dart';
 import 'package:assignment_sem6/data/service/impl/resourceserviceimpl.dart';
 import 'package:assignment_sem6/data/service/resourceservice.dart';
 import 'package:assignment_sem6/state/authstate.dart';
-import 'package:assignment_sem6/util/fileutil.dart';
 import 'package:assignment_sem6/util/validation.dart';
 import 'package:assignment_sem6/widgets/comment/commentwidget.dart';
 import 'package:assignment_sem6/widgets/input/text/markdowneditor.dart';
 import 'package:assignment_sem6/widgets/loadingiconbutton.dart';
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -119,32 +116,6 @@ class _WriteCommentState extends State<WriteComment> {
           mainAxisAlignment: MainAxisAlignment.end,
           spacing: 8,
           children: [
-            IconButton.filledTonal(
-              icon: Icon(Icons.add_photo_alternate_outlined),
-              iconSize: 20,
-              constraints: BoxConstraints(),
-              onPressed: () async {
-                final file = await FileUtil.pickFile(FileType.image);
-                if (file == null) return;
-                if (file.bytes == null || file.bytes!.isEmpty) return;
-
-                final fileName = file.name;
-                final fileExtension = fileName.split(".").last.toLowerCase();
-                final resource = Resource.create(
-                  type: ResourceType.image,
-                  name: fileName.replaceAll(".$fileExtension", ""),
-                  originalExtension: fileExtension,
-                  data: file.bytes!,
-                );
-                await _localResourceService.addResource(resource);
-
-                setState(() {
-                  _controller.text +=
-                      "\n![$fileName](${resource.uuid}|width=300)";
-                });
-              },
-            ),
-            Spacer(),
             OutlinedButton(
               onPressed: () {
                 setState(() {
@@ -155,7 +126,7 @@ class _WriteCommentState extends State<WriteComment> {
             ),
             LoadingIconButton(
               onPressed: _onSubmit,
-              label: "Post Comment",
+              label: "Post",
               loading: _loading,
               icon: Icons.send_rounded,
               iconSize: 18,

@@ -6,7 +6,9 @@ import 'package:assignment_sem6/state/authstate.dart';
 import 'package:assignment_sem6/util/date.dart';
 import 'package:assignment_sem6/util/role.dart';
 import 'package:assignment_sem6/widgets/actualtextbutton.dart';
+import 'package:assignment_sem6/widgets/comment/commentsection.dart';
 import 'package:assignment_sem6/widgets/comment/writecomment.dart';
+import 'package:assignment_sem6/widgets/view/timeline/painter/dashedlinepainter.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:markdown_widget/config/markdown_generator.dart';
@@ -151,7 +153,7 @@ class _CommentWidgetState extends State<CommentWidget> {
     bool isReply = widget.comment.comment.replyToUUID != null;
     return Padding(
       padding: EdgeInsets.only(
-        left: isReply ? 32.0 : 0.0,
+        left: isReply ? 42.0 : 0.0,
         top: isReply ? 16.0 : 32.0,
       ),
       child: Column(
@@ -161,9 +163,8 @@ class _CommentWidgetState extends State<CommentWidget> {
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(8),
               border: Border.all(color: Theme.of(context).colorScheme.outline),
-              color: Theme.of(
-                context,
-              ).colorScheme.surfaceContainerLow.withAlpha(100),
+              color: Theme.of(context).colorScheme.surfaceContainerLow
+                  .withAlpha(widget.isPreview ? 255 : 100),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -232,19 +233,42 @@ class _CommentWidgetState extends State<CommentWidget> {
             ),
           ),
           if (_replyOpen)
-            Padding(
-              padding: const EdgeInsets.only(left: 32.0, top: 16.0),
-              child: WriteComment(
-                postUUID: widget.comment.comment.postUUID,
-                replyToUUID: widget.comment.comment.uuid,
-                onCommentAdded: () {
-                  setState(() {
-                    _replyOpen = false;
-                  });
+            Stack(
+              children: [
+                Positioned(
+                  left: CommentSection.replyLeftPadding / 2,
+                  top: 0,
+                  bottom: 0,
+                  child: CustomPaint(
+                    painter: DashedLinePainter.vertical(
+                      x: 0,
+                      dashHeight: 14.0,
+                      dashSpacing: 8.0,
+                      strokeWidth: 2.0,
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.outline.withAlpha(100),
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(
+                    left: CommentSection.replyLeftPadding,
+                    top: 16.0,
+                  ),
+                  child: WriteComment(
+                    postUUID: widget.comment.comment.postUUID,
+                    replyToUUID: widget.comment.comment.uuid,
+                    onCommentAdded: () {
+                      setState(() {
+                        _replyOpen = false;
+                      });
 
-                  widget.onReply?.call();
-                },
-              ),
+                      widget.onReply?.call();
+                    },
+                  ),
+                ),
+              ],
             ),
         ],
       ),
