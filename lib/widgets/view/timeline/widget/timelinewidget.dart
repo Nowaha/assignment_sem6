@@ -1,8 +1,9 @@
 import 'package:assignment_sem6/extension/color.dart';
+import 'package:assignment_sem6/util/date.dart';
 import 'package:assignment_sem6/widgets/view/timeline/item/timelineitem.dart';
 import 'package:flutter/material.dart';
 
-class TimelineElement extends StatefulWidget {
+class TimelineWidget extends StatefulWidget {
   static const headerHeight = 60.0;
   static const snap = 20.0;
 
@@ -11,8 +12,7 @@ class TimelineElement extends StatefulWidget {
   final double center;
   final double width;
   final double height;
-  final String startTime;
-  final String endTime;
+  final bool includeSeconds;
   final bool hovered;
   final bool selected;
   final bool inFront;
@@ -25,15 +25,14 @@ class TimelineElement extends StatefulWidget {
   late final bool isHanging;
   late final Color textColor;
 
-  TimelineElement({
+  TimelineWidget({
     super.key,
     required this.item,
     required this.left,
     required this.center,
     required this.width,
     required this.height,
-    required this.startTime,
-    required this.endTime,
+    required this.includeSeconds,
     this.hovered = false,
     this.selected = false,
     this.inFront = false,
@@ -56,10 +55,10 @@ class TimelineElement extends StatefulWidget {
   }
 
   @override
-  State<StatefulWidget> createState() => _TimelineElementState();
+  State<StatefulWidget> createState() => _TimelineWidgetState();
 }
 
-class _TimelineElementState extends State<TimelineElement> {
+class _TimelineWidgetState extends State<TimelineWidget> {
   Offset? _dragStart;
 
   Size _getSize(TextSpan textSpan) {
@@ -73,8 +72,23 @@ class _TimelineElementState extends State<TimelineElement> {
 
   @override
   Widget build(BuildContext context) {
+    final includeSeconds = widget.includeSeconds || widget.inFront;
+    final start = DateUtil.formatTime(
+      widget.item.startTimestamp,
+      includeSeconds,
+    );
+    final end = DateUtil.formatTime(widget.item.endTimestamp, includeSeconds);
+    final startTimeWithSeconds =
+        includeSeconds
+            ? start
+            : DateUtil.formatTime(widget.item.startTimestamp, true);
+    final endTimeWithSeconds =
+        includeSeconds
+            ? end
+            : DateUtil.formatTime(widget.item.endTimestamp, true);
+
     final startSpan = TextSpan(
-      text: widget.startTime,
+      text: start,
       style: TextStyle(color: widget.textColor),
     );
     final startSize = _getSize(startSpan);
@@ -86,7 +100,7 @@ class _TimelineElementState extends State<TimelineElement> {
     final nameSize = _getSize(nameSpan);
 
     final endSpan = TextSpan(
-      text: widget.endTime,
+      text: end,
       style: TextStyle(color: widget.textColor),
     );
     final endSize = _getSize(endSpan);
@@ -167,7 +181,7 @@ class _TimelineElementState extends State<TimelineElement> {
                     child: Tooltip(
                       preferBelow: widget.isHanging,
                       message:
-                          "${widget.item.name}\n(${widget.startTime} - ${widget.endTime})\nTags: ${widget.item.tags.join(", ")}",
+                          "${widget.item.name}\n($startTimeWithSeconds - $endTimeWithSeconds)\nTags: ${widget.item.tags.join(", ")}",
                       decoration: BoxDecoration(
                         color: widget.item.color.withAlpha(200),
                         borderRadius: BorderRadius.circular(8.0),

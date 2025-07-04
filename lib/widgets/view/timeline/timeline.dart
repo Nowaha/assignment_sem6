@@ -2,7 +2,7 @@ import 'package:assignment_sem6/util/screen.dart';
 import 'package:assignment_sem6/util/timelineutil.dart';
 import 'package:assignment_sem6/widgets/view/timeline/timelinecontroller.dart';
 import 'package:assignment_sem6/widgets/view/timeline/timelinecontrols.dart';
-import 'package:assignment_sem6/widgets/view/timeline/timelineelement.dart';
+import 'package:assignment_sem6/widgets/view/timeline/widget/timelinewidget.dart';
 import 'package:assignment_sem6/widgets/view/timeline/item/timelineitem.dart';
 import 'package:assignment_sem6/widgets/view/timeline/timelineindicator.dart';
 import 'package:assignment_sem6/widgets/view/timeline/timelineline.dart';
@@ -43,18 +43,6 @@ class TimelineState extends State<Timeline> {
       return SizedBox.shrink();
     }
 
-    final startTime = DateTime.fromMillisecondsSinceEpoch(item.startTimestamp);
-    final endTime = DateTime.fromMillisecondsSinceEpoch(item.endTimestamp);
-    String startTimeString =
-        "${startTime.hour.toString().padLeft(2, '0')}:${startTime.minute.toString().padLeft(2, '0')}";
-    String endTimeString =
-        "${endTime.hour.toString().padLeft(2, '0')}:${endTime.minute.toString().padLeft(2, '0')}";
-
-    if (tickEvery < 1000 * 60 || hovered) {
-      startTimeString += ":${startTime.second.toString().padLeft(2, '0')}";
-      endTimeString += ":${endTime.second.toString().padLeft(2, '0')}";
-    }
-
     final elementWidth = TimelineUtil.getElementWidth(
       screenWidth,
       widget.controller.visibleTimeScale,
@@ -63,7 +51,7 @@ class TimelineState extends State<Timeline> {
     );
     final elementHeight = 80.0;
 
-    final element = TimelineElement(
+    final element = TimelineWidget(
       key: ValueKey(
         item.key + (hovered ? "-hovered" : (inFront ? "-infront" : "")),
       ),
@@ -93,8 +81,7 @@ class TimelineState extends State<Timeline> {
       center: screenHeight / 2,
       width: elementWidth,
       height: elementHeight,
-      startTime: startTimeString,
-      endTime: endTimeString,
+      includeSeconds: tickEvery < 1000 * 60 || hovered,
       selected: widget.controller.selectedItem.value == item.key,
     );
     return element;
