@@ -1,5 +1,6 @@
 import 'package:assignment_sem6/allinputscrollbehavior.dart';
 import 'package:assignment_sem6/widgets/input/dateselector.dart';
+import 'package:assignment_sem6/widgets/input/groupinput.dart';
 import 'package:assignment_sem6/widgets/input/timesuggestions.dart';
 import 'package:assignment_sem6/widgets/screen.dart';
 import 'package:assignment_sem6/widgets/view/filter/filters.dart';
@@ -70,6 +71,15 @@ class FullscreenFilters extends StatelessWidget {
           updateLocation:
               (newLocationRect) =>
                   onFilterApplied(filters.copyWithLocation(newLocationRect)),
+        ),
+        SizedBox(),
+        Text("Groups", style: Theme.of(context).textTheme.titleMedium),
+        GroupInput(
+          selectedGroups: filters.groups,
+          maxLength: 100,
+          onChanged:
+              (newGroups) =>
+                  onFilterApplied(filters.copyWith(groups: newGroups)),
         ),
       ],
     ),
