@@ -17,6 +17,8 @@ class TimelineController extends ChangeNotifier {
 
   double _verticalOffset = 0;
 
+  bool _layerShiftMode = false;
+
   TimelineController({
     required Map<String, TimelineItem> items,
     required int startTimestamp,
@@ -76,6 +78,14 @@ class TimelineController extends ChangeNotifier {
 
   int get visibleTimeScale => _visibleEndTimestamp - _visibleStartTimestamp;
 
+  bool get layerShiftMode => _layerShiftMode;
+
+  set layerShiftMode(bool value) {
+    if (_layerShiftMode == value) return;
+    _layerShiftMode = value;
+    notifyListeners();
+  }
+
   int getTickEvery(int totalWidth) =>
       TimelineUtil.calculateTickEvery(visibleTimeScale, totalWidth);
 
@@ -110,9 +120,15 @@ class TimelineController extends ChangeNotifier {
 
   void updateItems(List<TimelineItem> newItems, {bool resetSelected = true}) {
     List<TimelineItem> sorted = List.from(newItems);
-    sorted.sort(
-      (a, b) => b.effectiveLayer.abs().compareTo(a.effectiveLayer.abs()),
-    );
+
+    if (_layerShiftMode) {
+      sorted.sort(
+        (a, b) => b.effectiveLayer.abs().compareTo(a.effectiveLayer.abs()),
+      );
+    } else {
+      sorted.sort((a, b) => b.rawLayer.abs().compareTo(a.rawLayer.abs()));
+    }
+
     _items = {for (final item in sorted) item.key: item};
 
     if (resetSelected) {

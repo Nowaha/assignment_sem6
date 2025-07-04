@@ -1,6 +1,6 @@
-import 'package:assignment_sem6/extension/color.dart';
-import 'package:assignment_sem6/util/date.dart';
+import 'package:assignment_sem6/widgets/mouse/clickhoverlistener.dart';
 import 'package:assignment_sem6/widgets/view/timeline/item/timelineitem.dart';
+import 'package:assignment_sem6/widgets/view/timeline/widget/timelineheader.dart';
 import 'package:flutter/material.dart';
 
 class TimelineWidget extends StatefulWidget {
@@ -23,7 +23,6 @@ class TimelineWidget extends StatefulWidget {
   late final double finalHeight;
   late final double top;
   late final bool isHanging;
-  late final Color textColor;
 
   TimelineWidget({
     super.key,
@@ -50,8 +49,6 @@ class TimelineWidget extends StatefulWidget {
       finalHeight = height + ((layer.abs() - 1) * height * 0.75);
       top = center;
     }
-
-    textColor = item.color.getForegroundColor();
   }
 
   @override
@@ -59,75 +56,8 @@ class TimelineWidget extends StatefulWidget {
 }
 
 class _TimelineWidgetState extends State<TimelineWidget> {
-  Offset? _dragStart;
-
-  Size _getSize(TextSpan textSpan) {
-    final painter = TextPainter(
-      text: textSpan,
-      textDirection: TextDirection.ltr,
-      maxLines: 1,
-    )..layout();
-    return painter.size;
-  }
-
   @override
   Widget build(BuildContext context) {
-    final includeSeconds = widget.includeSeconds || widget.inFront;
-    final start = DateUtil.formatTime(
-      widget.item.startTimestamp,
-      includeSeconds,
-    );
-    final end = DateUtil.formatTime(widget.item.endTimestamp, includeSeconds);
-    final startTimeWithSeconds =
-        includeSeconds
-            ? start
-            : DateUtil.formatTime(widget.item.startTimestamp, true);
-    final endTimeWithSeconds =
-        includeSeconds
-            ? end
-            : DateUtil.formatTime(widget.item.endTimestamp, true);
-
-    final startSpan = TextSpan(
-      text: start,
-      style: TextStyle(color: widget.textColor),
-    );
-    final startSize = _getSize(startSpan);
-
-    final nameSpan = TextSpan(
-      text: widget.item.name,
-      style: TextStyle(color: widget.textColor, fontWeight: FontWeight.bold),
-    );
-    final nameSize = _getSize(nameSpan);
-
-    final endSpan = TextSpan(
-      text: end,
-      style: TextStyle(color: widget.textColor),
-    );
-    final endSize = _getSize(endSpan);
-
-    final timeWidth = startSize.width + endSize.width + 24;
-
-    final Widget textRow;
-    if (widget.width > timeWidth + 48) {
-      textRow = Row(
-        spacing: 12,
-        children: [
-          Text.rich(startSpan),
-          Expanded(child: Text.rich(nameSpan, overflow: TextOverflow.ellipsis)),
-          Text.rich(endSpan),
-        ],
-      );
-    } else if (widget.width > timeWidth + 16) {
-      textRow = Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [Text.rich(startSpan), Text.rich(endSpan)],
-      );
-    } else if (widget.width > startSize.width + 32) {
-      textRow = Text.rich(startSpan, textAlign: TextAlign.start);
-    } else {
-      textRow = SizedBox(height: nameSize.height);
-    }
-
     return Positioned(
       left: widget.left,
       top: widget.top,
@@ -165,37 +95,15 @@ class _TimelineWidgetState extends State<TimelineWidget> {
                       ? MainAxisAlignment.end
                       : MainAxisAlignment.start,
               children: [
-                MouseRegion(
-                  onEnter: (_) => widget.onHover?.call(),
-                  onExit: (_) => widget.onLeave?.call(),
-                  child: Listener(
-                    onPointerDown: (event) {
-                      _dragStart = event.localPosition;
-                    },
-                    onPointerUp: (event) {
-                      if (_dragStart == null ||
-                          (event.localPosition - _dragStart!).distance < 5) {
-                        widget.onSelect?.call();
-                      }
-                    },
-                    child: Tooltip(
-                      preferBelow: widget.isHanging,
-                      message:
-                          "${widget.item.name}\n($startTimeWithSeconds - $endTimeWithSeconds)\nTags: ${widget.item.tags.join(", ")}",
-                      decoration: BoxDecoration(
-                        color: widget.item.color.withAlpha(200),
-                        borderRadius: BorderRadius.circular(8.0),
-                      ),
-                      textStyle: TextStyle(color: widget.textColor),
-                      child: Container(
-                        color: widget.item.color,
-                        alignment: Alignment.centerLeft,
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: textRow,
-                        ),
-                      ),
-                    ),
+                ClickHoverListener(
+                  onClick: () => widget.onSelect?.call(),
+                  mouseEnter: widget.onHover ?? () {},
+                  mouseLeave: widget.onLeave ?? () {},
+                  child: TimelineHeader(
+                    item: widget.item,
+                    width: widget.width,
+                    includeSeconds: widget.includeSeconds || widget.inFront,
+                    isHanging: widget.isHanging,
                   ),
                 ),
               ],
