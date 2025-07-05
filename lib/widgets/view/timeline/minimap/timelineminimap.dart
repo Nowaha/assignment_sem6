@@ -1,22 +1,17 @@
+import 'package:assignment_sem6/state/timelinestate.dart';
 import 'package:assignment_sem6/widgets/view/timeline/minimap/seeker.dart';
 import 'package:assignment_sem6/widgets/view/timeline/minimap/timelineminimappostpainter.dart';
 import 'package:assignment_sem6/widgets/view/timeline/minimap/timelineminimapseekerpainter.dart';
-import 'package:assignment_sem6/widgets/view/timeline/timelinecontroller.dart';
 import 'package:assignment_sem6/widgets/view/timeline/timelinezoom.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 
 class TimelineMiniMap extends StatefulWidget {
-  final TimelineController controller;
   final double height;
   final Function(bool show)? setShowZoom;
 
-  const TimelineMiniMap({
-    super.key,
-    required this.controller,
-    this.height = 90.0,
-    this.setShowZoom,
-  });
+  const TimelineMiniMap({super.key, this.height = 90.0, this.setShowZoom});
 
   @override
   State<StatefulWidget> createState() => _TimelineMiniMapState();
@@ -31,14 +26,16 @@ class _TimelineMiniMapState extends State<TimelineMiniMap> {
   void initState() {
     super.initState();
 
-    widget.controller.addListener(() {
+    final timelineState = context.read<TimelineState>();
+    timelineState.addListener(() {
       _updateSeekerInfo();
     });
   }
 
   void _updateSeekerInfo() {
-    final controller = widget.controller;
-    if (controller.visibleStartTimestamp == controller.visibleEndTimestamp) {
+    final timelineState = context.read<TimelineState>();
+    if (timelineState.visibleStartTimestamp ==
+        timelineState.visibleEndTimestamp) {
       setState(() {
         _seekerInfo = SeekerInfo.zero();
       });
@@ -46,12 +43,12 @@ class _TimelineMiniMapState extends State<TimelineMiniMap> {
     }
 
     final seekerStart =
-        (controller.visibleStartTimestamp - controller.startTimestamp) /
-        (controller.endTimestamp - controller.startTimestamp);
+        (timelineState.visibleStartTimestamp - timelineState.startTimestamp) /
+        (timelineState.endTimestamp - timelineState.startTimestamp);
 
     final seekerEnd =
-        (controller.visibleEndTimestamp - controller.startTimestamp) /
-        (controller.endTimestamp - controller.startTimestamp);
+        (timelineState.visibleEndTimestamp - timelineState.startTimestamp) /
+        (timelineState.endTimestamp - timelineState.startTimestamp);
 
     _setSeekerInfo(
       SeekerInfo(
@@ -107,7 +104,9 @@ class _TimelineMiniMapState extends State<TimelineMiniMap> {
 
   void _onDragLeft(double dx) {
     if (_seekerInfo == null) return;
-    widget.controller.adjustVisibleStart(dx.toInt());
+
+    final timelineState = context.read<TimelineState>();
+    timelineState.adjustVisibleStart(dx.toInt());
     setState(() {
       _hovering = Hovering.leftHandle;
     });
@@ -115,7 +114,9 @@ class _TimelineMiniMapState extends State<TimelineMiniMap> {
 
   void _onDragRight(double dx) {
     if (_seekerInfo == null) return;
-    widget.controller.adjustVisibleEnd(dx.toInt());
+
+    final timelineState = context.read<TimelineState>();
+    timelineState.adjustVisibleEnd(dx.toInt());
     setState(() {
       _hovering = Hovering.rightHandle;
     });
@@ -132,11 +133,12 @@ class _TimelineMiniMapState extends State<TimelineMiniMap> {
       _updateSeekerInfo();
     }
 
+    final timelineState = context.watch<TimelineState>();
+
     double width = MediaQuery.sizeOf(context).width;
 
     double dragSensitivity =
-        (widget.controller.endTimestamp - widget.controller.startTimestamp) /
-        width;
+        (timelineState.endTimestamp - timelineState.startTimestamp) / width;
 
     return TimelineZoom.delegate(
       dragSensitivity: dragSensitivity,
@@ -170,9 +172,9 @@ class _TimelineMiniMapState extends State<TimelineMiniMap> {
         });
       },
       invertGestureZoom: true,
-      zoom: widget.controller.zoom,
+      zoom: timelineState.zoom,
       pan: (pan) {
-        widget.controller.pan(-pan);
+        timelineState.pan(-pan);
         widget.setShowZoom?.call(true);
       },
       panEnd: () {
@@ -209,10 +211,10 @@ class _TimelineMiniMapState extends State<TimelineMiniMap> {
           },
           child: CustomPaint(
             painter: TimelineMinimapPostPainter(
-              items: widget.controller.items,
-              selectedItemKey: widget.controller.selectedItem.value,
-              startTimestamp: widget.controller.startTimestamp,
-              endTimestamp: widget.controller.endTimestamp,
+              items: timelineState.items,
+              selectedItemKey: timelineState.selectedItem.value,
+              startTimestamp: timelineState.startTimestamp,
+              endTimestamp: timelineState.endTimestamp,
               timelineColor: Theme.of(context).colorScheme.onSurface,
             ),
             foregroundPainter: TimelineMinimapSeekerPainter(

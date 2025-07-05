@@ -1,17 +1,16 @@
+import 'package:assignment_sem6/state/timelinestate.dart';
 import 'package:assignment_sem6/util/date.dart';
 import 'package:assignment_sem6/util/timelineutil.dart';
-import 'package:assignment_sem6/widgets/view/timeline/timelinecontroller.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class TimelineIndicator extends StatelessWidget {
-  final TimelineController controller;
-  final double timelineHeight;
   final bool isLeft;
+  final double timelineHeight;
   final VoidCallback? expand;
 
   const TimelineIndicator({
     super.key,
-    required this.controller,
     required this.timelineHeight,
     required this.isLeft,
     this.expand,
@@ -19,10 +18,12 @@ class TimelineIndicator extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final timelineState = context.watch<TimelineState>();
     bool isOnEdge =
         isLeft
-            ? controller.startTimestamp == controller.visibleStartTimestamp
-            : controller.endTimestamp == controller.visibleEndTimestamp;
+            ? timelineState.startTimestamp ==
+                timelineState.visibleStartTimestamp
+            : timelineState.endTimestamp == timelineState.visibleEndTimestamp;
 
     IconData iconData = isLeft ? Icons.arrow_left : Icons.arrow_right;
     final Color? backgroundColor;
@@ -64,7 +65,7 @@ class TimelineIndicator extends StatelessWidget {
             child: Tooltip(
               message:
                   isOnEdge
-                      ? "Expand to ${isLeft ? "left" : "right"} by ${DateUtil.formatIntervalShort(TimelineUtil.preferredExpansion(controller.visibleTimeScale))}"
+                      ? "Expand to ${isLeft ? "left" : "right"} by ${DateUtil.formatIntervalShort(TimelineUtil.preferredExpansion(timelineState.visibleTimeScale))}"
                       : "",
               child: Icon(iconData, size: 28, color: iconColor),
             ),

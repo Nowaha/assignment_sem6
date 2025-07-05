@@ -3,22 +3,62 @@ import 'package:assignment_sem6/widgets/noeffectinkwell.dart';
 import 'package:flutter/material.dart';
 
 class CollapsibleWithHeader extends StatefulWidget {
-  final String title;
+  final String? title;
+  final Widget? titleWidget;
   final bool containsError;
   final Widget child;
   final bool initiallyCollapsed;
   final Function(bool)? onCollapseChanged;
   final bool noIntrinsicWidth;
 
-  const CollapsibleWithHeader({
+  const CollapsibleWithHeader._({
     super.key,
     required this.title,
+    this.titleWidget,
     this.containsError = false,
     this.initiallyCollapsed = false,
     this.onCollapseChanged,
     this.noIntrinsicWidth = false,
     required this.child,
   });
+
+  const CollapsibleWithHeader.textTitle({
+    Key? key,
+    required String title,
+    Widget? child,
+    bool containsError = false,
+    bool initiallyCollapsed = false,
+    Function(bool)? onCollapseChanged,
+    bool noIntrinsicWidth = false,
+  }) : this._(
+         key: key,
+         title: title,
+         child: child ?? const SizedBox.shrink(),
+         containsError: containsError,
+         initiallyCollapsed: initiallyCollapsed,
+         onCollapseChanged: onCollapseChanged,
+         noIntrinsicWidth: noIntrinsicWidth,
+       );
+
+  const CollapsibleWithHeader.widgetTitle({
+    Key? key,
+    required Widget title,
+    required String tooltip,
+    Widget? child,
+    bool containsError = false,
+    bool initiallyCollapsed = false,
+    Function(bool)? onCollapseChanged,
+    bool noIntrinsicWidth = false,
+  }) : this._(
+         key: key,
+         titleWidget: title,
+         title: tooltip,
+         child: child ?? const SizedBox.shrink(),
+         containsError: containsError,
+         initiallyCollapsed: initiallyCollapsed,
+         onCollapseChanged: onCollapseChanged,
+         noIntrinsicWidth: noIntrinsicWidth,
+       );
 
   @override
   State<StatefulWidget> createState() => _CollapsibleWithHeaderState();
@@ -84,30 +124,35 @@ class _CollapsibleWithHeaderState extends State<CollapsibleWithHeader> {
                   ),
                 ),
                 Expanded(
-                  child: RichText(
-                    text: TextSpan(
-                      text: widget.title,
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        color:
-                            widget.containsError
-                                ? Theme.of(context).colorScheme.error
-                                : null,
+                  child:
+                      widget.titleWidget ??
+                      RichText(
+                        text: TextSpan(
+                          text: widget.title,
+                          style: Theme.of(
+                            context,
+                          ).textTheme.titleMedium?.copyWith(
+                            color:
+                                widget.containsError
+                                    ? Theme.of(context).colorScheme.error
+                                    : null,
+                          ),
+                          children:
+                              widget.containsError
+                                  ? [
+                                    TextSpan(
+                                      text: " (contains errors)",
+                                      style: Theme.of(
+                                        context,
+                                      ).textTheme.bodySmall?.copyWith(
+                                        color:
+                                            Theme.of(context).colorScheme.error,
+                                      ),
+                                    ),
+                                  ]
+                                  : [],
+                        ),
                       ),
-                      children:
-                          widget.containsError
-                              ? [
-                                TextSpan(
-                                  text: " (contains errors)",
-                                  style: Theme.of(
-                                    context,
-                                  ).textTheme.bodySmall?.copyWith(
-                                    color: Theme.of(context).colorScheme.error,
-                                  ),
-                                ),
-                              ]
-                              : [],
-                    ),
-                  ),
                 ),
               ],
             ),

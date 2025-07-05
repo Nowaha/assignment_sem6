@@ -2,12 +2,13 @@ import 'package:assignment_sem6/util/timelineutil.dart';
 import 'package:assignment_sem6/widgets/view/timeline/item/timelineitem.dart';
 import 'package:flutter/foundation.dart';
 
-import 'timeline.dart';
+import '../widgets/view/timeline/timeline.dart';
 
 typedef Range = ({int start, int end});
 
-class TimelineController extends ChangeNotifier {
+class TimelineState extends ChangeNotifier {
   Map<String, TimelineItem> _items;
+  ValueNotifier<String?> hoveredItem = ValueNotifier<String?>(null);
   ValueNotifier<String?> selectedItem = ValueNotifier<String?>(null);
   int _startTimestamp;
   int _endTimestamp;
@@ -19,7 +20,7 @@ class TimelineController extends ChangeNotifier {
 
   bool _layerShiftMode = false;
 
-  TimelineController({
+  TimelineState({
     required Map<String, TimelineItem> items,
     required int startTimestamp,
     required int endTimestamp,
@@ -33,9 +34,12 @@ class TimelineController extends ChangeNotifier {
        _startTimestamp = startTimestamp,
        _endTimestamp = endTimestamp,
        _visibleStartTimestamp = visibleStartTimestamp,
-       _visibleEndTimestamp = visibleEndTimestamp;
+       _visibleEndTimestamp = visibleEndTimestamp {
+    hoveredItem.addListener(notifyListeners);
+    selectedItem.addListener(notifyListeners);
+  }
 
-  TimelineController.withTimeScale({
+  TimelineState.withTimeScale({
     required Map<String, TimelineItem> items,
     required int startTimestamp,
     required int endTimestamp,

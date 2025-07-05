@@ -178,7 +178,7 @@ class _CreatePostState extends State<CreatePost> with FormMixin {
 
                     SizedBox(height: 12),
 
-                    CollapsibleWithHeader(
+                    CollapsibleWithHeader.textTitle(
                       title: "Attachments (${_attachments.length})",
                       noIntrinsicWidth: true,
                       initiallyCollapsed: true,
@@ -200,7 +200,7 @@ class _CreatePostState extends State<CreatePost> with FormMixin {
 
                     Divider(height: 32),
 
-                    CollapsibleWithHeader(
+                    CollapsibleWithHeader.textTitle(
                       title: "Post Metadata",
                       noIntrinsicWidth: true,
                       containsError: anyMetadataErrors,

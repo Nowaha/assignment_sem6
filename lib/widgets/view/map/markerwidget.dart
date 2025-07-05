@@ -1,12 +1,14 @@
+import 'package:assignment_sem6/state/timelinestate.dart';
 import 'package:assignment_sem6/util/date.dart';
+import 'package:assignment_sem6/widgets/mouse/clicklistener.dart';
 import 'package:assignment_sem6/widgets/view/map/markertimepainter.dart';
 import 'package:assignment_sem6/widgets/view/timeline/item/timelineitem.dart';
-import 'package:assignment_sem6/widgets/view/timeline/timelinecontroller.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class MarkerWidget extends StatefulWidget {
-  final TimelineController controller;
   final TimelineItem item;
+  final bool staticView;
   final int visibleTimelineStart;
   final int visibleTimelineEnd;
   final Color color;
@@ -14,8 +16,8 @@ class MarkerWidget extends StatefulWidget {
 
   const MarkerWidget({
     super.key,
-    required this.controller,
     required this.item,
+    this.staticView = false,
     required this.visibleTimelineStart,
     required this.visibleTimelineEnd,
     this.color = Colors.red,
@@ -27,25 +29,28 @@ class MarkerWidget extends StatefulWidget {
 }
 
 class _MarkerWidgetState extends State<MarkerWidget> {
+  late final TimelineState _timelineState;
   bool _hovering = false;
   bool _selected = false;
-  Offset? _downAt;
 
   @override
   void initState() {
-    widget.controller.selectedItem.addListener(_onSelectedItemChanged);
+    _timelineState = context.read<TimelineState>();
+    _timelineState.selectedItem.addListener(_onSelectedItemChanged);
     _onSelectedItemChanged();
+
     super.initState();
   }
 
   @override
   void dispose() {
-    widget.controller.selectedItem.removeListener(_onSelectedItemChanged);
+    _timelineState.selectedItem.removeListener(_onSelectedItemChanged);
     super.dispose();
   }
 
   void _onSelectedItemChanged() {
-    bool isSelected = widget.controller.selectedItem.value == widget.item.key;
+    final timelineState = context.read<TimelineState>();
+    bool isSelected = timelineState.selectedItem.value == widget.item.key;
     if (isSelected != _selected) {
       setState(() {
         _selected = isSelected;
@@ -59,29 +64,26 @@ class _MarkerWidgetState extends State<MarkerWidget> {
 
     return MouseRegion(
       onEnter: (_) {
+        if (widget.staticView) return;
         setState(() {
           _hovering = true;
         });
       },
       onExit: (_) {
+        if (widget.staticView) return;
         setState(() {
           _hovering = false;
         });
       },
-      child: Listener(
-        onPointerDown: (event) {
-          _downAt = event.localPosition;
-        },
-        onPointerUp: (event) {
-          if (_downAt != null &&
-              (event.localPosition - _downAt!).distance < 10) {
-            if (widget.controller.selectedItem.value == widget.item.key) {
-              widget.controller.selectedItem.value = null;
-            } else {
-              widget.controller.selectedItem.value = widget.item.key;
-            }
+      child: ClickListener(
+        onClick: () {
+          if (widget.staticView) return;
+          final timelineState = context.read<TimelineState>();
+          if (timelineState.selectedItem.value == widget.item.key) {
+            timelineState.selectedItem.value = null;
+          } else {
+            timelineState.selectedItem.value = widget.item.key;
           }
-          _downAt = null;
         },
         child: Tooltip(
           message:

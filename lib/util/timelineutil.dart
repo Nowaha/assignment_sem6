@@ -134,4 +134,8 @@ class TimelineUtil {
     final duration = endTimestamp - startTimestamp;
     return (duration ~/ 4).clamp(1000 * 60, 1000 * 60 * 60 * 24);
   }
+
+  static String generateKey(String postUUID) {
+    return "item-$postUUID";
+  }
 }

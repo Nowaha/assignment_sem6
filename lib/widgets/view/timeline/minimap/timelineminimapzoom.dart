@@ -1,10 +1,10 @@
+import 'package:assignment_sem6/state/timelinestate.dart';
 import 'package:assignment_sem6/widgets/view/timeline/minimap/timelineminimappostpainter.dart';
-import 'package:assignment_sem6/widgets/view/timeline/timelinecontroller.dart';
 import 'package:assignment_sem6/widgets/view/timeline/item/timelineitem.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class TimelineMinimapZoom extends StatefulWidget {
-  final TimelineController controller;
   final double width;
   final double height;
 
@@ -13,7 +13,6 @@ class TimelineMinimapZoom extends StatefulWidget {
 
   const TimelineMinimapZoom({
     super.key,
-    required this.controller,
     required this.width,
     required this.height,
     required this.fullWidth,
@@ -25,6 +24,7 @@ class TimelineMinimapZoom extends StatefulWidget {
 }
 
 class _TimelineMinimapZoomState extends State<TimelineMinimapZoom> {
+  late final TimelineState _timelineState;
   final List<TimelineItem> _filtered = [];
   int _firstTimestamp = -1;
   int _lastTimestamp = -1;
@@ -32,13 +32,15 @@ class _TimelineMinimapZoomState extends State<TimelineMinimapZoom> {
   @override
   void initState() {
     super.initState();
-    widget.controller.addListener(filter);
+
+    _timelineState = context.read<TimelineState>();
+    _timelineState.addListener(filter);
     filter();
   }
 
   @override
   void dispose() {
-    widget.controller.removeListener(filter);
+    _timelineState.removeListener(filter);
     super.dispose();
   }
 
@@ -50,17 +52,17 @@ class _TimelineMinimapZoomState extends State<TimelineMinimapZoom> {
         lastTimestamp = -1,
         backupLastTimestamp = -1;
 
-    for (final item in widget.controller.items) {
-      if (item.endTimestamp <= widget.controller.visibleStartTimestamp ||
-          item.startTimestamp >= widget.controller.visibleEndTimestamp) {
+    for (final item in _timelineState.items) {
+      if (item.endTimestamp <= _timelineState.visibleStartTimestamp ||
+          item.startTimestamp >= _timelineState.visibleEndTimestamp) {
         continue;
       }
 
       filtered.add(item);
 
       bool fullyOnScreen =
-          item.startTimestamp >= widget.controller.visibleStartTimestamp &&
-          item.endTimestamp <= widget.controller.visibleEndTimestamp;
+          item.startTimestamp >= _timelineState.visibleStartTimestamp &&
+          item.endTimestamp <= _timelineState.visibleEndTimestamp;
 
       if (fullyOnScreen) {
         if (item.startTimestamp < firstTimestamp || firstTimestamp == -1) {
@@ -116,8 +118,8 @@ class _TimelineMinimapZoomState extends State<TimelineMinimapZoom> {
           endTimestamp: _lastTimestamp,
           timelineColor:
               isDarkMode ? Theme.of(context).colorScheme.primary : Colors.black,
-          timelineStart: widget.controller.visibleStartTimestamp,
-          timelineEnd: widget.controller.visibleEndTimestamp,
+          timelineStart: _timelineState.visibleStartTimestamp,
+          timelineEnd: _timelineState.visibleEndTimestamp,
           timelineWidth: widget.fullWidth,
         ),
       ),

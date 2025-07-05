@@ -1,4 +1,5 @@
 import 'package:assignment_sem6/data/entity/impl/post.dart';
+import 'package:assignment_sem6/util/timelineutil.dart';
 import 'package:flutter/material.dart';
 import 'package:latlong2/latlong.dart';
 
@@ -13,7 +14,7 @@ class TimelineItem {
   late final int rawLayer;
   final double layerOffset;
 
-  String get key => "item-$postUUID";
+  String get key => TimelineUtil.generateKey(postUUID);
 
   late final double effectiveLayer;
 

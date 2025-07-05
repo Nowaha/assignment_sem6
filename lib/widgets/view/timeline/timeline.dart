@@ -1,6 +1,6 @@
+import 'package:assignment_sem6/state/timelinestate.dart';
 import 'package:assignment_sem6/util/screen.dart';
 import 'package:assignment_sem6/util/timelineutil.dart';
-import 'package:assignment_sem6/widgets/view/timeline/timelinecontroller.dart';
 import 'package:assignment_sem6/widgets/view/timeline/timelinecontrols.dart';
 import 'package:assignment_sem6/widgets/view/timeline/widget/timelineitemwidget.dart';
 import 'package:assignment_sem6/widgets/view/timeline/item/timelineitem.dart';
@@ -8,30 +8,28 @@ import 'package:assignment_sem6/widgets/view/timeline/timelineindicator.dart';
 import 'package:assignment_sem6/widgets/view/timeline/timelineline.dart';
 import 'package:assignment_sem6/widgets/view/timeline/timelinezoom.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class Timeline extends StatefulWidget {
   static const timelineItemHeight = 80.0;
-  final TimelineController controller;
   final VoidCallback? onMapButtonPressed;
   final VoidCallback? expandLeft;
   final VoidCallback? expandRight;
 
   const Timeline({
     super.key,
-    required this.controller,
     this.expandLeft,
     this.expandRight,
     this.onMapButtonPressed,
   });
 
   @override
-  State<StatefulWidget> createState() => TimelineState();
+  State<StatefulWidget> createState() => _TimelineState();
 }
 
-class TimelineState extends State<Timeline> {
-  final ValueNotifier<String?> _hovered = ValueNotifier(null);
-
+class _TimelineState extends State<Timeline> {
   Widget _buildChild(
+    TimelineState timelineState,
     TimelineItem? item,
     double screenWidth,
     double screenHeight,
@@ -45,7 +43,7 @@ class TimelineState extends State<Timeline> {
 
     final elementWidth = TimelineUtil.getElementWidth(
       screenWidth,
-      widget.controller.visibleTimeScale,
+      timelineState.visibleTimeScale,
       item.startTimestamp,
       item.endTimestamp,
     );
@@ -59,70 +57,61 @@ class TimelineState extends State<Timeline> {
       hovered: hovered,
       inFront: inFront,
       onHover: () {
-        _hovered.value = item.key;
+        timelineState.hoveredItem.value = item.key;
       },
       onLeave: () {
-        _hovered.value = null;
+        timelineState.hoveredItem.value = null;
       },
       onSelect: () {
-        if (widget.controller.selectedItem.value != item.key) {
-          widget.controller.selectedItem.value = item.key;
+        if (timelineState.selectedItem.value != item.key) {
+          timelineState.selectedItem.value = item.key;
         } else {
-          widget.controller.selectedItem.value = null;
+          timelineState.selectedItem.value = null;
         }
       },
       left: TimelineUtil.getElementLeftPosition(
         screenWidth,
-        widget.controller.visibleTimeScale,
-        widget.controller.visibleCenterTimestamp,
+        timelineState.visibleTimeScale,
+        timelineState.visibleCenterTimestamp,
         item,
         elementWidth,
       ),
-      layerShiftMode: widget.controller.layerShiftMode,
+      layerShiftMode: timelineState.layerShiftMode,
       center:
           screenHeight / 2 -
-          (widget.controller.layerShiftMode
-              ? 0.0
-              : widget.controller.verticalOffset),
+          (timelineState.layerShiftMode ? 0.0 : timelineState.verticalOffset),
       width: elementWidth,
       height: elementHeight,
       includeSeconds: tickEvery < 1000 * 60 || hovered,
-      selected: widget.controller.selectedItem.value == item.key,
+      selected: timelineState.selectedItem.value == item.key,
     );
     return element;
   }
 
   @override
   Widget build(BuildContext context) {
-    final listenables = Listenable.merge([
-      widget.controller,
-      widget.controller.selectedItem,
-      _hovered,
-    ]);
+    final timelineState = context.watch<TimelineState>();
 
     return LayoutBuilder(
       builder: (context, constraints) {
         final size = Size(constraints.maxWidth, constraints.maxHeight);
         return ListenableBuilder(
-          listenable: listenables,
+          listenable: timelineState.hoveredItem,
           builder: (context, _) {
             final screenUtil = ScreenUtil(context);
 
-            final tickEvery = widget.controller.getTickEvery(
-              size.width.toInt(),
-            );
+            final tickEvery = timelineState.getTickEvery(size.width.toInt());
 
-            final visibleItems = widget.controller.getVisibleItems();
+            final visibleItems = timelineState.getVisibleItems();
             return Stack(
               children: [
                 Positioned.fill(
                   child: TimelineZoom(
                     dragSensitivity:
-                        widget.controller.visibleTimeScale.toDouble() /
-                        size.width,
-                    zoom: (zoom) => widget.controller.zoom(zoom),
-                    pan: (pan) => widget.controller.pan(pan),
-                    panUp: (pan) => widget.controller.adjustVerticalOffset(pan),
+                        timelineState.visibleTimeScale.toDouble() / size.width,
+                    zoom: (zoom) => timelineState.zoom(zoom),
+                    pan: (pan) => timelineState.pan(pan),
+                    panUp: (pan) => timelineState.adjustVerticalOffset(pan),
                     child: ShaderMask(
                       shaderCallback: (bounds) {
                         return LinearGradient(
@@ -142,18 +131,19 @@ class TimelineState extends State<Timeline> {
                         children: [
                           for (final item in visibleItems)
                             _buildChild(
+                              timelineState,
                               item,
                               size.width,
                               size.height,
                               tickEvery,
                             ),
 
-                          if (widget.controller.selectedItem.value != null &&
-                              widget.controller.selectedItem.value !=
-                                  _hovered.value)
+                          if (timelineState.selectedItem.value != null &&
+                              timelineState.selectedItem.value !=
+                                  timelineState.hoveredItem.value)
                             _buildChild(
-                              widget.controller.itemsMap[widget
-                                  .controller
+                              timelineState,
+                              timelineState.itemsMap[timelineState
                                   .selectedItem
                                   .value!],
                               size.width,
@@ -163,9 +153,12 @@ class TimelineState extends State<Timeline> {
                               inFront: true,
                             ),
 
-                          if (_hovered.value != null)
+                          if (timelineState.hoveredItem.value != null)
                             _buildChild(
-                              widget.controller.itemsMap[_hovered.value!]!,
+                              timelineState,
+                              timelineState.itemsMap[timelineState
+                                  .hoveredItem
+                                  .value!]!,
                               size.width,
                               size.height,
                               tickEvery,
@@ -179,17 +172,16 @@ class TimelineState extends State<Timeline> {
                 ),
                 Positioned.fill(
                   child: TimelineLine(
-                    startTimestamp: widget.controller.startTimestamp,
-                    endTimestamp: widget.controller.endTimestamp,
-                    visibleStartTimestamp:
-                        widget.controller.visibleStartTimestamp,
-                    visibleEndTimestamp: widget.controller.visibleEndTimestamp,
-                    timescale: widget.controller.visibleTimeScale,
-                    centerTime: widget.controller.visibleCenterTimestamp,
+                    startTimestamp: timelineState.startTimestamp,
+                    endTimestamp: timelineState.endTimestamp,
+                    visibleStartTimestamp: timelineState.visibleStartTimestamp,
+                    visibleEndTimestamp: timelineState.visibleEndTimestamp,
+                    timescale: timelineState.visibleTimeScale,
+                    centerTime: timelineState.visibleCenterTimestamp,
                     tickEvery: tickEvery,
                     color: Theme.of(context).colorScheme.onSurface,
-                    offset: widget.controller.verticalOffset,
-                    layerShiftMode: widget.controller.layerShiftMode,
+                    offset: timelineState.verticalOffset,
+                    layerShiftMode: timelineState.layerShiftMode,
                   ),
                 ),
                 Positioned(
@@ -208,34 +200,32 @@ class TimelineState extends State<Timeline> {
                         ),
                       if (screenUtil.isBigScreen)
                         TimelineControls(
-                          onZoomIn: () => widget.controller.zoom(1.2),
-                          onZoomOut: () => widget.controller.zoom(0.8),
-                          onResetZoom: () => widget.controller.resetZoom(),
+                          onZoomIn: () => timelineState.zoom(1.2),
+                          onZoomOut: () => timelineState.zoom(0.8),
+                          onResetZoom: () => timelineState.resetZoom(),
                           onScrollLeft:
-                              () => widget.controller.pan(
-                                -widget.controller.visibleTimeScale ~/ 10,
+                              () => timelineState.pan(
+                                -timelineState.visibleTimeScale ~/ 10,
                               ),
                           onScrollRight:
-                              () => widget.controller.pan(
-                                widget.controller.visibleTimeScale ~/ 10,
+                              () => timelineState.pan(
+                                timelineState.visibleTimeScale ~/ 10,
                               ),
                           onScrollUp:
-                              () => widget.controller.adjustVerticalOffset(-50),
+                              () => timelineState.adjustVerticalOffset(-50),
                           onScrollDown:
-                              () => widget.controller.adjustVerticalOffset(50),
-                          onRecenter: () => widget.controller.recenter(),
+                              () => timelineState.adjustVerticalOffset(50),
+                          onRecenter: () => timelineState.recenter(),
                         ),
                     ],
                   ),
                 ),
                 TimelineIndicator(
-                  controller: widget.controller,
                   timelineHeight: size.height,
                   isLeft: true,
                   expand: widget.expandLeft,
                 ),
                 TimelineIndicator(
-                  controller: widget.controller,
                   timelineHeight: size.height,
                   isLeft: false,
                   expand: widget.expandRight,

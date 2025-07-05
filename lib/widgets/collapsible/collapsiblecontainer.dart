@@ -48,7 +48,7 @@ class _CollapsibleContainerState extends State<CollapsibleContainer> {
         border: widget.border,
         boxShadow: !_isCollapsed ? widget.boxShadow : null,
       ),
-      child: CollapsibleWithHeader(
+      child: CollapsibleWithHeader.textTitle(
         title: widget.title,
         initiallyCollapsed: widget.initiallyCollapsed,
         child: widget.child,
