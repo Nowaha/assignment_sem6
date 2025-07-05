@@ -1,6 +1,6 @@
 import 'package:assignment_sem6/screens/home/home.dart';
 import 'package:assignment_sem6/state/timelinestate.dart';
-import 'package:assignment_sem6/widgets/view/map/mapzoom.dart';
+import 'package:assignment_sem6/widgets/view/map/zoom/mapzoom.dart';
 import 'package:assignment_sem6/widgets/view/map/marker.dart';
 import 'package:assignment_sem6/widgets/view/timeline/item/timelineitem.dart';
 import 'package:flutter/material.dart';
