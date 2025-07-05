@@ -1,3 +1,4 @@
+import 'package:assignment_sem6/util/platform.dart';
 import 'package:flutter/material.dart';
 
 class Resizable extends StatefulWidget {
@@ -59,6 +60,7 @@ class _ResizableState extends State<Resizable> {
   Widget build(BuildContext context) {
     WidgetsBinding.instance.addPostFrameCallback(_afterLayout);
 
+    bool showHandle = _hovered || PlatformUtil.isMobile;
     return MouseRegion(
       onEnter: (_) => setState(() => _hovered = true),
       onExit: (_) {
@@ -71,7 +73,7 @@ class _ResizableState extends State<Resizable> {
       },
       child: SizedBox(
         width: _dragStartGlobalX == null ? _width + 20 : double.infinity,
-        height: _childHeight,
+        height: _childHeight ?? 0,
         child: Stack(
           clipBehavior: Clip.none,
           children: [
@@ -81,7 +83,7 @@ class _ResizableState extends State<Resizable> {
               width: _width,
               child: KeyedSubtree(key: _childKey, child: widget.child),
             ),
-            _hovered
+            showHandle
                 ? Positioned(
                   left: _width,
                   top: 0,
@@ -114,7 +116,7 @@ class _ResizableState extends State<Resizable> {
                     child: MouseRegion(
                       cursor: SystemMouseCursors.resizeLeftRight,
                       child: Container(
-                        width: 20,
+                        width: PlatformUtil.isMobile ? 30 : 20,
                         height: 80,
                         color: Colors.purple.withAlpha(76),
                         child: const Center(
