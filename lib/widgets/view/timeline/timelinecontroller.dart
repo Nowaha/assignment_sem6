@@ -62,7 +62,9 @@ class TimelineController extends ChangeNotifier {
   int get startTimestamp => _startTimestamp;
   int get endTimestamp => _endTimestamp;
   int get centerTimestamp => (_startTimestamp + _endTimestamp) ~/ 2;
-  double get verticalOffset => _verticalOffset;
+  double get verticalOffset =>
+      (_verticalOffset.abs() < 20 ? 0 : _verticalOffset) *
+      (layerShiftMode ? 1.0 : -1.0);
   Range get range => (start: _startTimestamp, end: _endTimestamp);
   int get initialTimeScale =>
       TimelineUtil.calculateInitialTimeScale(_startTimestamp, _endTimestamp);
@@ -279,11 +281,7 @@ class TimelineController extends ChangeNotifier {
       }
     }
 
-    _verticalOffset = clampDouble(
-      verticalOffset,
-      minLayer * height,
-      maxLayer * height,
-    );
+    _verticalOffset = verticalOffset;
 
     List<TimelineItem> newItems = [];
     for (final item in items) {

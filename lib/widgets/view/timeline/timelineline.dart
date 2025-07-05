@@ -13,6 +13,7 @@ class TimelineLine extends StatelessWidget {
   final int centerTime;
   final Color color;
   final double offset;
+  final bool layerShiftMode;
 
   late final double offsetRounded;
 
@@ -27,6 +28,7 @@ class TimelineLine extends StatelessWidget {
     required this.centerTime,
     this.color = Colors.white,
     this.offset = 0.0,
+    required this.layerShiftMode,
   }) {
     offsetRounded =
         -TimelineUtil.calculateLayerOffset(
@@ -77,6 +79,7 @@ class TimelineLine extends StatelessWidget {
             isDarkMode: isDarkMode,
             offset: offset,
             offsetRounded: offsetRounded,
+            layerShiftMode: layerShiftMode,
           ),
         ),
       ),

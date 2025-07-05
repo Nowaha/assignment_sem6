@@ -78,7 +78,12 @@ class TimelineState extends State<Timeline> {
         item,
         elementWidth,
       ),
-      center: screenHeight / 2,
+      layerShiftMode: widget.controller.layerShiftMode,
+      center:
+          screenHeight / 2 -
+          (widget.controller.layerShiftMode
+              ? 0.0
+              : widget.controller.verticalOffset),
       width: elementWidth,
       height: elementHeight,
       includeSeconds: tickEvery < 1000 * 60 || hovered,
@@ -184,6 +189,7 @@ class TimelineState extends State<Timeline> {
                     tickEvery: tickEvery,
                     color: Theme.of(context).colorScheme.onSurface,
                     offset: widget.controller.verticalOffset,
+                    layerShiftMode: widget.controller.layerShiftMode,
                   ),
                 ),
                 Positioned(

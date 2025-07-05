@@ -18,6 +18,7 @@ class TickPainter extends CustomPainter {
   final Color onSurfaceColor;
   final Color shadowColor;
   final Color ghostColor;
+  final bool layerShiftMode;
 
   const TickPainter({
     required this.tickTime,
@@ -32,6 +33,7 @@ class TickPainter extends CustomPainter {
     required this.onSurfaceColor,
     required this.shadowColor,
     required this.ghostColor,
+    required this.layerShiftMode,
   });
 
   @override
@@ -83,7 +85,7 @@ class TickPainter extends CustomPainter {
     );
 
     // Ghost tick
-    if (floating) {
+    if (floating && layerShiftMode) {
       canvas.drawLine(
         Offset(positionX, centerY - offsetRounded - appliedTickHeight / 2),
         Offset(positionX, centerY - offsetRounded + appliedTickHeight / 2),

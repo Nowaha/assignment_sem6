@@ -16,6 +16,7 @@ class TimelineItemWidget extends StatefulWidget {
   final bool hovered;
   final bool selected;
   final bool inFront;
+  final bool layerShiftMode;
   final VoidCallback? onHover;
   final VoidCallback? onLeave;
   final VoidCallback? onSelect;
@@ -35,11 +36,12 @@ class TimelineItemWidget extends StatefulWidget {
     this.hovered = false,
     this.selected = false,
     this.inFront = false,
+    required this.layerShiftMode,
     this.onHover,
     this.onLeave,
     this.onSelect,
   }) {
-    final layer = item.effectiveLayer;
+    final layer = layerShiftMode ? item.effectiveLayer : item.rawLayer;
     isHanging = layer < 0;
 
     if (layer > 0) {

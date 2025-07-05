@@ -19,6 +19,7 @@ class TimelinePainter extends CustomPainter {
   final int firstTickTime;
   final double offset;
   final double offsetRounded;
+  final bool layerShiftMode;
   final Color color;
   final Color floatingColor;
   final Color onSurfaceColor;
@@ -44,14 +45,14 @@ class TimelinePainter extends CustomPainter {
     required this.isDarkMode,
     this.offset = 0.0,
     this.offsetRounded = 0.0,
+    required this.layerShiftMode,
   });
 
   @override
   void paint(Canvas canvas, Size size) {
-    double offsetAdjusted = offset.abs() < 20 ? 0 : offset;
-    bool floating = offsetAdjusted != 0;
+    bool floating = offset != 0.0;
 
-    final centerY = size.height / 2;
+    final centerY = size.height / 2 - (layerShiftMode ? 0.0 : offset);
     final timelineColor = floating ? floatingColor : color;
     final shadowColor = timelineColor.darken(isDarkMode ? 0.7 : 0.5);
     final ghostColor =
@@ -62,23 +63,25 @@ class TimelinePainter extends CustomPainter {
     if (floating) {
       // Ghost dashed line (exact)
       DashedLinePainter.horizontal(
-        y: centerY - offsetAdjusted,
+        y: (layerShiftMode ? centerY - offset : centerY + offset),
         dashHeight: 4.0,
         dashSpacing: 4.0,
         color: ghostColor,
         strokeWidth: 2.0,
       ).paint(canvas, size);
 
-      // Ghost line (rounded)
-      canvas.drawLine(
-        Offset(0, centerY - offsetRounded),
-        Offset(size.width, centerY - offsetRounded),
-        Paint()
-          ..color = ghostColor
-          ..style = PaintingStyle.stroke
-          ..strokeWidth = timelineThickness
-          ..blendMode = BlendMode.plus,
-      );
+      if (layerShiftMode) {
+        // Ghost line (rounded)
+        canvas.drawLine(
+          Offset(0, centerY - offsetRounded),
+          Offset(size.width, centerY - offsetRounded),
+          Paint()
+            ..color = ghostColor
+            ..style = PaintingStyle.stroke
+            ..strokeWidth = timelineThickness
+            ..blendMode = BlendMode.plus,
+        );
+      }
     }
 
     // Line shadow
@@ -114,6 +117,7 @@ class TimelinePainter extends CustomPainter {
         onSurfaceColor: onSurfaceColor,
         shadowColor: shadowColor,
         ghostColor: ghostColor,
+        layerShiftMode: layerShiftMode,
       ).paint(canvas, size);
     }
 
