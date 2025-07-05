@@ -1,8 +1,5 @@
-import 'package:assignment_sem6/widgets/view/map/basemap.dart';
-import 'package:assignment_sem6/widgets/view/map/impl/stackmap.dart';
 import 'package:assignment_sem6/widgets/view/map/impl/zoombarmap.dart';
 import 'package:assignment_sem6/widgets/view/map/marker/marker.dart';
-import 'package:assignment_sem6/widgets/view/map/zoom/mapzoom.dart';
 import 'package:assignment_sem6/widgets/view/timeline/item/timelineitem.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
