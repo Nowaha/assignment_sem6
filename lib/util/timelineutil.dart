@@ -1,4 +1,8 @@
+import 'dart:ui';
+
+import 'package:assignment_sem6/data/entity/impl/post.dart';
 import 'package:assignment_sem6/widgets/view/timeline/item/timelineitem.dart';
+import 'package:flutter/material.dart';
 
 class TimelineUtil {
   static final Set<int> _layers = _generateLayers();
@@ -37,6 +41,12 @@ class TimelineUtil {
     }
 
     throw Exception("No available layer found.");
+  }
+
+  static Color resolveColor(Post post) {
+    final timestamp = post.startTimestamp;
+    return Colors.primaries[((timestamp >> 5) ^ timestamp) %
+        Colors.primaries.length];
   }
 
   static double getElementLeftPosition(

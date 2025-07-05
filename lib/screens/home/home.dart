@@ -198,7 +198,7 @@ class _HomePageState extends State<HomePage> {
         TimelineItem.fromPost(
           post,
           layer: TimelineUtil.resolveLayer(post.startTimestamp, arranged),
-          color: Colors.primaries[i % Colors.primaries.length],
+          color: TimelineUtil.resolveColor(post),
           layerOffset:
               _timelineController.items.isEmpty || completelyNewView
                   ? 0.0
