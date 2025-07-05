@@ -69,17 +69,18 @@ class _AttachmentListState
   void _onFilePicked(PlatformFile file) async {
     final resourceService =
         widget.resourceService ?? context.read<ResourceService>();
-    final fileExtension = file.name.split(".").last.toLowerCase();
+    final fileExtension = file.name.split(".").last;
+    final lowerFileExtension = fileExtension.toLowerCase();
 
-    if (!ResourceType.allExtensions.contains(fileExtension)) {
-      Toast.showToast(context, "Unsupported file type: $fileExtension");
+    if (!ResourceType.allExtensions.contains(lowerFileExtension)) {
+      Toast.showToast(context, "Unsupported file type: $lowerFileExtension");
       return;
     }
 
     final resource = Resource.create(
-      type: ResourceType.fromExtension(fileExtension),
+      type: ResourceType.fromExtension(lowerFileExtension),
       name: file.name.replaceAll(".$fileExtension", ""),
-      originalExtension: fileExtension,
+      originalExtension: lowerFileExtension,
       data: file.bytes!,
     );
     try {
