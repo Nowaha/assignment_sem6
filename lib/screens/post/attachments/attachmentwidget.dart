@@ -111,10 +111,7 @@ class _AttachmentWidgetState extends State<AttachmentWidget> {
                         child: IconButton.filledTonal(
                           iconSize: 16,
                           padding: EdgeInsets.all(4),
-                          icon: Icon(
-                            Icons.delete,
-                            color: Theme.of(context).colorScheme.error,
-                          ),
+                          icon: Icon(Icons.delete),
                           tooltip: "Delete Attachment",
                           onPressed:
                               () => widget.onDelete!(widget.attachmentUUID),
