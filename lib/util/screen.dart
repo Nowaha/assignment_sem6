@@ -19,5 +19,5 @@ class ScreenUtil {
   double get safeAreaLeft => MediaQuery.of(context).padding.left;
   double get safeAreaRight => MediaQuery.of(context).padding.right;
 
-  bool get isBigScreen => width > 600;
+  bool get isBigScreen => width > 800;
 }
