@@ -20,8 +20,8 @@ class FilePickerButton extends StatelessWidget {
     this.child,
   });
 
-  void _pickFile() async {
-    final file = await FileUtil.pickFile(fileType);
+  void _pickFile(BuildContext context) async {
+    final file = await FileUtil.pickFile(fileType, context: context);
     if (file != null) {
       onFilePicked(file.bytes!, file.name);
     }
@@ -32,21 +32,21 @@ class FilePickerButton extends StatelessWidget {
     children: [
       switch (type) {
         FilePickerButtonType.elevated => ElevatedButton(
-          onPressed: () => _pickFile(),
+          onPressed: () => _pickFile(context),
           child: child ?? const Text("Pick File"),
         ),
         FilePickerButtonType.icon => IconButton(
-          onPressed: () => _pickFile(),
+          onPressed: () => _pickFile(context),
           icon: child ?? const Icon(Icons.file_upload),
           tooltip: tooltip ?? "Pick File",
         ),
         FilePickerButtonType.iconTonal => IconButton.filledTonal(
-          onPressed: () => _pickFile(),
+          onPressed: () => _pickFile(context),
           icon: child ?? const Icon(Icons.file_upload_outlined),
           tooltip: tooltip ?? "Pick File",
         ),
         FilePickerButtonType.iconFilled => IconButton.filled(
-          onPressed: () => _pickFile(),
+          onPressed: () => _pickFile(context),
           icon: child ?? const Icon(Icons.file_upload),
           tooltip: tooltip ?? "Pick File",
         ),

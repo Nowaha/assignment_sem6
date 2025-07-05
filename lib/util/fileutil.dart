@@ -2,14 +2,18 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:assignment_sem6/data/entity/impl/resource.dart';
+import 'package:assignment_sem6/util/toast.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 
 class FileUtil {
+  /// If [context] is provided, it will show errors through toasts.
   static Future<PlatformFile?> pickFile(
     FileType fileType, {
     List<String>? allowedExtensions,
+    BuildContext? context,
   }) async {
     FilePickerResult? result = await FilePicker.platform.pickFiles(
       type: fileType,
@@ -21,14 +25,20 @@ class FileUtil {
       final file = result.files.first;
       if (file.bytes != null) {
         return file;
+      } else {
+        if (context != null && context.mounted) {
+          Toast.showToast(context, "Selected file is empty.");
+        }
       }
     }
     return null;
   }
 
+  /// If [context] is provided, it will show errors through toasts.
   static Future<Resource?> pickFileAsResource(
     FileType fileType, {
     List<String>? allowedExtensions,
+    BuildContext? context,
   }) async {
     final file = await pickFile(fileType, allowedExtensions: allowedExtensions);
     if (file == null) {
@@ -36,13 +46,32 @@ class FileUtil {
     }
 
     final fileName = file.name;
-    final fileExtension = fileName.split(".").last.toLowerCase();
-    return Resource.create(
-      type: ResourceType.fromExtension(fileExtension),
-      name: fileName.replaceAll(".$fileExtension", ""),
-      originalExtension: fileExtension,
-      data: file.bytes!,
-    );
+    final fileExtension = fileName.split(".").last;
+    final fileExtensionLower = fileExtension.toLowerCase();
+
+    try {
+      return Resource.create(
+        type: ResourceType.fromExtension(fileExtensionLower),
+        name: fileName.replaceAll(".$fileExtension", ""),
+        originalExtension: fileExtensionLower,
+        data: file.bytes!,
+      );
+    } on ArgumentError catch (error) {
+      if (error.name == "ext") {
+        if (context != null && context.mounted) {
+          Toast.showToast(
+            context,
+            "Unsupported file type: $fileExtensionLower",
+          );
+        }
+      }
+      rethrow;
+    } catch (e) {
+      if (context != null && context.mounted) {
+        Toast.showToast(context, "Failed to create resource from file.");
+      }
+    }
+    return null;
   }
 
   static Future<void> shareFile(Uint8List data, String suggestedName) async {

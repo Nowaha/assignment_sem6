@@ -59,7 +59,10 @@ enum ResourceType {
         return type;
       }
     }
-    throw ArgumentError("No valid ResourceType found for extension: $ext");
+    throw ArgumentError(
+      "No valid ResourceType found for extension: $ext",
+      "ext",
+    );
   }
 
   static List<String> get allExtensions {

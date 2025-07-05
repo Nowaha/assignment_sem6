@@ -70,19 +70,27 @@ class _AttachmentListState
     final resourceService =
         widget.resourceService ?? context.read<ResourceService>();
     final fileExtension = file.name.split(".").last;
-    final lowerFileExtension = fileExtension.toLowerCase();
+    final fileExtensionLower = fileExtension.toLowerCase();
 
-    if (!ResourceType.allExtensions.contains(lowerFileExtension)) {
-      Toast.showToast(context, "Unsupported file type: $lowerFileExtension");
+    final Resource resource;
+    try {
+      resource = Resource.create(
+        type: ResourceType.fromExtension(fileExtensionLower),
+        name: file.name.replaceAll(".$fileExtension", ""),
+        originalExtension: fileExtensionLower,
+        data: file.bytes!,
+      );
+    } on ArgumentError catch (error) {
+      if (error.name == "ext") {
+        Toast.showToast(context, "Unsupported file type: $fileExtensionLower");
+        return;
+      }
+      rethrow;
+    } catch (e) {
+      Toast.showToast(context, "Failed to create resource from file.");
       return;
     }
 
-    final resource = Resource.create(
-      type: ResourceType.fromExtension(lowerFileExtension),
-      name: file.name.replaceAll(".$fileExtension", ""),
-      originalExtension: lowerFileExtension,
-      data: file.bytes!,
-    );
     try {
       await resourceService.addResource(resource);
 

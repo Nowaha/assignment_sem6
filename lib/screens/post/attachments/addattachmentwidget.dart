@@ -32,7 +32,10 @@ class AddAttachmentWidget extends StatelessWidget {
               child: InkWell(
                 borderRadius: BorderRadius.all(Radius.circular(8)),
                 onTap: () async {
-                  final result = await FileUtil.pickFile(FileType.media);
+                  final result = await FileUtil.pickFile(
+                    FileType.media,
+                    context: context,
+                  );
                   if (result != null) {
                     onFilePicked(result);
                   }
@@ -63,6 +66,7 @@ class AddAttachmentWidget extends StatelessWidget {
                   final result = await FileUtil.pickFile(
                     FileType.custom,
                     allowedExtensions: ResourceType.allExtensions,
+                    context: context,
                   );
                   if (result != null) {
                     onFilePicked(result);

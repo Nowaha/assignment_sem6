@@ -1,3 +1,4 @@
+import 'package:assignment_sem6/data/entity/impl/resource.dart';
 import 'package:assignment_sem6/data/service/resourceservice.dart';
 import 'package:assignment_sem6/extension/textformatting.dart';
 import 'package:assignment_sem6/screens/post/markdownhelp.dart';
@@ -41,7 +42,10 @@ class _MarkdownEditorState extends State<MarkdownEditor> {
   void _pickImage() async {
     if (!widget.enabled) return;
 
-    final resource = await FileUtil.pickFileAsResource(FileType.image);
+    final Resource? resource = await FileUtil.pickFileAsResource(
+      FileType.image,
+      context: context,
+    );
     if (resource != null) {
       await widget.resourceService.addResource(resource);
       widget.controller.insertImage(resource.name, resource.uuid);
@@ -52,7 +56,10 @@ class _MarkdownEditorState extends State<MarkdownEditor> {
   void _pickVideo() async {
     if (!widget.enabled) return;
 
-    final resource = await FileUtil.pickFileAsResource(FileType.video);
+    final resource = await FileUtil.pickFileAsResource(
+      FileType.video,
+      context: context,
+    );
     if (resource != null) {
       await widget.resourceService.addResource(resource);
       widget.controller.insertVideo(resource.name, resource.uuid);
@@ -131,8 +138,7 @@ class _MarkdownEditorState extends State<MarkdownEditor> {
                   );
                 },
                 color: Theme.of(context).colorScheme.primary,
-                hoverColor:
-                    Theme.of(context).colorScheme.primaryContainer,
+                hoverColor: Theme.of(context).colorScheme.primaryContainer,
                 onHover: (hovering) {
                   setState(() {
                     _helpHovered = hovering;
