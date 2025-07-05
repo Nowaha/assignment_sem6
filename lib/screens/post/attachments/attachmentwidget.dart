@@ -74,6 +74,12 @@ class _AttachmentWidgetState extends State<AttachmentWidget> {
                       frameBuilder: postImageFrameBuilder,
                       errorBuilder: postImageErrorBuilder,
                     )
+                  else if (widget.attachmentResource.type == ResourceType.video)
+                    Icon(
+                      Icons.video_file,
+                      size: 32,
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    )
                   else
                     Icon(
                       Icons.attachment,
