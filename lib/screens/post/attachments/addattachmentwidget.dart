@@ -28,11 +28,11 @@ class AddAttachmentWidget extends StatelessWidget {
         children: [
           Expanded(
             child: Tooltip(
-              message: "Attach Photo",
+              message: "Attach Media",
               child: InkWell(
                 borderRadius: BorderRadius.all(Radius.circular(8)),
                 onTap: () async {
-                  final result = await FileUtil.pickFile(FileType.image);
+                  final result = await FileUtil.pickFile(FileType.media);
                   if (result != null) {
                     onFilePicked(result);
                   }
