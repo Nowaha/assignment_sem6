@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
-class Resizeable extends StatefulWidget {
+class Resizable extends StatefulWidget {
   final double startingWidth;
   final double minWidth;
   final double maxWidth;
   final Function(double) onResize;
   final Widget child;
 
-  const Resizeable({
+  const Resizable({
     super.key,
     required this.startingWidth,
     required this.minWidth,
@@ -17,10 +17,10 @@ class Resizeable extends StatefulWidget {
   });
 
   @override
-  State<Resizeable> createState() => _ResizeableState();
+  State<Resizable> createState() => _ResizableState();
 }
 
-class _ResizeableState extends State<Resizeable> {
+class _ResizableState extends State<Resizable> {
   late double _width = widget.startingWidth;
   bool _hovered = false;
 
@@ -46,7 +46,7 @@ class _ResizeableState extends State<Resizeable> {
   }
 
   @override
-  void didUpdateWidget(covariant Resizeable oldWidget) {
+  void didUpdateWidget(covariant Resizable oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (widget.startingWidth != oldWidget.startingWidth) {
       setState(() {

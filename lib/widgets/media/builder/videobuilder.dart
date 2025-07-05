@@ -2,7 +2,7 @@ import 'dart:math';
 
 import 'package:assignment_sem6/widgets/media/builder/mediabuilder.dart';
 import 'package:assignment_sem6/widgets/media/video/resourcevideo.dart';
-import 'package:assignment_sem6/widgets/resizeable.dart';
+import 'package:assignment_sem6/widgets/resizable.dart';
 import 'package:flutter/material.dart';
 
 Widget videoBuilder(MediaBuilderContext c) {
@@ -27,7 +27,7 @@ Widget videoBuilder(MediaBuilderContext c) {
     return wrapped;
   }
 
-  return Resizeable(
+  return Resizable(
     startingWidth: c.width,
     minWidth: effectiveMinWidth,
     maxWidth: c.maxWidth,

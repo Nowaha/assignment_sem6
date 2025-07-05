@@ -1,6 +1,6 @@
 import 'package:assignment_sem6/widgets/media/builder/mediabuilder.dart';
 import 'package:assignment_sem6/widgets/media/image/resourceimage.dart';
-import 'package:assignment_sem6/widgets/resizeable.dart';
+import 'package:assignment_sem6/widgets/resizable.dart';
 import 'package:flutter/material.dart';
 import 'package:markdown_widget/widget/inlines/img.dart';
 
@@ -31,7 +31,7 @@ Widget imageBuilder(MediaBuilderContext c) {
     return wrapped;
   }
 
-  return Resizeable(
+  return Resizable(
     startingWidth: c.width,
     minWidth: c.minWidth,
     maxWidth: c.maxWidth,
