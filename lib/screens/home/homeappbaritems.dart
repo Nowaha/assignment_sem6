@@ -17,7 +17,7 @@ List<PopupMenuButton> homeAppBarItems(
             "profile" => context.go("/profile/${user!.uuid}"),
             "admin" => context.goNamed("admin"),
             "settings" => context.goNamed("settings"),
-            "logout" => logout,
+            "logout" => logout(),
             _ => FlutterError("Unknown action selected: $value"),
           },
         },
