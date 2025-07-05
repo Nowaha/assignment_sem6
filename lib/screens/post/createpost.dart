@@ -330,33 +330,33 @@ class _CreatePostState extends State<CreatePost> with FormMixin {
                     ),
 
                     Divider(height: 32),
-
-                    CollapsibleWithHeader(
-                      title: "Preview",
-                      noIntrinsicWidth: true,
-                      child: ListenableBuilder(
-                        listenable: _contentsController,
-                        builder: (context, _) {
-                          if (_contentsController.text.isEmpty) {
-                            return const Text("No contents to preview.");
-                          }
-                          return MarkdownWidget(
-                            shrinkWrap: true,
-                            selectable: false,
-                            data: _contentsController.text,
-                            config: postEditMarkdownConfig(
-                              context: context,
-                              localResourceService: localResourceService,
-                              getContents: () => _contentsController.text,
-                              setContents: (contents) {
-                                setState(() {
-                                  _contentsController.text = contents;
-                                });
-                              },
-                            ),
-                          );
-                        },
-                      ),
+                    Text(
+                      "Preview",
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
+                    SizedBox(height: 8),
+                    ListenableBuilder(
+                      listenable: _contentsController,
+                      builder: (context, _) {
+                        if (_contentsController.text.isEmpty) {
+                          return const Text("No contents to preview.");
+                        }
+                        return MarkdownWidget(
+                          shrinkWrap: true,
+                          selectable: false,
+                          data: _contentsController.text,
+                          config: postEditMarkdownConfig(
+                            context: context,
+                            localResourceService: localResourceService,
+                            getContents: () => _contentsController.text,
+                            setContents: (contents) {
+                              setState(() {
+                                _contentsController.text = contents;
+                              });
+                            },
+                          ),
+                        );
+                      },
                     ),
                   ],
                 ),
