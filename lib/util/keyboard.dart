@@ -9,4 +9,13 @@ class KeyboardUtil {
           LogicalKeyboardKey.shiftRight,
         );
   }
+
+  static bool isAltPressed() {
+    return HardwareKeyboard.instance.logicalKeysPressed.contains(
+          LogicalKeyboardKey.altLeft,
+        ) ||
+        HardwareKeyboard.instance.logicalKeysPressed.contains(
+          LogicalKeyboardKey.altRight,
+        );
+  }
 }
