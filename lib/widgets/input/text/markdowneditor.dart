@@ -36,6 +36,7 @@ class MarkdownEditor extends StatefulWidget {
 
 class _MarkdownEditorState extends State<MarkdownEditor> {
   final FocusNode _focusNode = FocusNode();
+  bool _helpHovered = false;
 
   void _pickImage() async {
     if (!widget.enabled) return;
@@ -114,19 +115,30 @@ class _MarkdownEditorState extends State<MarkdownEditor> {
           right: 8.0,
           child: Tooltip(
             message: "Formatting Help",
-            child: IconButton(
-              onPressed: () {
-                showModalBottomSheet(
-                  context: context,
-                  isScrollControlled: true,
-                  constraints: BoxConstraints(
-                    maxWidth: 500,
-                    maxHeight: MediaQuery.of(context).size.height * 0.8,
-                  ),
-                  builder: (context) => MarkdownHelp(),
-                );
-              },
-              icon: Icon(Icons.help),
+            child: Opacity(
+              opacity: _helpHovered ? 1.0 : 0.7,
+              child: IconButton(
+                icon: Icon(Icons.help),
+                onPressed: () {
+                  showModalBottomSheet(
+                    context: context,
+                    isScrollControlled: true,
+                    constraints: BoxConstraints(
+                      maxWidth: 500,
+                      maxHeight: MediaQuery.of(context).size.height * 0.8,
+                    ),
+                    builder: (context) => MarkdownHelp(),
+                  );
+                },
+                color: Theme.of(context).colorScheme.primary,
+                hoverColor:
+                    Theme.of(context).colorScheme.primaryContainer,
+                onHover: (hovering) {
+                  setState(() {
+                    _helpHovered = hovering;
+                  });
+                },
+              ),
             ),
           ),
         ),
