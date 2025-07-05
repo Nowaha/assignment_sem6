@@ -112,6 +112,7 @@ class _WriteCommentState extends State<WriteComment> {
                 }),
           ),
         ),
+        SizedBox(height: 8),
         Row(
           mainAxisAlignment: MainAxisAlignment.end,
           spacing: 8,
