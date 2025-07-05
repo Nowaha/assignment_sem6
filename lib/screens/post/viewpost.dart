@@ -103,7 +103,7 @@ class _ViewPostState extends DataHolderState<ViewPost, PostView> {
                 children: [
                   Text(
                     "Attachments",
-                    style: Theme.of(context).textTheme.headlineSmall,
+                    style: Theme.of(context).textTheme.titleLarge,
                   ),
                   AttachmentList(attachments: data!.post.attachments),
                 ],
