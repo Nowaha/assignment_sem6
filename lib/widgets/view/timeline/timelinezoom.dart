@@ -138,10 +138,7 @@ class _TimelineZoomState extends State<TimelineZoom>
                 (-details.focalPointDelta.dx * widget.dragSensitivity).toInt();
             widget.pan(pan);
 
-            if (details.focalPointDelta.dx < 2 &&
-                details.focalPointDelta.dx > -2) {
-              widget.panUp((details.focalPointDelta.dy).toInt());
-            }
+            widget.panUp((details.focalPointDelta.dy).toInt());
           }
         },
         onScaleEnd: (details) {

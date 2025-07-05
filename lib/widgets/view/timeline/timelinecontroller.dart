@@ -63,7 +63,7 @@ class TimelineController extends ChangeNotifier {
   int get endTimestamp => _endTimestamp;
   int get centerTimestamp => (_startTimestamp + _endTimestamp) ~/ 2;
   double get verticalOffset =>
-      (_verticalOffset.abs() < 20 ? 0 : _verticalOffset) *
+      (_verticalOffset.abs() < 30 ? 0 : _verticalOffset) *
       (layerShiftMode ? 1.0 : -1.0);
   Range get range => (start: _startTimestamp, end: _endTimestamp);
   int get initialTimeScale =>
