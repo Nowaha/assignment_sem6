@@ -63,12 +63,22 @@ extension TextFormattingExtension on TextEditingController {
     int startingWidth = 300,
   }) {
     final imageMarkdown = "![$fileName](image:$fileUUID|width=$startingWidth)";
+    if (!selection.isValid) {
+      // Insert at the end if selection is not valid
+      value = TextEditingValue(
+        text: text + imageMarkdown,
+        selection: TextSelection.collapsed(
+          offset: (text + imageMarkdown).length,
+        ),
+      );
+      return;
+    }
     final newText =
         selection.textBefore(text) + imageMarkdown + selection.textAfter(text);
 
     final newSelection = TextSelection(
       baseOffset: selection.start,
-      extentOffset: selection.end + imageMarkdown.length,
+      extentOffset: selection.start + imageMarkdown.length,
     );
 
     value = TextEditingValue(text: newText, selection: newSelection);
@@ -80,6 +90,15 @@ extension TextFormattingExtension on TextEditingController {
     int startingWidth = 300,
   }) {
     final videoMarkdown = "![$fileName](video:$fileUUID|width=$startingWidth)";
+    if (!selection.isValid) {
+      value = TextEditingValue(
+        text: text + videoMarkdown,
+        selection: TextSelection.collapsed(
+          offset: (text + videoMarkdown).length,
+        ),
+      );
+      return;
+    }
     final newText =
         selection.textBefore(text) + videoMarkdown + selection.textAfter(text);
 
