@@ -82,7 +82,7 @@ class _AttachmentWidgetState extends State<AttachmentWidget> {
                     )
                   else
                     Icon(
-                      Icons.attachment,
+                      Icons.file_present_rounded,
                       size: 32,
                       color: Theme.of(context).colorScheme.onSurfaceVariant,
                     ),
