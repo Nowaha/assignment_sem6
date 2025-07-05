@@ -18,6 +18,7 @@ void main() {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => ThemeProvider()),
+        ...timelineProviders,
         ...authProviders,
         ...userProviders,
         ...commentProviders,
