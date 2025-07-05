@@ -133,7 +133,7 @@ class _MarkdownEditorState extends State<MarkdownEditor> {
         Positioned(
           left: 4.0,
           bottom: 4.0,
-          right: 0.0,
+          right: 64.0,
           child: Align(
             alignment: Alignment.bottomLeft,
             child: EditorControls(
