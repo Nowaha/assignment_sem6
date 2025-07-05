@@ -1,5 +1,7 @@
 import 'dart:math';
 
+import 'package:assignment_sem6/extension/canvasextension.dart';
+import 'package:assignment_sem6/extension/color.dart';
 import 'package:flutter/material.dart';
 
 class MarkerTimePainter extends CustomPainter {
@@ -25,27 +27,6 @@ class MarkerTimePainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final timelinePaint =
-        Paint()
-          ..color = timelineColor
-          ..style = PaintingStyle.stroke
-          ..strokeWidth = thickness / 2;
-
-    final itemPaint =
-        Paint()
-          ..color = color
-          ..style = PaintingStyle.stroke
-          ..strokeWidth = thickness;
-
-    canvas.drawLine(
-      Offset(offset.dx, size.height / 2 + thickness / 2 + offset.dy),
-      Offset(
-        offset.dx + size.width,
-        size.height / 2 + thickness / 2 + offset.dy,
-      ),
-      timelinePaint,
-    );
-
     final startX = max(
       0.0,
       (startTimestamp - timelineStartTimestamp) /
@@ -53,16 +34,36 @@ class MarkerTimePainter extends CustomPainter {
           size.width,
     );
     final endX = min(
-      (endTimestamp - timelineStartTimestamp) /
-          (timelineEndTimestamp - timelineStartTimestamp) *
-          size.width,
+      max(
+        (endTimestamp - timelineStartTimestamp) /
+            (timelineEndTimestamp - timelineStartTimestamp) *
+            size.width,
+        0.0,
+      ),
       size.width,
+    );
+
+    bool notOnTimeline = startX == 0 && endX == 0;
+
+    canvas.drawLineWithShadow(
+      Offset(offset.dx, size.height / 2 + thickness / 2 + offset.dy),
+      Offset(
+        offset.dx + size.width,
+        size.height / 2 + thickness / 2 + offset.dy,
+      ),
+      Paint()
+        ..color = !notOnTimeline ? timelineColor : timelineColor.darken(0.2)
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = thickness / 2,
     );
 
     canvas.drawLine(
       Offset(startX + offset.dx, size.height / 2 + thickness / 2 + offset.dy),
       Offset(endX + offset.dx, size.height / 2 + thickness / 2 + offset.dy),
-      itemPaint,
+      Paint()
+        ..color = color
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = thickness,
     );
   }
 

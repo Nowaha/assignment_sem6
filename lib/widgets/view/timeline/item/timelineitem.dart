@@ -47,7 +47,7 @@ class TimelineItem {
          endTimestamp: post.endTimestamp ?? post.startTimestamp,
          name: post.title,
          tags: post.tags,
-         color: color ?? Colors.purple,
+         color: color ?? TimelineUtil.resolveColor(post),
          location: LatLng(post.lat, post.lng),
          rawLayer: layer,
          layerOffset: layerOffset,

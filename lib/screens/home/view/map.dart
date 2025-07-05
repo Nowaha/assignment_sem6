@@ -1,6 +1,6 @@
 import 'package:assignment_sem6/screens/home/home.dart';
 import 'package:assignment_sem6/state/timelinestate.dart';
-import 'package:assignment_sem6/widgets/view/map/map.dart';
+import 'package:assignment_sem6/widgets/view/map/impl/homemap.dart';
 import 'package:assignment_sem6/widgets/view/timeline/painter/datespainter.dart';
 import 'package:assignment_sem6/widgets/view/timeline/painter/scalepainter.dart';
 import 'package:flutter/material.dart' hide Align;
@@ -25,7 +25,7 @@ class MapView extends StatelessWidget {
 
         return Stack(
           children: [
-            Positioned.fill(child: MapWidget(activeView: activeView)),
+            Positioned.fill(child: HomeMap(activeView: activeView)),
             Positioned(
               right: 16,
               top: 16,

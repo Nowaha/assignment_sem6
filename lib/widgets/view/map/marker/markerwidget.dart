@@ -1,7 +1,7 @@
 import 'package:assignment_sem6/state/timelinestate.dart';
 import 'package:assignment_sem6/util/date.dart';
 import 'package:assignment_sem6/widgets/mouse/clicklistener.dart';
-import 'package:assignment_sem6/widgets/view/map/markertimepainter.dart';
+import 'package:assignment_sem6/widgets/view/map/marker/markertimepainter.dart';
 import 'package:assignment_sem6/widgets/view/timeline/item/timelineitem.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -13,6 +13,7 @@ class MarkerWidget extends StatefulWidget {
   final int visibleTimelineEnd;
   final Color color;
   final double size;
+  final bool forceEngaged;
 
   const MarkerWidget({
     super.key,
@@ -22,6 +23,7 @@ class MarkerWidget extends StatefulWidget {
     required this.visibleTimelineEnd,
     this.color = Colors.red,
     this.size = 24,
+    this.forceEngaged = false,
   });
 
   @override
@@ -60,7 +62,7 @@ class _MarkerWidgetState extends State<MarkerWidget> {
 
   @override
   Widget build(BuildContext context) {
-    bool engaged = _hovering || _selected;
+    bool engaged = _hovering || _selected || widget.forceEngaged;
 
     return MouseRegion(
       onEnter: (_) {
