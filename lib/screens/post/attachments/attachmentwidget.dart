@@ -124,11 +124,20 @@ class _AttachmentWidgetState extends State<AttachmentWidget> {
 
                   if (_hovered)
                     Positioned.fill(
-                      child: Center(child: Icon(Icons.download, size: 24)),
-                    ),
-                  if (_hovered)
-                    Positioned.fill(
-                      child: Center(child: Icon(Icons.download, size: 24)),
+                      child: Center(
+                        child: Icon(
+                          Icons.download,
+                          size: 24,
+                          color: Colors.white,
+                          shadows: [
+                            Shadow(
+                              offset: Offset(2, 2),
+                              color: Colors.black,
+                              blurRadius: 4,
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
                 ],
               ),
