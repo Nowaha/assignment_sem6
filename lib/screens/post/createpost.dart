@@ -141,6 +141,7 @@ class _CreatePostState extends State<CreatePost> with FormMixin {
     return Screen(
       title: Text("Create Post"),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      padding: EdgeInsets.zero,
       child: Align(
         alignment: Alignment.topCenter,
         child: SizedBox(
@@ -148,7 +149,7 @@ class _CreatePostState extends State<CreatePost> with FormMixin {
           child: Stack(
             children: [
               SingleChildScrollView(
-                padding: const EdgeInsets.only(bottom: 48),
+                padding: Screen.defaultPadding.copyWith(bottom: 80),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -362,7 +363,7 @@ class _CreatePostState extends State<CreatePost> with FormMixin {
                 ),
               ),
               Positioned(
-                bottom: 0,
+                bottom: 32,
                 left: 0,
                 right: 0,
                 child: Align(
