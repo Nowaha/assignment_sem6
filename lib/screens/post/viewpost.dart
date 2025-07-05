@@ -5,13 +5,17 @@ import 'package:assignment_sem6/data/service/postservice.dart';
 import 'package:assignment_sem6/screens/post/attachments/attachmentlist.dart';
 import 'package:assignment_sem6/screens/profile/grouplist.dart';
 import 'package:assignment_sem6/util/date.dart';
+import 'package:assignment_sem6/util/timelineutil.dart';
 import 'package:assignment_sem6/util/toast.dart';
 import 'package:assignment_sem6/widgets/actualtextbutton.dart';
+import 'package:assignment_sem6/widgets/collapsible/collapsiblewithheader.dart';
 import 'package:assignment_sem6/widgets/comment/commentsection.dart';
 import 'package:assignment_sem6/widgets/dataholderstate.dart';
 import 'package:assignment_sem6/widgets/screen.dart';
+import 'package:assignment_sem6/widgets/view/map/map.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:latlong2/latlong.dart';
 import 'package:markdown_widget/widget/markdown_block.dart';
 import 'package:provider/provider.dart';
 
@@ -179,6 +183,31 @@ class _ViewPostState extends DataHolderState<ViewPost, PostView> {
                     ],
                   ),
                 ],
+              ),
+            ),
+
+            SizedBox(height: 8),
+
+            Divider(height: 8),
+
+            SizedBox(height: 8),
+
+            SizedBox(
+              width: double.infinity,
+              child: CollapsibleWithHeader.widgetTitle(
+                title: Text(
+                  "Location",
+                  style: Theme.of(context).textTheme.titleLarge,
+                ),
+                tooltip: "Location",
+                child: SizedBox(
+                  height: 400,
+                  child: MapWidget.static(
+                    initialCenter: LatLng(data!.post.lat, data!.post.lng),
+                    initialZoom: 15.0,
+                    staticItemKey: TimelineUtil.generateKey(data!.post.uuid),
+                  ),
+                ),
               ),
             ),
 
