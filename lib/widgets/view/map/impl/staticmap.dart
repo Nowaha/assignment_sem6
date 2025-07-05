@@ -7,14 +7,12 @@ import 'package:flutter_map/flutter_map.dart';
 
 class StaticMap extends BaseMapWidget {
   final TimelineItem centralItem;
-  final bool peekable;
 
   const StaticMap({
     super.key,
     super.initialCenter,
     super.initialZoom,
     required this.centralItem,
-    this.peekable = false,
   });
 
   @override
@@ -31,26 +29,24 @@ class StaticMapState extends BaseMapState<StaticMap> {
 
     return Stack(
       children: [
-        Positioned.fill(
-          child: IgnorePointer(
-            child: super.buildMap(
-              context,
-              finalFiltered: finalFiltered,
-              staticView: true,
-              extraLayers: [
-                MarkerLayer(
-                  markers: [
-                    MapMarker(
-                      item: widget.centralItem,
-                      staticView: true,
-                      visibleTimelineStart: startTimestamp,
-                      visibleTimelineEnd: endTimestamp,
-                      forceEngaged: true,
-                    ),
-                  ],
-                ),
-              ],
-            ),
+        IgnorePointer(
+          child: super.buildMap(
+            context,
+            finalFiltered: finalFiltered,
+            staticView: true,
+            extraLayers: [
+              MarkerLayer(
+                markers: [
+                  MapMarker(
+                    item: widget.centralItem,
+                    staticView: true,
+                    visibleTimelineStart: startTimestamp,
+                    visibleTimelineEnd: endTimestamp,
+                    forceEngaged: true,
+                  ),
+                ],
+              ),
+            ],
           ),
         ),
 
