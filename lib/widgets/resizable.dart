@@ -94,8 +94,10 @@ class _ResizableState extends State<Resizable> {
                       _dragStartWidth = _width;
                     },
                     onHorizontalDragUpdate: (details) {
-                      if (_dragStartGlobalX == null || _dragStartWidth == null)
+                      if (_dragStartGlobalX == null ||
+                          _dragStartWidth == null) {
                         return;
+                      }
 
                       double delta =
                           details.globalPosition.dx - _dragStartGlobalX!;

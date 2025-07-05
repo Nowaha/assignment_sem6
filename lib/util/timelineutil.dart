@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:assignment_sem6/data/entity/impl/post.dart';
 import 'package:assignment_sem6/widgets/view/timeline/item/timelineitem.dart';
 import 'package:flutter/material.dart';
