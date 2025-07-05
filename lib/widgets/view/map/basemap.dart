@@ -6,21 +6,21 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:provider/provider.dart';
 
-abstract class BaseMapWidget extends StatefulWidget {
+class BaseMapWidget extends StatefulWidget {
   final LatLng initialCenter;
   final double initialZoom;
 
-  const BaseMapWidget({
-    super.key,
-    this.initialCenter = const LatLng(
-      41.8719,
-      12.5674,
-    ), // Center the map over Italy
-    this.initialZoom = 9.2,
-  });
+  const BaseMapWidget({super.key, LatLng? initialCenter, double? initialZoom})
+    : initialCenter =
+          initialCenter ??
+          const LatLng(41.8719, 12.5674), // Center the map over Italy
+      initialZoom = initialZoom ?? 9.2;
+
+  @override
+  State<StatefulWidget> createState() => BaseMapState<BaseMapWidget>();
 }
 
-abstract class BaseMapState<T extends BaseMapWidget> extends State<T> {
+class BaseMapState<T extends BaseMapWidget> extends State<T> {
   late final TimelineState timelineState;
   late final MapController mapController;
   final List<TimelineItem> filtered = [];
