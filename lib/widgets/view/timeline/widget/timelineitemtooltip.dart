@@ -2,13 +2,13 @@ import 'package:assignment_sem6/util/date.dart';
 import 'package:assignment_sem6/widgets/view/timeline/item/timelineitem.dart';
 import 'package:flutter/material.dart';
 
-class TimelineTooltip extends StatelessWidget {
+class TimelineItemTooltip extends StatelessWidget {
   final TimelineItem item;
   final Color textColor;
   final bool preferBelow;
   final Widget child;
 
-  const TimelineTooltip({
+  const TimelineItemTooltip({
     super.key,
     required this.item,
     required this.textColor,

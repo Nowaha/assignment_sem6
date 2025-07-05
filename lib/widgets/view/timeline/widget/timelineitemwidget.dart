@@ -1,9 +1,9 @@
 import 'package:assignment_sem6/widgets/mouse/clickhoverlistener.dart';
 import 'package:assignment_sem6/widgets/view/timeline/item/timelineitem.dart';
-import 'package:assignment_sem6/widgets/view/timeline/widget/timelineheader.dart';
+import 'package:assignment_sem6/widgets/view/timeline/widget/timelineitemheader.dart';
 import 'package:flutter/material.dart';
 
-class TimelineWidget extends StatefulWidget {
+class TimelineItemWidget extends StatefulWidget {
   static const headerHeight = 60.0;
   static const snap = 20.0;
 
@@ -24,7 +24,7 @@ class TimelineWidget extends StatefulWidget {
   late final double top;
   late final bool isHanging;
 
-  TimelineWidget({
+  TimelineItemWidget({
     super.key,
     required this.item,
     required this.left,
@@ -52,10 +52,10 @@ class TimelineWidget extends StatefulWidget {
   }
 
   @override
-  State<StatefulWidget> createState() => _TimelineWidgetState();
+  State<StatefulWidget> createState() => _TimelineItemWidgetState();
 }
 
-class _TimelineWidgetState extends State<TimelineWidget> {
+class _TimelineItemWidgetState extends State<TimelineItemWidget> {
   @override
   Widget build(BuildContext context) {
     return Positioned(
@@ -99,7 +99,7 @@ class _TimelineWidgetState extends State<TimelineWidget> {
                   onClick: () => widget.onSelect?.call(),
                   mouseEnter: widget.onHover ?? () {},
                   mouseLeave: widget.onLeave ?? () {},
-                  child: TimelineHeader(
+                  child: TimelineItemHeader(
                     item: widget.item,
                     width: widget.width,
                     includeSeconds: widget.includeSeconds || widget.inFront,

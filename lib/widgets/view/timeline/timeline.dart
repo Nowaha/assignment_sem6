@@ -2,7 +2,7 @@ import 'package:assignment_sem6/util/screen.dart';
 import 'package:assignment_sem6/util/timelineutil.dart';
 import 'package:assignment_sem6/widgets/view/timeline/timelinecontroller.dart';
 import 'package:assignment_sem6/widgets/view/timeline/timelinecontrols.dart';
-import 'package:assignment_sem6/widgets/view/timeline/widget/timelinewidget.dart';
+import 'package:assignment_sem6/widgets/view/timeline/widget/timelineitemwidget.dart';
 import 'package:assignment_sem6/widgets/view/timeline/item/timelineitem.dart';
 import 'package:assignment_sem6/widgets/view/timeline/timelineindicator.dart';
 import 'package:assignment_sem6/widgets/view/timeline/timelineline.dart';
@@ -51,7 +51,7 @@ class TimelineState extends State<Timeline> {
     );
     final elementHeight = 80.0;
 
-    final element = TimelineWidget(
+    final element = TimelineItemWidget(
       key: ValueKey(
         item.key + (hovered ? "-hovered" : (inFront ? "-infront" : "")),
       ),

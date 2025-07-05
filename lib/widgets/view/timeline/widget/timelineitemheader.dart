@@ -1,11 +1,11 @@
 import 'package:assignment_sem6/extension/color.dart';
 import 'package:assignment_sem6/util/date.dart';
 import 'package:assignment_sem6/widgets/view/timeline/item/timelineitem.dart';
-import 'package:assignment_sem6/widgets/view/timeline/widget/timelinetooltip.dart';
+import 'package:assignment_sem6/widgets/view/timeline/widget/timelineitemtooltip.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
-class TimelineHeader extends StatelessWidget {
+class TimelineItemHeader extends StatelessWidget {
   final TimelineItem item;
   final double width;
   final bool includeSeconds;
@@ -13,7 +13,7 @@ class TimelineHeader extends StatelessWidget {
 
   late final Color textColor;
 
-  TimelineHeader({
+  TimelineItemHeader({
     super.key,
     required this.item,
     required this.width,
@@ -69,7 +69,7 @@ class TimelineHeader extends StatelessWidget {
       textRow = SizedBox(height: _getSize(nameSpan).height);
     }
 
-    return TimelineTooltip(
+    return TimelineItemTooltip(
       item: item,
       textColor: textColor,
       preferBelow: isHanging,
