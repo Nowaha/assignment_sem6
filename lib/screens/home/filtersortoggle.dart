@@ -16,18 +16,30 @@ class FiltersOrToggle extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) => Positioned(
-    left: 16,
-    top: 16,
-    child:
-        ScreenUtil(context).isBigScreen
-            ? CollapsibleFilterContainer(
+  Widget build(BuildContext context) =>
+      ScreenUtil(context).isBigScreen
+          ? Positioned(
+            left: 16,
+            top: 16,
+            child: CollapsibleFilterContainer(
               filters: filters,
               onFilterApplied: filterUpdate,
-            )
-            : IconButton.filled(
-              onPressed: openFullscreenFilters,
-              icon: Icon(Icons.search),
             ),
-  );
+          )
+          : Positioned(
+            bottom: 132,
+            right: 20,
+            child: SizedBox(
+              width: 48,
+              height: 48,
+              child: FloatingActionButton(
+                onPressed: openFullscreenFilters,
+                backgroundColor: Theme.of(context).colorScheme.secondary,
+                foregroundColor: Theme.of(context).colorScheme.onSecondary,
+                tooltip: "Filters",
+                elevation: 2,
+                child: Icon(Icons.search, size: 22),
+              ),
+            ),
+          );
 }

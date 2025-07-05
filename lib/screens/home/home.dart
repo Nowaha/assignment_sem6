@@ -302,13 +302,6 @@ class _HomePageState extends State<HomePage> {
       title: Text(_activeView.value.title),
       padding: EdgeInsets.zero,
       appBarActions: homeAppBarItems(context, user, _logout),
-      floatingActionButton:
-          !_fullscreenFiltersOpen
-              ? CreatePostFab(
-                bottomOffset: _activeView.value.fabOffset,
-                user: user,
-              )
-              : null,
       child: Focus(
         focusNode: _focusNode,
         onKeyEvent: _handleKeyEvent,
@@ -369,6 +362,7 @@ class _HomePageState extends State<HomePage> {
                                     _fullscreenFiltersOpen = true;
                                   }),
                             ),
+                            CreatePostFab(user: user),
                           ],
                         ),
                       ),

@@ -3,14 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 class CreatePostFab extends StatelessWidget {
-  final double bottomOffset;
   final User? user;
 
-  const CreatePostFab({super.key, this.bottomOffset = 0, this.user});
+  const CreatePostFab({super.key, this.user});
 
   @override
-  Widget build(BuildContext context) => Padding(
-    padding: EdgeInsets.only(bottom: bottomOffset),
+  Widget build(BuildContext context) => Positioned(
+    bottom: 64,
+    right: 16,
     child: FloatingActionButton(
       tooltip: "Create Post",
       onPressed: () {
