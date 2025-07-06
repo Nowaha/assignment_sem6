@@ -1,8 +1,8 @@
 import 'package:assignment_sem6/screens/home/home.dart';
 import 'package:assignment_sem6/state/timelinestate.dart';
+import 'package:assignment_sem6/util/date.dart';
 import 'package:assignment_sem6/widgets/view/map/impl/homemap.dart';
 import 'package:assignment_sem6/widgets/view/timeline/painter/datespainter.dart';
-import 'package:assignment_sem6/widgets/view/timeline/painter/scalepainter.dart';
 import 'package:flutter/material.dart' hide Align;
 import 'package:provider/provider.dart';
 
@@ -57,19 +57,20 @@ class MapView extends StatelessWidget {
               ),
             ),
             Positioned(
+              right: 80,
+              top: 24,
               child: IgnorePointer(
-                child: CustomPaint(
-                  painter: ScalePainter(
-                    position: Offset(size.width - 80, 40),
-                    timelineWidth: 200,
-                    timelineThickness: 2,
-                    scaleDownFactor: 1,
-                    timeScale: timelineState.visibleTimeScale,
-                    tickEvery: timelineState.getTickEvery(size.width.toInt()),
-                    visibleStartTimestamp: timelineState.visibleStartTimestamp,
-                    timelineColor: Colors.white,
-                    surfaceColor: Colors.black,
-                    align: Align.right,
+                child: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: Colors.black.withAlpha(180),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Text(
+                    DateUtil.formatIntervalShort(
+                      timelineState.getTickEvery(size.width.toInt()),
+                    ),
+                    style: TextStyle(color: Colors.white, fontSize: 12),
                   ),
                 ),
               ),
