@@ -7,6 +7,8 @@ import 'package:assignment_sem6/data/service/postservice.dart';
 import 'package:assignment_sem6/data/service/resourceservice.dart';
 import 'package:assignment_sem6/mixin/formmixin.dart';
 import 'package:assignment_sem6/screens/post/attachments/attachmentlist.dart';
+import 'package:assignment_sem6/util/location.dart';
+import 'package:assignment_sem6/widgets/collapsible/collapsible.dart';
 import 'package:assignment_sem6/widgets/collapsible/collapsiblewithheader.dart';
 import 'package:assignment_sem6/widgets/input/dateselector.dart';
 import 'package:assignment_sem6/widgets/input/groupinput.dart';
@@ -17,6 +19,7 @@ import 'package:assignment_sem6/util/validation.dart';
 import 'package:assignment_sem6/widgets/loadingiconbutton.dart';
 import 'package:assignment_sem6/widgets/screen.dart';
 import 'package:assignment_sem6/widgets/input/chiplistinput.dart';
+import 'package:assignment_sem6/widgets/view/map/impl/selectpointmap.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:latlong2/latlong.dart';
@@ -48,6 +51,8 @@ class _CreatePostState extends State<CreatePost> with FormMixin {
   final List<String> _tags = [];
   final Map<String, String> _selectedGroups = {};
   final List<String> _attachments = [];
+  bool _locationPickerOpen = false;
+  final _selectedPoint = ValueNotifier<LatLng>(LatLng(41.8719, 12.5674));
 
   final ResourceService localResourceService = ResourceServiceImpl(
     repository: ResourceRepositoryImpl(dao: MemoryResourceDao()..init()),
@@ -64,6 +69,23 @@ class _CreatePostState extends State<CreatePost> with FormMixin {
       _latitudeController: (input) => Validation.isValidLatitude(input).message,
       _longitudeController:
           (input) => Validation.isValidLongitude(input).message,
+    });
+
+    _latitudeController.addListener(() {
+      setState(() {
+        _selectedPoint.value = LatLng(
+          double.parse(_latitudeController.text),
+          double.parse(_longitudeController.text),
+        );
+      });
+    });
+    _longitudeController.addListener(() {
+      setState(() {
+        _selectedPoint.value = LatLng(
+          double.parse(_latitudeController.text),
+          double.parse(_longitudeController.text),
+        );
+      });
     });
   }
 
@@ -229,9 +251,44 @@ class _CreatePostState extends State<CreatePost> with FormMixin {
                                     _longitudeController,
                                   ),
                                 ),
+                                IconButton.filled(
+                                  onPressed: () {
+                                    setState(() {
+                                      _locationPickerOpen =
+                                          !_locationPickerOpen;
+                                    });
+                                  },
+                                  icon: const Icon(Icons.my_location),
+                                ),
                               ],
                             ),
-
+                            SizedBox(height: 8),
+                            Collapsible(
+                              isCollapsed: !_locationPickerOpen,
+                              child: Container(
+                                height: 300,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                clipBehavior: Clip.antiAlias,
+                                child: SelectPointMap(
+                                  selectedPoint: _selectedPoint.value,
+                                  onPointSelected: (LatLng latLng) {
+                                    setState(() {
+                                      _selectedPoint.value = latLng;
+                                      _latitudeController
+                                          .text = LocationUtil.latLonToString(
+                                        latLng.latitude,
+                                      );
+                                      _longitudeController
+                                          .text = LocationUtil.latLonToString(
+                                        latLng.longitude,
+                                      );
+                                    });
+                                  },
+                                ),
+                              ),
+                            ),
                             SizedBox(height: 12),
 
                             Text(
