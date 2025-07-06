@@ -150,7 +150,7 @@ class _MarkdownEditorState extends State<MarkdownEditor> {
         ),
         Positioned(
           left: 4.0,
-          bottom: 4.0,
+          bottom: widget.errorText == null ? 4.0 : 24.0,
           right: 64.0,
           child: Align(
             alignment: Alignment.bottomLeft,

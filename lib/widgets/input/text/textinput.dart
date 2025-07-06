@@ -123,7 +123,7 @@ class _TextInputState extends State<TextInput> {
               final length = widget.controller.text.length;
               return Positioned(
                 right: 12,
-                bottom: 12,
+                bottom: widget.errorText == null ? 12 : 32,
                 child: IgnorePointer(
                   child: Text(
                     "$length/${widget.maxLength}",
