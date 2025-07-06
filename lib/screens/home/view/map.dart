@@ -52,6 +52,7 @@ class MapView extends StatelessWidget {
                     timescale: timelineState.visibleTimeScale,
                     surfaceColor: Colors.black,
                     onSurfaceColor: Colors.white,
+                    isStatic: true
                   ),
                 ),
               ),

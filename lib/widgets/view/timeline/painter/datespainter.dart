@@ -23,6 +23,7 @@ class DatesPainter extends CustomPainter {
   final int timescale;
   final Color surfaceColor;
   final Color onSurfaceColor;
+  final bool isStatic;
 
   DatesPainter({
     required this.startTimestamp,
@@ -33,10 +34,36 @@ class DatesPainter extends CustomPainter {
     required this.timescale,
     required this.surfaceColor,
     required this.onSurfaceColor,
+    this.isStatic = false,
   });
 
   @override
   void paint(Canvas canvas, Size size) {
+    if (isStatic) {
+      final startPainter = _getDateTextPainter(visibleStartTimestamp);
+      final endPainter = _getDateTextPainter(visibleStartTimestamp, textAlign: TextAlign.right);
+      _drawDate(
+        canvas,
+        startPainter,
+        _calculateDatePosition(
+          0,
+          size.height - startPainter.height - edgePadding,
+          startPainter,
+        ),
+      );
+      _drawDate(
+        canvas,
+        endPainter,
+        _calculateDatePosition(
+          size.width,
+          size.height - endPainter.height - edgePadding,
+          endPainter,
+          fromRight: true,
+        ),
+      );
+      return;
+    }
+
     final date = DateTime.fromMillisecondsSinceEpoch(visibleStartTimestamp);
     final startOfDay = DateTime(date.year, date.month, date.day);
     final startOfVisibleDay = startOfDay.millisecondsSinceEpoch;
