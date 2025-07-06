@@ -106,24 +106,24 @@ class Validation {
     return UsernameValidationResult.valid;
   }
 
-  static LongitudeValidationResult isValidLongitude(String longitude) {
-    if (longitude.isEmpty) return LongitudeValidationResult.empty;
-    final double? value = double.tryParse(longitude);
-    if (value == null) return LongitudeValidationResult.notANumber;
-    if (value < -180 || value > 180) {
-      return LongitudeValidationResult.invalid;
-    }
-    return LongitudeValidationResult.valid;
-  }
-
   static LatitudeValidationResult isValidLatitude(String latitude) {
     if (latitude.isEmpty) return LatitudeValidationResult.empty;
     final double? value = double.tryParse(latitude);
     if (value == null) return LatitudeValidationResult.notANumber;
-    if (value < -90 || value > 90) {
-      return LatitudeValidationResult.invalid;
-    }
+    if (value.toString().length > value.toStringAsFixed(6).length)
+      return LatitudeValidationResult.tooManyDecimals;
+    if (value < -90 || value > 90) return LatitudeValidationResult.invalid;
     return LatitudeValidationResult.valid;
+  }
+
+  static LongitudeValidationResult isValidLongitude(String longitude) {
+    if (longitude.isEmpty) return LongitudeValidationResult.empty;
+    final double? value = double.tryParse(longitude);
+    if (value == null) return LongitudeValidationResult.notANumber;
+    if (value.toString().length > value.toStringAsFixed(6).length)
+      return LongitudeValidationResult.tooManyDecimals;
+    if (value < -180 || value > 180) return LongitudeValidationResult.invalid;
+    return LongitudeValidationResult.valid;
   }
 
   static CommentValidationResult isValidComment(String comment) {
@@ -234,6 +234,7 @@ enum LongitudeValidationResult {
   valid,
   notANumber(message: "Longitude must be a number."),
   invalid(message: "Longitude must be between -180 and 180 degrees."),
+  tooManyDecimals(message: "Longitude cannot have more than 6 decimal places."),
   empty(message: "Longitude cannot be empty.");
 
   final String? message;
@@ -245,6 +246,7 @@ enum LatitudeValidationResult {
   valid,
   notANumber(message: "Latitude must be a number."),
   invalid(message: "Latitude must be between -90 and 90 degrees."),
+  tooManyDecimals(message: "Latitude cannot have more than 6 decimal places."),
   empty(message: "Latitude cannot be empty.");
 
   final String? message;
