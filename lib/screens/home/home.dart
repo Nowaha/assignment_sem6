@@ -23,7 +23,6 @@ import 'package:assignment_sem6/widgets/view/timeline/item/timelineitem.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
-import 'package:latlong2/latlong.dart';
 import 'package:provider/provider.dart';
 
 class HomePage extends StatefulWidget {
@@ -382,27 +381,10 @@ class _HomePageState extends State<HomePage> {
 }
 
 enum ActiveView {
-  timeline("Timeline View", 150.0),
-  map("Map View", 150.0);
+  timeline("Timeline View"),
+  map("Map View");
 
   final String title;
-  final double fabOffset;
 
-  const ActiveView(this.title, this.fabOffset);
-}
-
-class TempPost {
-  final int startTimestamp;
-  final int endTimestamp;
-  final String name;
-  final Color color;
-  final LatLng location;
-
-  const TempPost({
-    required this.startTimestamp,
-    required this.endTimestamp,
-    required this.name,
-    this.color = Colors.purple,
-    required this.location,
-  });
+  const ActiveView(this.title);
 }
