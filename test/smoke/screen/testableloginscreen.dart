@@ -12,7 +12,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
 
-import '../testwithservicemixin.dart';
+import '../../widget/testwithservicemixin.dart';
 
 class TestableLoginScreen
     with TestWithService<User, UserDao, UserRepository, UserService> {
