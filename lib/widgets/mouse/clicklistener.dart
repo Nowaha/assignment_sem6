@@ -5,10 +5,16 @@ import 'package:flutter/widgets.dart';
 ///
 /// This is to replace the default [GestureDetector] which has a huge delay
 class ClickListener extends StatefulWidget {
+  final HitTestBehavior hitTestBehavior;
   final Function(PointerUpEvent) onClick;
   final Widget child;
 
-  const ClickListener({super.key, required this.onClick, required this.child});
+  const ClickListener({
+    super.key,
+    this.hitTestBehavior = HitTestBehavior.deferToChild,
+    required this.onClick,
+    required this.child,
+  });
 
   @override
   State<ClickListener> createState() => _ClickListenerState();
@@ -20,6 +26,7 @@ class _ClickListenerState extends State<ClickListener> {
   @override
   Widget build(BuildContext context) {
     return Listener(
+      behavior: widget.hitTestBehavior,
       onPointerDown: (event) {
         _dragStart = event.localPosition;
       },
