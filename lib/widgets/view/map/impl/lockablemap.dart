@@ -55,7 +55,7 @@ class LockableMapState extends State<LockableMap> {
         child: Center(
           child: ClickHoverListener(
             onClick:
-                () => setState(() {
+                (_) => setState(() {
                   _locked = !_locked;
                 }),
             child: Container(

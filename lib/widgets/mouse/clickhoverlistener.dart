@@ -4,7 +4,7 @@ import 'package:flutter/widgets.dart';
 /// A wrapper for [ClickListener] that also listens for mouse hover events.
 /// See [ClickListener] for more details as to why this is necessary.
 class ClickHoverListener extends StatelessWidget {
-  final VoidCallback? onClick;
+  final Function(PointerUpEvent)? onClick;
   final VoidCallback? mouseEnter;
   final VoidCallback? mouseLeave;
   final MouseCursor? cursor;
@@ -25,7 +25,7 @@ class ClickHoverListener extends StatelessWidget {
       onEnter: (_) => mouseEnter?.call(),
       onExit: (_) => mouseLeave?.call(),
       cursor: cursor ?? SystemMouseCursors.click,
-      child: ClickListener(onClick: onClick ?? () {}, child: child),
+      child: ClickListener(onClick: onClick ?? (_) {}, child: child),
     );
   }
 }

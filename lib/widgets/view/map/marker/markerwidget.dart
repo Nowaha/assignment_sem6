@@ -78,7 +78,7 @@ class _MarkerWidgetState extends State<MarkerWidget> {
         });
       },
       child: ClickListener(
-        onClick: () {
+        onClick: (_) {
           if (widget.staticView) return;
           final timelineState = context.read<TimelineState>();
           if (timelineState.selectedItem.value == widget.item.key) {

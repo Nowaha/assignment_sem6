@@ -98,7 +98,7 @@ class _TimelineItemWidgetState extends State<TimelineItemWidget> {
                       : MainAxisAlignment.start,
               children: [
                 ClickHoverListener(
-                  onClick: () => widget.onSelect?.call(),
+                  onClick: (_) => widget.onSelect?.call(),
                   mouseEnter: widget.onHover ?? () {},
                   mouseLeave: widget.onLeave ?? () {},
                   child: TimelineItemHeader(
