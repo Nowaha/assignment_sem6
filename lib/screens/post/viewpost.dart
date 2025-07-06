@@ -11,7 +11,7 @@ import 'package:assignment_sem6/widgets/collapsible/collapsiblewithheader.dart';
 import 'package:assignment_sem6/widgets/comment/commentsection.dart';
 import 'package:assignment_sem6/widgets/dataholderstate.dart';
 import 'package:assignment_sem6/widgets/screen.dart';
-import 'package:assignment_sem6/widgets/view/map/impl/staticmap.dart';
+import 'package:assignment_sem6/widgets/view/map/impl/lockablemap.dart';
 import 'package:assignment_sem6/widgets/view/timeline/item/timelineitem.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -200,9 +200,13 @@ class _ViewPostState extends DataHolderState<ViewPost, PostView> {
                   style: Theme.of(context).textTheme.titleLarge,
                 ),
                 tooltip: "Location",
-                child: SizedBox(
+                child: Container(
                   height: 400,
-                  child: StaticMap(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  clipBehavior: Clip.antiAlias,
+                  child: LockableMap(
                     initialCenter: LatLng(data!.post.lat, data!.post.lng),
                     initialZoom: 15.0,
                     centralItem: TimelineItem.fromPost(data!.post),

@@ -9,9 +9,11 @@ abstract class StackMap extends BaseMapWidget {
 }
 
 abstract class StackMapState<T extends StackMap> extends BaseMapState<T> {
-  List<Widget> getStackItems(BuildContext context);
+  Widget getBase();
+
+  List<Widget> getStackExtras(BuildContext context);
 
   @override
   Widget buildWidget(BuildContext context) =>
-      Stack(children: [...getStackItems(context)]);
+      Stack(children: [getBase(), ...getStackExtras(context)]);
 }

@@ -1,6 +1,7 @@
 import 'package:assignment_sem6/widgets/view/map/impl/stackmap.dart';
 import 'package:assignment_sem6/widgets/view/map/zoom/mapzoom.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_map/flutter_map.dart';
 
 class ZoomBarMap extends StackMap {
   final double? maxHeight;
@@ -20,12 +21,32 @@ class ZoomBarMap extends StackMap {
 
 class ZoomBarMapState<T extends ZoomBarMap> extends StackMapState<T> {
   @override
-  List<Widget> getStackItems(BuildContext context) => [
+  void initState() {
+    super.initState();
+    mapController.mapEventStream.listen((event) {
+      if (event is MapEventWithMove) {
+        if (event.oldCamera.zoom != event.camera.zoom) {
+          onZoomChange(event.camera.zoom);
+        }
+      }
+    });
+  }
+
+  void onZoomChange(double zoom) {
+    setState(() {});
+    widget.onZoomChanged?.call(zoom);
+  }
+
+  @override
+  Widget getBase() => buildMap(context, finalFiltered: filtered);
+
+  @override
+  List<Widget> getStackExtras(BuildContext context) => [
     if (mapReady)
       Positioned(
-        top: 16,
-        right: 16,
-        bottom: 16,
+        top: 8,
+        right: 8,
+        bottom: 8,
         child: Center(
           child: SizedBox(
             height: widget.maxHeight,
@@ -35,7 +56,7 @@ class ZoomBarMapState<T extends ZoomBarMap> extends StackMapState<T> {
               maxZoom: 20.0,
               onZoomChanged: (double zoom) {
                 mapController.move(mapController.camera.center, zoom);
-                setState(() {});
+                onZoomChange(zoom);
               },
             ),
           ),

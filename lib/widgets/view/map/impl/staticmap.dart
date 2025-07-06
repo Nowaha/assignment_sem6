@@ -11,6 +11,7 @@ class StaticMap extends ZoomBarMap {
     super.key,
     super.initialCenter,
     super.initialZoom,
+    super.onZoomChanged,
     required this.centralItem,
   });
 
@@ -20,34 +21,31 @@ class StaticMap extends ZoomBarMap {
 
 class StaticMapState extends ZoomBarMapState<StaticMap> {
   @override
-  List<Widget> getStackItems(BuildContext context) {
+  Widget getBase() {
     final finalFiltered =
         filtered.where((item) {
           return item.key != widget.centralItem.key;
         }).toList();
 
-    return [
-      IgnorePointer(
-        child: super.buildMap(
-          context,
-          finalFiltered: finalFiltered,
-          staticView: true,
-          extraLayers: [
-            MarkerLayer(
-              markers: [
-                MapMarker(
-                  item: widget.centralItem,
-                  staticView: true,
-                  visibleTimelineStart: startTimestamp,
-                  visibleTimelineEnd: endTimestamp,
-                  forceEngaged: true,
-                ),
-              ],
-            ),
-          ],
-        ),
+    return IgnorePointer(
+      child: super.buildMap(
+        context,
+        finalFiltered: finalFiltered,
+        staticView: true,
+        extraLayers: [
+          MarkerLayer(
+            markers: [
+              MapMarker(
+                item: widget.centralItem,
+                staticView: true,
+                visibleTimelineStart: startTimestamp,
+                visibleTimelineEnd: endTimestamp,
+                forceEngaged: true,
+              ),
+            ],
+          ),
+        ],
       ),
-      ...super.getStackItems(context),
-    ];
+    );
   }
 }
