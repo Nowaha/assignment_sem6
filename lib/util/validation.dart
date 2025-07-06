@@ -17,6 +17,7 @@ class Validation {
   static const int maxPostGroups = 6;
   static const int minCommentLength = 4;
   static const int maxCommentLength = 1000;
+  static const int maxLongLatDecimalPlaces = 6;
 
   static final characterWhitelistRegex = RegExp(r'^[a-zA-Z0-9_]+$');
   static final emailRegex = RegExp(
@@ -110,7 +111,9 @@ class Validation {
     if (latitude.isEmpty) return LatitudeValidationResult.empty;
     final double? value = double.tryParse(latitude);
     if (value == null) return LatitudeValidationResult.notANumber;
-    if (value.toString().length > value.toStringAsFixed(6).length)
+    print(value.toStringAsFixed(maxLongLatDecimalPlaces));
+    if (value.toString().length >
+        value.toStringAsFixed(maxLongLatDecimalPlaces).length)
       return LatitudeValidationResult.tooManyDecimals;
     if (value < -90 || value > 90) return LatitudeValidationResult.invalid;
     return LatitudeValidationResult.valid;
@@ -120,7 +123,8 @@ class Validation {
     if (longitude.isEmpty) return LongitudeValidationResult.empty;
     final double? value = double.tryParse(longitude);
     if (value == null) return LongitudeValidationResult.notANumber;
-    if (value.toString().length > value.toStringAsFixed(6).length)
+    if (value.toString().length >
+        value.toStringAsFixed(maxLongLatDecimalPlaces).length)
       return LongitudeValidationResult.tooManyDecimals;
     if (value < -180 || value > 180) return LongitudeValidationResult.invalid;
     return LongitudeValidationResult.valid;
