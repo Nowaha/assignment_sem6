@@ -11,7 +11,7 @@ class ClickHoverListener extends StatelessWidget {
   final VoidCallback? mouseEnter;
   final VoidCallback? mouseLeave;
   final Function(PointerHoverEvent)? onHover;
-  final Widget child;
+  final Widget? child;
 
   const ClickHoverListener({
     super.key,
@@ -21,7 +21,7 @@ class ClickHoverListener extends StatelessWidget {
     this.mouseLeave,
     this.onHover,
     this.cursor,
-    required this.child,
+    this.child,
   });
 
   @override

@@ -7,13 +7,13 @@ import 'package:flutter/widgets.dart';
 class ClickListener extends StatefulWidget {
   final HitTestBehavior hitTestBehavior;
   final Function(PointerUpEvent) onClick;
-  final Widget child;
+  final Widget? child;
 
   const ClickListener({
     super.key,
     this.hitTestBehavior = HitTestBehavior.deferToChild,
     required this.onClick,
-    required this.child,
+    this.child,
   });
 
   @override
