@@ -43,7 +43,7 @@ class MarkerTimePainter extends CustomPainter {
       size.width,
     );
 
-    bool notOnTimeline = startX == 0 && endX == 0;
+    bool notOnTimeline = (startX == 0 && endX == 0) || startX > endX;
 
     canvas.drawLineWithShadow(
       Offset(offset.dx, size.height / 2 + thickness / 2 + offset.dy),
@@ -57,14 +57,16 @@ class MarkerTimePainter extends CustomPainter {
         ..strokeWidth = thickness / 2,
     );
 
-    canvas.drawLine(
-      Offset(startX + offset.dx, size.height / 2 + thickness / 2 + offset.dy),
-      Offset(endX + offset.dx, size.height / 2 + thickness / 2 + offset.dy),
-      Paint()
-        ..color = color
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = thickness,
-    );
+    if (!notOnTimeline) {
+      canvas.drawLine(
+        Offset(startX + offset.dx, size.height / 2 + thickness / 2 + offset.dy),
+        Offset(endX + offset.dx, size.height / 2 + thickness / 2 + offset.dy),
+        Paint()
+          ..color = color
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = thickness,
+      );
+    }
   }
 
   @override
