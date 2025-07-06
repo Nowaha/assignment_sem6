@@ -24,24 +24,6 @@ class _LoginPageState extends State<LoginPage> with FormMixin {
   final usernameEmailController = TextEditingController();
   final passwordController = TextEditingController();
 
-  @override
-  void initState() {
-    super.initState();
-
-    // _TEMPLOGIN();
-  }
-
-  // void _TEMPLOGIN() async {
-  //   final authState = context.read<AuthState>();
-  //   final userService = context.read<UserService>();
-
-  //   await Future.delayed(Duration(milliseconds: 100));
-
-  //   authState.login(
-  //     (await userService.authenticateByUsername("Admin", "123456"))!,
-  //   );
-  // }
-
   void _attemptToAuthenticate(BuildContext context) async {
     if (loading) return;
     setLoading(true);
